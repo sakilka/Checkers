@@ -1,0 +1,11 @@
+.button {
+    -fx-text-fill: red;
+}
+
+.menu-item {
+    -fx-padding: 5 5 20 5
+}
+
+.menu-bar {
+    -fx-border-color:  #f0cd90;
+}
