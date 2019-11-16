@@ -1,5 +1,6 @@
-package org.sample.checkers;
+package org.sample.checkers.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.input.InputEvent;
@@ -20,4 +21,8 @@ public class MenuController {
         System.out.println("menu action " + event.getEventType());
     }
 
+    @FXML
+    private void quitAction() {
+        Platform.exit();
+    }
 }
