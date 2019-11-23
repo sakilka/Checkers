@@ -9,10 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.sample.checkers.mesh.components.SmartGroup;
+import org.sample.checkers.mesh.mesh.Pyramid;
 
 public class Mesh extends Application {
 
@@ -37,8 +39,17 @@ public class Mesh extends Application {
         camera.setFarClip(10000);
         camera.translateZProperty().set(-1000);
 
-        Cylinder sphere = new Cylinder(50, 100);
-        group.getChildren().add(sphere);
+        Cylinder cylinder = new Cylinder(5, 200);
+        Pyramid pyramid = new Pyramid(150, 300);
+
+        pyramid.setTranslateX(0);
+        pyramid.setTranslateY(-100);
+        pyramid.setTranslateZ(150);
+
+        pyramid.setMaterial(new PhongMaterial(Color.GREEN));
+
+        group.getChildren().add(cylinder);
+        group.getChildren().add(pyramid);
 
         Scene root = new Scene(group, WIDTH, HEIGHT, true, SceneAntialiasing.DISABLED);
         root.setFill(Color.SILVER);
