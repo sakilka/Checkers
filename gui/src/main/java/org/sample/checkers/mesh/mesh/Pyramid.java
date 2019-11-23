@@ -6,8 +6,8 @@ import javafx.scene.shape.TriangleMesh;
 
 public class Pyramid extends MeshView {
 
-    private static final float DEFAULT_HEIGHT = 150;                    // Height
-    private static final float DEFAULT_SIDE = 300;                    // Side
+    private static final float DEFAULT_HEIGHT = 150;
+    private static final float DEFAULT_SIDE = 300;
 
     public Pyramid() {
         this(DEFAULT_HEIGHT, DEFAULT_SIDE);
@@ -17,7 +17,7 @@ public class Pyramid extends MeshView {
         TriangleMesh pyramidMesh = new TriangleMesh();
         setTextureCoordinates(pyramidMesh);
         definePoints(pyramidMesh, height, side);
-        defineFaces(pyramidMesh, height, side);
+        defineFaces(pyramidMesh);
 
         super.setMesh(pyramidMesh);
         super.setDrawMode(DrawMode.FILL);
@@ -37,7 +37,7 @@ public class Pyramid extends MeshView {
         );
     }
 
-    private void defineFaces(TriangleMesh pyramidMesh, float height, float side) {
+    private void defineFaces(TriangleMesh pyramidMesh) {
         pyramidMesh.getFaces().addAll(
                 0, 0, 2, 0, 1, 0,          // Front left face
                 0, 0, 1, 0, 3, 0,          // Front right face
