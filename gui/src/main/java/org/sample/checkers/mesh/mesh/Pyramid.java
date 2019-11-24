@@ -27,7 +27,7 @@ public class Pyramid extends MeshView {
         pyramidMesh.getTexCoords().addAll(0, 0);
     }
 
-    private void definePoints(TriangleMesh pyramidMesh, float height, float side) {
+    private void definePoints(TriangleMesh pyramidMesh, float height, float side) { // body
         pyramidMesh.getPoints().addAll(
                 0, 0, 0,                // Point 0 - Top
                 0, height, -side / 2,           // Point 1 - Front
@@ -37,7 +37,7 @@ public class Pyramid extends MeshView {
         );
     }
 
-    private void defineFaces(TriangleMesh pyramidMesh) {
+    private void defineFaces(TriangleMesh pyramidMesh) { // steny
         pyramidMesh.getFaces().addAll(
                 0, 0, 2, 0, 1, 0,          // Front left face
                 0, 0, 1, 0, 3, 0,          // Front right face

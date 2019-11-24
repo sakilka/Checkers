@@ -1,8 +1,10 @@
 package org.sample.checkers.mesh;
 
+import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ObservableFloatArray;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -11,9 +13,12 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.sample.checkers.mesh.components.SmartGroup;
+import org.sample.checkers.mesh.mesh.OktaHedron;
 import org.sample.checkers.mesh.mesh.Pyramid;
 
 public class Mesh extends Application {
@@ -40,16 +45,50 @@ public class Mesh extends Application {
         camera.translateZProperty().set(-1000);
 
         Cylinder cylinder = new Cylinder(5, 200);
+
+        cylinder.setTranslateX(100);
+        cylinder.setTranslateY(0);
+        cylinder.setTranslateZ(0);
+
         Pyramid pyramid = new Pyramid(150, 300);
 
-        pyramid.setTranslateX(0);
+        pyramid.setTranslateX(-150);
         pyramid.setTranslateY(-100);
         pyramid.setTranslateZ(150);
-
         pyramid.setMaterial(new PhongMaterial(Color.GREEN));
+
+        OktaHedron oktaHedron = new OktaHedron(50);
+
+        oktaHedron.setTranslateX(0);
+        oktaHedron.setTranslateY(0);
+        oktaHedron.setTranslateZ(100);
+        oktaHedron.setMaterial(new PhongMaterial(Color.BLUE));
+
+        ObjModelImporter importer = new ObjModelImporter();
+        importer.read("C:/Users/Ivan/Documents/customObject.obj");
+
+        MeshView[] customObject = importer.getImport();
+        customObject[0].setTranslateX(0);
+        customObject[0].setTranslateY(0);
+        customObject[0].setTranslateZ(0);
+        customObject[0].setMaterial(new PhongMaterial(Color.RED));
+
+        ObservableFloatArray points = ((TriangleMesh) customObject[0].getMesh()).getPoints();
+        float[] floats = new float[points.size()];
+        float[] resized = new float[points.size()];
+        int p = 0;
+        for (float f : points.toArray(floats)) {
+            System.out.println(f);
+            resized[p] = f * 100;
+            p++;
+        }
+        ((TriangleMesh) customObject[0].getMesh()).getPoints().setAll(resized);
+        //((TriangleMesh) customObject[0].getMesh()).getPoints().addAll(resized);
 
         group.getChildren().add(cylinder);
         group.getChildren().add(pyramid);
+        group.getChildren().addAll(customObject);
+        group.getChildren().addAll(oktaHedron);
 
         Scene root = new Scene(group, WIDTH, HEIGHT, true, SceneAntialiasing.DISABLED);
         root.setFill(Color.SILVER);
