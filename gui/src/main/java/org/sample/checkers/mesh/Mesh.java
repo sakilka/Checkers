@@ -1,20 +1,17 @@
 package org.sample.checkers.mesh;
 
-import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.collections.ObservableFloatArray;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import org.sample.checkers.mesh.components.SmartGroup;
@@ -62,35 +59,30 @@ public class Mesh extends Application {
         oktaHedron.setTranslateX(0);
         oktaHedron.setTranslateY(0);
         oktaHedron.setTranslateZ(100);
-        oktaHedron.setMaterial(new PhongMaterial(Color.BLUE));
+        PhongMaterial mat = new PhongMaterial();
+        mat.setDiffuseMap(new Image(getClass().getResourceAsStream("icosah_net.gif")));
+        oktaHedron.setMaterial(mat);
 
-        ObjModelImporter importer = new ObjModelImporter();
-        importer.read("C:/Users/Ivan/Documents/customObject.obj");
-
-        MeshView[] customObject = importer.getImport();
-        customObject[0].setTranslateX(0);
-        customObject[0].setTranslateY(0);
-        customObject[0].setTranslateZ(0);
-        customObject[0].setMaterial(new PhongMaterial(Color.RED));
-
-        ObservableFloatArray points = ((TriangleMesh) customObject[0].getMesh()).getPoints();
-        float[] floats = new float[points.size()];
-        float[] resized = new float[points.size()];
-        int p = 0;
-        for (float f : points.toArray(floats)) {
-            System.out.println(f);
-            resized[p] = f * 100;
-            p++;
-        }
-        ((TriangleMesh) customObject[0].getMesh()).getPoints().setAll(resized);
-        //((TriangleMesh) customObject[0].getMesh()).getPoints().addAll(resized);
+//        ExternMesh customObject = new ExternMesh("C:/Users/Ivan/Documents/customObject.obj", 10);
+//        customObject.setTranslateX(0);
+//        customObject.setTranslateY(0);
+//        customObject.setTranslateZ(0);
+//        customObject.setMaterial(new PhongMaterial(Color.RED));
+//
+//        ExternMesh donut = new ExternMesh("C:/Users/Ivan/Documents/donut.obj", 100);
+//        customObject.setTranslateX(0);
+//        customObject.setTranslateY(0);
+//        customObject.setTranslateZ(0);
+//        customObject.setMaterial(new PhongMaterial(Color.RED));
+//        donut.setMaterial(new PhongMaterial(Color.YELLOW));
 
         group.getChildren().add(cylinder);
         group.getChildren().add(pyramid);
-        group.getChildren().addAll(customObject);
         group.getChildren().addAll(oktaHedron);
+        //group.getChildren().addAll(customObject);
+        //group.getChildren().addAll(donut);
 
-        Scene root = new Scene(group, WIDTH, HEIGHT, true, SceneAntialiasing.DISABLED);
+        Scene root = new Scene(group, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
         root.setFill(Color.SILVER);
         root.setCamera(camera);
 

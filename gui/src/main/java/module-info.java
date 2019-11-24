@@ -1,7 +1,6 @@
 module hellofx {
     requires javafx.controls;
     requires javafx.fxml;
-    requires jimObjModelImporterJFX;
 
     opens org.sample.checkers to javafx.fxml;
     opens org.sample.checkers.controller to javafx.fxml;
