@@ -12,5 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jimObjModelImporterJFX" level="project" />
+    <orderEntry type="library" name="jimStlMeshImporterJFX" level="project" />
   </component>
 </module>

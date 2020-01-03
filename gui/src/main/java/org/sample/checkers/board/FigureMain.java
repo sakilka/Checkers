@@ -1,4 +1,5 @@
-package org.sample.checkers.mesh;
+package org.sample.checkers.board;
+
 
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
@@ -7,19 +8,16 @@ import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
-import javafx.scene.image.Image;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Cylinder;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import org.sample.checkers.board.model.Cube;
+import org.sample.checkers.board.model.Figure;
 import org.sample.checkers.mesh.components.SmartGroup;
-import org.sample.checkers.mesh.mesh.ExternMesh;
-import org.sample.checkers.mesh.mesh.OktaHedron;
-import org.sample.checkers.mesh.mesh.Pyramid;
 
-public class Mesh extends Application {
+public class FigureMain extends Application {
 
     private static final float WIDTH = 800;
     private static final float HEIGHT = 600;
@@ -40,56 +38,24 @@ public class Mesh extends Application {
         Camera camera = new PerspectiveCamera(true);
         camera.setNearClip(1);
         camera.setFarClip(10000);
-        camera.translateZProperty().set(-1000);
+        camera.translateZProperty().set(-1500);
 
-        Cylinder cylinder = new Cylinder(5, 200);
+        Cube cube = new Cube(100, 100, 100);
 
-        cylinder.setTranslateX(100);
-        cylinder.setTranslateY(0);
-        cylinder.setTranslateZ(0);
+        cube.setTranslateX(150);
+        cube.setTranslateY(0);
+        cube.setTranslateZ(-250);
+        cube.setMaterial(new PhongMaterial(Color.GREEN));
 
-        Pyramid pyramid = new Pyramid(150, 300);
+        Figure figure = new Figure(250, 10);
 
-        pyramid.setTranslateX(-150);
-        pyramid.setTranslateY(-100);
-        pyramid.setTranslateZ(150);
-        pyramid.setMaterial(new PhongMaterial(Color.GREEN));
+        figure.setTranslateX(0);
+        figure.setTranslateY(0);
+        figure.setTranslateZ(0);
+        figure.setMaterial(new PhongMaterial(Color.RED));
 
-        OktaHedron oktaHedron = new OktaHedron(50);
-
-        oktaHedron.setTranslateX(0);
-        oktaHedron.setTranslateY(0);
-        oktaHedron.setTranslateZ(100);
-        PhongMaterial mat = new PhongMaterial();
-        mat.setDiffuseMap(new Image(getClass().getResourceAsStream("icosah_net.gif")));
-        oktaHedron.setMaterial(mat);
-
-        ExternMesh customObject = new ExternMesh("C:/Users/Ivan/Documents/customObject.obj", 10);
-        customObject.setTranslateX(0);
-        customObject.setTranslateY(0);
-        customObject.setTranslateZ(0);
-//        customObject.setMaterial(new PhongMaterial(Color.RED));
-//
-        ExternMesh donut = new ExternMesh("C:/Users/Ivan/Documents/donut.obj", 100);
-//        customObject.setTranslateX(0);
-//        customObject.setTranslateY(0);
-//        customObject.setTranslateZ(0);
-//        customObject.setMaterial(new PhongMaterial(Color.RED));
-//        donut.setMaterial(new PhongMaterial(Color.YELLOW));
-//        ExternMesh donut = new ExternMesh("C:/Users/Ivan/Documents/donut.stl", 100);
-        donut.setTranslateX(0);
-        donut.setTranslateY(0);
-        donut.setTranslateZ(0);
-//        donut.setMaterial(new PhongMaterial(Color.YELLOW));
-
-//        ExternMesh externMesh = new ExternMesh("", 1);
-//        externMesh.getMayaGroup().getChildren();
-
-        group.getChildren().add(cylinder);
-//        group.getChildren().add(pyramid);
-//        group.getChildren().addAll(oktaHedron);
-//        group.getChildren().addAll(customObject);
-        group.getChildren().addAll(donut);
+        group.getChildren().add(cube);
+        group.getChildren().add(figure);
 
         Scene root = new Scene(group, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
         root.setFill(Color.SILVER);
@@ -97,7 +63,7 @@ public class Mesh extends Application {
 
         initMouseControl(group, root, primaryStage);
 
-        primaryStage.setTitle("Mesh");
+        primaryStage.setTitle("Checkers");
         primaryStage.setScene(root);
         primaryStage.show();
     }
@@ -144,3 +110,4 @@ public class Mesh extends Application {
         launch(args);
     }
 }
+
