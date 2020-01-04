@@ -13,6 +13,8 @@ public class Figure extends MeshView {
 
     private static final int DEFAULT_SIZE = 150;
     private static final int DEFAULT_GRANULARITY = 10;
+    private static final int ANGLE_RANGE = 360;
+    private static final int END_TOP = 90;
     private static final double PRECISION = 1000000.0;
 
     public Figure() {
@@ -36,60 +38,65 @@ public class Figure extends MeshView {
 
     private void definePoints(TriangleMesh pyramidMesh, int size, int granularity) { // body
         pyramidMesh.getPoints().addAll(
-                calculatePoints(size, granularity)
+                calculateTopPoints(size, granularity)
         );
     }
 
     private void defineFaces(TriangleMesh pyramidMesh, int granularity) { // steny
 
-        List<Integer> faces = new ArrayList<>();
-
-        for (int point = 1; point <= (360 / granularity); point++) {
-            faces.add(0);
-            faces.add(0);
-            faces.add(point);
-            faces.add(0);
-            faces.add((point % 36) + 1);
-            faces.add(0);
-        }
-
-        for (int level = 1; level < (granularity - 1); level++) {
-            for (int point = 1; point <= (360 / granularity); point++) {
-                faces.add(((level - 1) * 36) + point);
-                faces.add(0);
-                faces.add((level * 36) + point);
-                faces.add(0);
-                faces.add((level * 36) + (point % 36) + 1);
-                faces.add(0);
-
-                faces.add(((level - 1) * 36) + point);
-                faces.add(0);
-                faces.add((level * 36) + (point % 36) + 1);
-                faces.add(0);
-                faces.add(((level - 1) * 36) + (point % 36) + 1);
-                faces.add(0);
-            }
-        }
-
-        for (int i = 0; i < faces.size(); i += 6) {
-            System.out.println(i / 6 + ". [" + faces.get(i) + "," + faces.get(i + 1) + "," + +faces.get(i + 2) + ","
-                    + faces.get(i + 3) + "," + faces.get(i + 4) + "," + faces.get(i + 5) + "]");
-        }
+        List<Integer> faces = calculateTopFaces(granularity);
 
         pyramidMesh.getFaces().addAll(
                 faces.stream().mapToInt(i -> i).toArray()
         );
     }
 
-    private float[] calculatePoints(int size, int granularity) {
+    private List<Integer> calculateTopFaces(int granularity) {
+        List<Integer> faces = new ArrayList<>();
+
+        for (int point = 1; point <= (ANGLE_RANGE / granularity); point++) {
+            faces.add(0);
+            faces.add(0);
+            faces.add(point);
+            faces.add(0);
+            faces.add((point % (ANGLE_RANGE / granularity)) + 1);
+            faces.add(0);
+        }
+
+        for (int level = 1; level < (((((ANGLE_RANGE / 4.0) + END_TOP) / granularity)) - 1); level++) {
+            for (int point = 1; point <= (ANGLE_RANGE / granularity); point++) {
+                faces.add(((level - 1) * (ANGLE_RANGE / granularity)) + point);
+                faces.add(0);
+                faces.add((level * (ANGLE_RANGE / granularity)) + point);
+                faces.add(0);
+                faces.add((level * (ANGLE_RANGE / granularity)) + (point % (ANGLE_RANGE / granularity)) + 1);
+                faces.add(0);
+
+                faces.add(((level - 1) * (ANGLE_RANGE / granularity)) + point);
+                faces.add(0);
+                faces.add((level * (ANGLE_RANGE / granularity)) + (point % (ANGLE_RANGE / granularity)) + 1);
+                faces.add(0);
+                faces.add(((level - 1) * (ANGLE_RANGE / granularity)) + (point % (ANGLE_RANGE / granularity)) + 1);
+                faces.add(0);
+            }
+        }
+
+//        for (int i = 0; i < faces.size(); i += 6) {
+//            System.out.println(i / 6 + ". [" + faces.get(i) + "," + faces.get(i + 1) + "," + +faces.get(i + 2) + ","
+//                    + faces.get(i + 3) + "," + faces.get(i + 4) + "," + faces.get(i + 5) + "]");
+//        }
+        return faces;
+    }
+
+    private float[] calculateTopPoints(int size, int granularity) {
         List<float[]> points = new ArrayList<>();
 
-        for (double angle = 90; angle >= 0; angle -= 10) {
+        for (double angle = (ANGLE_RANGE / 4.0); angle >= -END_TOP; angle -= granularity) {
 
             double y = (1 - sin(Math.toRadians(angle))) * size;
             double radius = cos(Math.toRadians(angle)) * size;
 
-            for (int number = 0; number < 360; number += granularity) {
+            for (int number = 0; number < ANGLE_RANGE; number += granularity) {
                 double x = cos(Math.toRadians(number)) * radius;
                 double z = sin(Math.toRadians(number)) * radius;
                 points.add(new float[]{(float) (round(x * PRECISION) / PRECISION),
@@ -101,10 +108,10 @@ public class Figure extends MeshView {
 
         points = removeDuplicates(points);
 
-        int i = 0;
-        for (float[] point : points) {
-            System.out.println(i++ + ". [" + point[0] + "," + point[1] + "," + point[2] + "]");
-        }
+//        int i = 0;
+//        for (float[] point : points) {
+//            System.out.println(i++ + ". [" + point[0] + "," + point[1] + "," + point[2] + "]");
+//        }
 
         float[] result = new float[points.size() * 3];
         for (int p = 0; p < points.size(); p++) {

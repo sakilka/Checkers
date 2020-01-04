@@ -47,7 +47,7 @@ public class FigureMain extends Application {
         cube.setTranslateZ(-250);
         cube.setMaterial(new PhongMaterial(Color.GREEN));
 
-        Figure figure = new Figure(250, 10);
+        Figure figure = new Figure(250, 1);
 
         figure.setTranslateX(0);
         figure.setTranslateY(0);
