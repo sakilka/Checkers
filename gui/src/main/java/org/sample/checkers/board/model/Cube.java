@@ -15,21 +15,23 @@ public class Cube extends MeshView {
     }
 
     public Cube(float height, float width, float tight) {
-        TriangleMesh pyramidMesh = new TriangleMesh();
-        setTextureCoordinates(pyramidMesh);
-        definePoints(pyramidMesh, height, width, tight);
-        defineFaces(pyramidMesh);
+        TriangleMesh cubeMesh = new TriangleMesh();
+        setTextureCoordinates(cubeMesh);
+        definePoints(cubeMesh, height, width, tight);
+        defineFaces(cubeMesh);
 
-        super.setMesh(pyramidMesh);
+        super.setMesh(cubeMesh);
         super.setDrawMode(DrawMode.FILL);
     }
 
-    private void setTextureCoordinates(TriangleMesh pyramidMesh) {
-        pyramidMesh.getTexCoords().addAll(0, 0);
+    private void setTextureCoordinates(TriangleMesh cubeMesh) {
+        cubeMesh.getTexCoords().addAll(
+                0, 0
+        );
     }
 
-    private void definePoints(TriangleMesh pyramidMesh, float height, float width, float tight) { // body
-        pyramidMesh.getPoints().addAll(
+    private void definePoints(TriangleMesh cubeMesh, float height, float width, float tight) { // body
+        cubeMesh.getPoints().addAll(
                 0, 0, 0,
                 1 * width, 0, 0,
                 1 * width, 0, 1 * tight,
@@ -41,8 +43,8 @@ public class Cube extends MeshView {
         );
     }
 
-    private void defineFaces(TriangleMesh pyramidMesh) { // steny
-        pyramidMesh.getFaces().addAll(
+    private void defineFaces(TriangleMesh cubeMesh) { // steny
+        cubeMesh.getFaces().addAll(
                 0, 0, 1, 0, 2, 0, //VRCH
                 0, 0, 2, 0, 3, 0,
 
