@@ -49,47 +49,65 @@ public class FigureMain extends Application {
 //        cube.setTranslateZ(0);
 //        cube.setMaterial(new PhongMaterial(Color.GREEN));
 
-        Box board = new Box(5, 1, 5);
-        board.setTranslateX(0);
-        board.setTranslateY(0.5);
-        board.setTranslateZ(0);
-        board.setMaterial(new PhongMaterial(Color.BLACK));
+        double fieldWidth = 8;
+        double fieldHeight = 1;
+        double fieldDepth = 8;
+        double fieldShift = 0.5;
+        double fieldGap = 0.2;
+        double fieldGapShift = 0.2;
 
-        Box board2 = new Box(5, 1, 5);
-        board2.setTranslateX(-5);
-        board2.setTranslateY(0.5);
-        board2.setTranslateZ(0);
-        board2.setMaterial(new PhongMaterial(Color.WHITE));
+        PhongMaterial blackMaterial = new PhongMaterial(Color.BLACK);
+        PhongMaterial whiteMaterial = new PhongMaterial(Color.WHITE);
+        PhongMaterial gapMaterial = new PhongMaterial(Color.WHITE);
 
-        Box board3 = new Box(5, 1, 5);
-        board3.setTranslateX(-10);
-        board3.setTranslateY(0.5);
-        board3.setTranslateZ(0);
-        board3.setMaterial(new PhongMaterial(Color.BLACK));
+        Box[][] board = new Box[8][8];
+        Box[][][] boardBorder = new Box[8][8][4];
 
-        Box board4 = new Box(5, 1, 5);
-        board4.setTranslateX(-15);
-        board4.setTranslateY(0.5);
-        board4.setTranslateZ(0);
-        board4.setMaterial(new PhongMaterial(Color.WHITE));
+        for (int fieldZ = 0; fieldZ < 8; fieldZ++) {
 
-        Box board5 = new Box(5, 1, 5);
-        board5.setTranslateX(-20);
-        board5.setTranslateY(0.5);
-        board5.setTranslateZ(0);
-        board5.setMaterial(new PhongMaterial(Color.BLACK));
+            PhongMaterial current = (fieldZ % 2) == 0 ? blackMaterial : whiteMaterial;
 
-        Box board6 = new Box(5, 1, 5);
-        board6.setTranslateX(-25);
-        board6.setTranslateY(0.5);
-        board6.setTranslateZ(0);
-        board6.setMaterial(new PhongMaterial(Color.WHITE));
-//        Figure figure = new Figure(250, 10);
-//
-//        figure.setTranslateX(0);
-//        figure.setTranslateY(0);
-//        figure.setTranslateZ(0);
-//        figure.setMaterial(new PhongMaterial(Color.RED));
+            for (int fieldX = 0; fieldX < 8; fieldX++) {
+
+                Box field = new Box(fieldWidth - fieldGap, fieldHeight, fieldDepth - fieldGap);
+
+                field.setTranslateX(fieldX * fieldWidth);
+                field.setTranslateY(fieldShift);
+                field.setTranslateZ(fieldZ * fieldDepth);
+
+                field.setMaterial(current);
+                board[fieldX][fieldZ] = field;
+                current = current == whiteMaterial ? blackMaterial : whiteMaterial;
+
+                Box borderLeft = new Box(fieldGap / 2, fieldHeight - fieldGapShift, fieldDepth);
+                borderLeft.setTranslateX((fieldX * fieldWidth) - ((fieldWidth - fieldGap) / 2) - (fieldGap / 4));
+                borderLeft.setTranslateY(fieldShift + (fieldGapShift / 2));
+                borderLeft.setTranslateZ(fieldZ * fieldDepth);
+                borderLeft.setMaterial(gapMaterial);
+                boardBorder[fieldX][fieldZ][0] = borderLeft;
+
+                Box borderUp = new Box(fieldWidth, fieldHeight - fieldGapShift, fieldGap / 2);
+                borderUp.setTranslateX(fieldX * fieldWidth);
+                borderUp.setTranslateY(fieldShift + (fieldGapShift / 2));
+                borderUp.setTranslateZ((fieldZ * fieldDepth) + ((fieldDepth - fieldGap) / 2) + (fieldGap / 4));
+                borderUp.setMaterial(gapMaterial);
+                boardBorder[fieldX][fieldZ][1] = borderUp;
+
+                Box borderRight = new Box(fieldGap / 2, fieldHeight - fieldGapShift, fieldDepth);
+                borderRight.setTranslateX((fieldX * fieldWidth) + ((fieldWidth - fieldGap) / 2) + (fieldGap / 4));
+                borderRight.setTranslateY(fieldShift + (fieldGapShift / 2));
+                borderRight.setTranslateZ(fieldZ * fieldDepth);
+                borderRight.setMaterial(gapMaterial);
+                boardBorder[fieldX][fieldZ][2] = borderRight;
+
+                Box borderDown = new Box(fieldWidth, fieldHeight - fieldGapShift, fieldGap / 2);
+                borderDown.setTranslateX(fieldX * fieldWidth);
+                borderDown.setTranslateY(fieldShift + (fieldGapShift / 2));
+                borderDown.setTranslateZ((fieldZ * fieldDepth) - ((fieldDepth - fieldGap) / 2) - (fieldGap / 4));
+                borderDown.setMaterial(gapMaterial);
+                boardBorder[fieldX][fieldZ][3] = borderDown;
+            }
+        }
 
         LoadObject pawn = new LoadObject(new File((getClass().getResource("pawn.obj").getFile())), 1);
         pawn.setMaterial(new PhongMaterial(Color.WHITE));
@@ -99,7 +117,7 @@ public class FigureMain extends Application {
 
         LoadObject knight = new LoadObject(new File((getClass().getResource("knight.obj").getFile())), 1);
         knight.setMaterial(new PhongMaterial(Color.DARKGOLDENROD));
-        knight.setTranslateX(-5);
+        knight.setTranslateX(fieldWidth);
         knight.setTranslateY(0);
         knight.setTranslateZ(0);
 
@@ -108,7 +126,7 @@ public class FigureMain extends Application {
         silver.setSpecularColor(Color.WHITE);
         silver.setSpecularPower(15);
         queen.setMaterial(silver);
-        queen.setTranslateX(-10);
+        queen.setTranslateX(fieldWidth * 2);
         queen.setTranslateY(0);
         queen.setTranslateZ(0);
 
@@ -117,19 +135,19 @@ public class FigureMain extends Application {
         gold.setSpecularColor(Color.WHITE);
         gold.setSpecularPower(15);
         king.setMaterial(gold);
-        king.setTranslateX(-15);
+        king.setTranslateX(fieldWidth * 3);
         king.setTranslateY(0);
         king.setTranslateZ(0);
 
         LoadObject bishop = new LoadObject(new File((getClass().getResource("bishop.obj").getFile())), 1);
         bishop.setMaterial(new PhongMaterial(Color.WHITE));
-        bishop.setTranslateX(-20);
+        bishop.setTranslateX(fieldWidth * 4);
         bishop.setTranslateY(0);
         bishop.setTranslateZ(0);
 
         LoadObject rook = new LoadObject(new File((getClass().getResource("rook.obj").getFile())), 1);
         rook.setMaterial(new PhongMaterial(Color.DARKGOLDENROD));
-        rook.setTranslateX(-25);
+        rook.setTranslateX(fieldWidth * 5);
         rook.setTranslateY(0);
         rook.setTranslateZ(0);
 //        LoadObject loadObject = new LoadObject(new File((getClass().getResource("pawn2.obj").getFile())), 100);
@@ -138,20 +156,22 @@ public class FigureMain extends Application {
 ////        whiteMaterial.setSpecularColor(Color.BLACK);
 //        loadObject.setMaterial(new PhongMaterial(Color.WHITE));
 
-        group.getChildren().add(board);
-        group.getChildren().add(board2);
-        group.getChildren().add(board3);
-        group.getChildren().add(board4);
-        group.getChildren().add(board5);
-        group.getChildren().add(board6);
+        for (int fieldZ = 0; fieldZ < 8; fieldZ++) {
+            for (int fieldX = 0; fieldX < 8; fieldX++) {
+                group.getChildren().add(board[fieldX][fieldZ]);
+                group.getChildren().add(boardBorder[fieldX][fieldZ][0]);
+                group.getChildren().add(boardBorder[fieldX][fieldZ][1]);
+                group.getChildren().add(boardBorder[fieldX][fieldZ][2]);
+                group.getChildren().add(boardBorder[fieldX][fieldZ][3]);
+            }
+        }
+
         group.getChildren().add(pawn);
         group.getChildren().add(knight);
         group.getChildren().add(queen);
         group.getChildren().add(king);
         group.getChildren().add(bishop);
         group.getChildren().add(rook);
-//        group.getChildren().add(figure);
-//        group.getChildren().add(loadObject);
 
         Scene root = new Scene(group, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
         root.setFill(Color.SILVER);
