@@ -4,11 +4,15 @@ import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.sample.checkers.board.ChessBoardScene;
+import org.sample.checkers.mesh.components.SmartGroup;
 
 import java.io.IOException;
 
@@ -37,9 +41,7 @@ public class Checkers extends Application {
         MenuBar menu = (MenuBar) loadFXML("menu");
         root.setTop(menu);
 
-        Group boardGroup = new Group();
-        SubScene boardScene = new SubScene(boardGroup, WIDTH, HEIGHT, true, SceneAntialiasing.DISABLED);
-        boardScene.setFill(Color.SILVER);
+        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(), WIDTH, HEIGHT, true, SceneAntialiasing.DISABLED);
 
         root.setCenter(boardScene);
         stage.setScene(scene);
