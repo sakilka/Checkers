@@ -1,5 +1,8 @@
 package org.sample.checkers;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -8,10 +11,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.control.MenuBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.sample.checkers.board.ChessBoardScene;
+import org.sample.checkers.menu.RightPanel;
 import org.sample.checkers.mesh.components.SmartGroup;
 
 import java.io.IOException;
@@ -35,15 +41,40 @@ public class Checkers extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");
-        Scene scene = new Scene(root, WIDTH, HEIGHT);
+        Scene scene = new Scene(root/*, WIDTH, HEIGHT*/);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         MenuBar menu = (MenuBar) loadFXML("menu");
         root.setTop(menu);
 
-        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(), WIDTH, HEIGHT, true, SceneAntialiasing.DISABLED);
+        SplitPane content = new SplitPane();
 
-        root.setCenter(boardScene);
+        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(), WIDTH, HEIGHT, true,
+                SceneAntialiasing.BALANCED);
+
+        TitledPane titledPane = new TitledPane("Options", new Label("An option"));
+        VBox settingsPane = new VBox(titledPane);
+        settingsPane.setMinWidth(0);
+        content.getItems().addAll(new BorderPane(boardScene), new RightPanel());
+        CheckMenuItem settings = (CheckMenuItem) menu.getMenus().get(2).getItems().get(0);
+
+        DoubleProperty splitPaneDividerPosition = content.getDividers().get(0).positionProperty();
+
+        splitPaneDividerPosition.addListener((obs, oldPos, newPos) ->
+                settings.setSelected(newPos.doubleValue() < 0.95));
+        splitPaneDividerPosition.set(0.5);
+
+        settings.setOnAction(event -> {
+            KeyValue end;
+            if (settings.isSelected()) {
+                end = new KeyValue(splitPaneDividerPosition, 0.8);
+            } else {
+                end = new KeyValue(splitPaneDividerPosition, 1.0);
+            }
+            new Timeline(new KeyFrame(Duration.seconds(0.5), end)).play();
+        });
+
+        root.setCenter(content);
         stage.setScene(scene);
         stage.show();
     }

@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <MenuBar fx:id="menuBar" onKeyPressed="#handleKeyInput" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
-         fx:controller="org.sample.checkers.controller.MenuController">
+         fx:controller="org.sample.checkers.menu.controller.MenuController">
     <menus>
         <Menu text="File">
             <items>
@@ -14,6 +14,11 @@
         <Menu text="Help">
             <items>
                 <MenuItem text="About" onAction="#handleAboutAction"/>
+            </items>
+        </Menu>
+        <Menu text="Settings">
+            <items>
+                <CheckMenuItem text="Show" onAction="#showSettings"/>
             </items>
         </Menu>
     </menus>

@@ -1,4 +1,4 @@
-package org.sample.checkers.controller;
+package org.sample.checkers.menu.controller;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -19,6 +19,11 @@ public class MenuController {
     @FXML
     private void handleAboutAction(final ActionEvent event) {
         System.out.println("menu action " + event.getEventType());
+    }
+
+    @FXML
+    private void showSettings(final ActionEvent event) {
+        System.out.println("menu action showSettings" + event.getEventType());
     }
 
     @FXML
