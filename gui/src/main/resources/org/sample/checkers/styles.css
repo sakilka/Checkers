@@ -9,3 +9,11 @@
 .menu-bar {
     -fx-border-color:  #f0cd90;
 }
+
+.split-pane-divider {
+   -fx-border-style: solid;
+    -fx-border-width: 0px;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+}

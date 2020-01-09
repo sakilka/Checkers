@@ -22,11 +22,6 @@ public class MenuController {
     }
 
     @FXML
-    private void showSettings(final ActionEvent event) {
-        System.out.println("menu action showSettings" + event.getEventType());
-    }
-
-    @FXML
     private void quitAction() {
         Platform.exit();
     }
