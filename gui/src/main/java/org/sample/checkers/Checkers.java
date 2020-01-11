@@ -1,7 +1,9 @@
 package org.sample.checkers;
 
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -52,21 +54,41 @@ public class Checkers extends Application {
                 SceneAntialiasing.BALANCED);
 
         StackPane boardPane = new StackPane(boardScene);
-        boardPane.setStyle("-fx-background-color: green;");
+        boardPane.setStyle("-fx-background-color: green;");//TODO remove
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
-        RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty());
+        splitPaneDividerPosition.set((scene.getWidth() - RIGHT_PANEL_WIDTH) / scene.getWidth());
+        BooleanProperty shownRightPanel = new SimpleBooleanProperty();
+        RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty(), scene.widthProperty(),
+                shownRightPanel);
         rightPanel.setPrefWidth(RIGHT_PANEL_WIDTH);
         boardScene.widthProperty().bind(scene.widthProperty().subtract(RIGHT_PANEL_WIDTH));
         boardScene.heightProperty().bind(scene.heightProperty());
+
         content.getItems().addAll(boardPane, rightPanel);
         content.getDividers().get(0).positionProperty().bindBidirectional(splitPaneDividerPosition);
 
         splitPaneDividerPosition.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if (mouseDragOnDivider) content.getDividers().get(0).setPosition(0);
+                if (mouseDragOnDivider) {
+                    if (shownRightPanel.getValue()) {
+                        splitPaneDividerPosition.set(1 - (200 / scene.widthProperty().doubleValue()));
+                    } else {
+                        splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
+                    }
+                    content.getDividers().get(0).positionProperty().set(splitPaneDividerPosition.doubleValue());
+                }
             }
         });
+
+//        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+//            if (shownRightPanel.getValue()) {
+//                rightPanel.setMinWidth(RIGHT_PANEL_WIDTH);
+//            } else {
+//                rightPanel.setPrefWidth(rightPanel.getButtonWidth());
+//            }
+//            System.out.println("change stage width");
+//        });
 
         root.setCenter(content);
         stage.setScene(scene);
