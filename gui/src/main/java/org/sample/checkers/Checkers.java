@@ -53,19 +53,12 @@ public class Checkers extends Application {
 
         StackPane boardPane = new StackPane(boardScene);
         boardPane.setStyle("-fx-background-color: green;");
-//        boardPane.prefWidthProperty().bindBidirectional(content.prefWidthProperty());
-//        boardScene.widthProperty().bindBidirectional(boardPane.prefWidthProperty());
-//        boardPane.prefWidthProperty()
-//                .bind(Bindings.createDoubleBinding((() -> content.widthProperty().doubleValue() * 0.8)));
-//        boardScene.widthProperty().bind(Bindings.createDoubleBinding((() -> scene.widthProperty().doubleValue())));
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
-        RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, content.heightProperty());
+        RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty());
+        rightPanel.setPrefWidth(RIGHT_PANEL_WIDTH);
         boardScene.widthProperty().bind(scene.widthProperty().subtract(RIGHT_PANEL_WIDTH));
         boardScene.heightProperty().bind(scene.heightProperty());
-//        boardScene.heightProperty().bind(boardPane.heightProperty());
-
         content.getItems().addAll(boardPane, rightPanel);
-//        content.getItems().addAll(boardScene, new BorderPane(new Label("test")));
         content.getDividers().get(0).positionProperty().bindBidirectional(splitPaneDividerPosition);
 
         splitPaneDividerPosition.addListener(new ChangeListener<Number>() {
