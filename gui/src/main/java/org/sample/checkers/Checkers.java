@@ -10,6 +10,7 @@ import javafx.scene.*;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.sample.checkers.board.ChessBoardScene;
 import org.sample.checkers.menu.RightPanel;
@@ -23,6 +24,7 @@ public class Checkers extends Application {
 
     private static final float WIDTH = 800;
     private static final float HEIGHT = 600;
+    private static final int RIGHT_PANEL_WIDTH = 200;
 
     private double anchorX;
     private double anchorY;
@@ -38,7 +40,7 @@ public class Checkers extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");
-        Scene scene = new Scene(root/*, WIDTH, HEIGHT*/);
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         MenuBar menu = (MenuBar) loadFXML("menu");
@@ -46,12 +48,24 @@ public class Checkers extends Application {
 
         SplitPane content = new SplitPane();
 
-        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(), WIDTH, HEIGHT, true,
+        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(), WIDTH - RIGHT_PANEL_WIDTH, HEIGHT, true,
                 SceneAntialiasing.BALANCED);
 
+        StackPane boardPane = new StackPane(boardScene);
+        boardPane.setStyle("-fx-background-color: green;");
+//        boardPane.prefWidthProperty().bindBidirectional(content.prefWidthProperty());
+//        boardScene.widthProperty().bindBidirectional(boardPane.prefWidthProperty());
+//        boardPane.prefWidthProperty()
+//                .bind(Bindings.createDoubleBinding((() -> content.widthProperty().doubleValue() * 0.8)));
+//        boardScene.widthProperty().bind(Bindings.createDoubleBinding((() -> scene.widthProperty().doubleValue())));
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
-        content.getItems().addAll(new BorderPane(boardScene), new RightPanel(splitPaneDividerPosition, content.heightProperty()));
+        RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, content.heightProperty());
+        boardScene.widthProperty().bind(scene.widthProperty().subtract(RIGHT_PANEL_WIDTH));
+        boardScene.heightProperty().bind(scene.heightProperty());
+//        boardScene.heightProperty().bind(boardPane.heightProperty());
 
+        content.getItems().addAll(boardPane, rightPanel);
+//        content.getItems().addAll(boardScene, new BorderPane(new Label("test")));
         content.getDividers().get(0).positionProperty().bindBidirectional(splitPaneDividerPosition);
 
         splitPaneDividerPosition.addListener(new ChangeListener<Number>() {
