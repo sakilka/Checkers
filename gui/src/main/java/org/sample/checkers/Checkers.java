@@ -5,16 +5,18 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.sample.checkers.board.ChessBoardScene;
+import org.sample.checkers.board.model.BoardPosition;
 import org.sample.checkers.menu.RightPanel;
 import org.sample.checkers.mesh.components.SmartGroup;
 
@@ -37,8 +39,6 @@ public class Checkers extends Application {
     private DoubleProperty angleX = new SimpleDoubleProperty(0);
     private DoubleProperty angleY = new SimpleDoubleProperty(0);
 
-    private boolean mouseDragOnDivider = false;
-
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");
@@ -50,59 +50,50 @@ public class Checkers extends Application {
 
         SplitPane content = new SplitPane();
 
+        BoardPosition boardPosition = new BoardPosition();
         SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(), WIDTH - RIGHT_PANEL_WIDTH, HEIGHT, true,
-                SceneAntialiasing.BALANCED);
+                SceneAntialiasing.BALANCED, boardPosition);
 
         StackPane boardPane = new StackPane(boardScene);
-        boardPane.setStyle("-fx-background-color: green;");//TODO remove
+        boardPane.setStyle("-fx-background-color: silver;");
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
         splitPaneDividerPosition.set((scene.getWidth() - RIGHT_PANEL_WIDTH) / scene.getWidth());
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
         RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty(), scene.widthProperty(),
-                shownRightPanel, boardScene);
-        rightPanel.setPrefWidth(RIGHT_PANEL_WIDTH);
+                shownRightPanel, boardScene, boardPosition);
         boardScene.widthProperty().bind(scene.widthProperty().subtract(RIGHT_PANEL_WIDTH));
         boardScene.heightProperty().bind(scene.heightProperty());
 
         content.getItems().addAll(boardPane, rightPanel);
         content.getDividers().get(0).positionProperty().bindBidirectional(splitPaneDividerPosition);
 
-        splitPaneDividerPosition.addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if (mouseDragOnDivider) {
-                    System.out.println("drag");
-                    if (shownRightPanel.getValue()) {
-                        splitPaneDividerPosition.set(1 - (200 / scene.widthProperty().doubleValue()));
-                    } else {
-                        splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
-                    }
-                    content.getDividers().get(0).positionProperty().set(splitPaneDividerPosition.doubleValue());
+        splitPaneDividerPosition.addListener((observable, oldValue, newValue) -> {
+            if (rightPanel.isMouseDragOnDivider()) {
+                if (shownRightPanel.getValue()) {
+                    splitPaneDividerPosition.set(1 - (RIGHT_PANEL_WIDTH / scene.widthProperty().doubleValue()));
+                } else {
+                    splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
                 }
+                content.getDividers().get(0).positionProperty().set(splitPaneDividerPosition.doubleValue());
             }
         });
 
         stage.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (shownRightPanel.getValue()) {
                 rightPanel.setMinWidth(RIGHT_PANEL_WIDTH);
-                splitPaneDividerPosition.set(1 - (200 / scene.widthProperty().doubleValue()));
+                splitPaneDividerPosition.set(1 - (RIGHT_PANEL_WIDTH / newVal.doubleValue()));
             } else {
                 rightPanel.minWidth(rightPanel.getButtonWidth());
-                splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
+                splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / newVal.doubleValue()));
             }
             content.getDividers().get(0).positionProperty().set(splitPaneDividerPosition.doubleValue());
         });
 
         root.setCenter(content);
+        rightPanel.disableDrag(content);
+
         stage.setScene(scene);
         stage.show();
-
-        content.requestLayout();
-        content.applyCss();
-        for (Node node : content.lookupAll(".split-pane-divider")) {
-            node.setOnMousePressed(evMousePressed -> mouseDragOnDivider = true);
-            node.setOnMouseReleased(evMouseReleased -> mouseDragOnDivider = false);
-        }
     }
 
     private static Parent loadFXML(String fxml) throws IOException {

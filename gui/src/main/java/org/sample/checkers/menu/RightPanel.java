@@ -6,23 +6,27 @@ import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.scene.Node;
 import javafx.scene.SubScene;
-import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
+import org.sample.checkers.board.model.BoardPosition;
 
 import static org.sample.checkers.Checkers.RIGHT_PANEL_WIDTH;
 
 public class RightPanel extends BorderPane {
 
     private double buttonWidth = 0;
+    private boolean mouseDragOnDivider = false;
 
     public RightPanel(DoubleProperty splitPaneDividerPosition, ReadOnlyDoubleProperty heightProperty,
-                      ReadOnlyDoubleProperty sceneWidth, BooleanProperty shown, SubScene boardScene) {
+                      ReadOnlyDoubleProperty sceneWidth, BooleanProperty shown, SubScene boardScene,
+                      BoardPosition boardPosition) {
         setMinWidth(0);
 
         ToggleButton toggleButton = new ToggleButton();
@@ -34,9 +38,8 @@ public class RightPanel extends BorderPane {
         shown.bindBidirectional(toggleButton.selectedProperty());
 
         BorderPane panelPane = new BorderPane();
-        Button testButton = new Button("test");
-        testButton.setMinWidth(0);
-        panelPane.setCenter(testButton);
+
+        panelPane.setCenter(new PositionPanel(boardPosition));
         panelPane.setMinWidth(0);
         panelPane.setStyle("-fx-background-color: red;");
 
@@ -71,5 +74,18 @@ public class RightPanel extends BorderPane {
 
     public double getButtonWidth() {
         return buttonWidth;
+    }
+
+    public void disableDrag(SplitPane content) {
+        content.requestLayout();
+        content.applyCss();
+        for (Node node : content.lookupAll(".split-pane-divider")) {
+            node.setOnMousePressed(evMouseReleased -> mouseDragOnDivider = true);
+            node.setOnMouseReleased(evMouseReleased -> mouseDragOnDivider = false);
+        }
+    }
+
+    public boolean isMouseDragOnDivider() {
+        return mouseDragOnDivider;
     }
 }

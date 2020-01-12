@@ -11,6 +11,7 @@ import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import org.sample.checkers.board.model.BoardPosition;
 import org.sample.checkers.board.model.Figure;
 import org.sample.checkers.board.model.FigurePosition;
 import org.sample.checkers.mesh.components.SmartGroup;
@@ -46,21 +47,27 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private double fieldGapShift = 0.2;
 
     public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
-                           SceneAntialiasing antiAliasing) {
+                           SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
 
         mainStage = stage;
         boardSceneGroup = root;
 
-        initCheckersBoard();
+        initCheckersBoard(boardPosition);
         initMouseControl(this);
     }
 
     @Override
-    public void initCheckersBoard() {
+    public void initCheckersBoard(BoardPosition boardPosition) {
 
         initializeBoard();
         initializeFigures();
+
+        boardPosition.deltaXProperty().bind(deltaX);
+        boardPosition.deltaYProperty().bind(deltaY);
+        boardPosition.angleXProperty().bind(angleX);
+        boardPosition.angleYProperty().bind(angleY);
+        boardPosition.translateZProperty().bindBidirectional(boardSceneGroup.translateZProperty());
 
         this.setCamera(initializeCamera());
         this.setFill(Color.SILVER);
