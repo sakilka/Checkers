@@ -26,7 +26,7 @@ public class Checkers extends Application {
 
     private static final float WIDTH = 800;
     private static final float HEIGHT = 600;
-    private static final int RIGHT_PANEL_WIDTH = 200;
+    public static final int RIGHT_PANEL_WIDTH = 300;
 
     private double anchorX;
     private double anchorY;
@@ -59,7 +59,7 @@ public class Checkers extends Application {
         splitPaneDividerPosition.set((scene.getWidth() - RIGHT_PANEL_WIDTH) / scene.getWidth());
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
         RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty(), scene.widthProperty(),
-                shownRightPanel);
+                shownRightPanel, boardScene);
         rightPanel.setPrefWidth(RIGHT_PANEL_WIDTH);
         boardScene.widthProperty().bind(scene.widthProperty().subtract(RIGHT_PANEL_WIDTH));
         boardScene.heightProperty().bind(scene.heightProperty());
@@ -71,6 +71,7 @@ public class Checkers extends Application {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 if (mouseDragOnDivider) {
+                    System.out.println("drag");
                     if (shownRightPanel.getValue()) {
                         splitPaneDividerPosition.set(1 - (200 / scene.widthProperty().doubleValue()));
                     } else {
@@ -81,14 +82,16 @@ public class Checkers extends Application {
             }
         });
 
-//        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-//            if (shownRightPanel.getValue()) {
-//                rightPanel.setMinWidth(RIGHT_PANEL_WIDTH);
-//            } else {
-//                rightPanel.setPrefWidth(rightPanel.getButtonWidth());
-//            }
-//            System.out.println("change stage width");
-//        });
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if (shownRightPanel.getValue()) {
+                rightPanel.setMinWidth(RIGHT_PANEL_WIDTH);
+                splitPaneDividerPosition.set(1 - (200 / scene.widthProperty().doubleValue()));
+            } else {
+                rightPanel.minWidth(rightPanel.getButtonWidth());
+                splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
+            }
+            content.getDividers().get(0).positionProperty().set(splitPaneDividerPosition.doubleValue());
+        });
 
         root.setCenter(content);
         stage.setScene(scene);
