@@ -9,6 +9,8 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.SubScene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,11 +39,12 @@ public class RightPanel extends BorderPane {
         toggleButton.prefHeightProperty().bind(heightProperty);
         shown.bindBidirectional(toggleButton.selectedProperty());
 
-        BorderPane panelPane = new BorderPane();
+        TabPane panelPane = new TabPane();
 
-        panelPane.setCenter(new PositionPanel(boardPosition));
+        panelPane.getTabs().add(new Tab("Border position", (new PositionTab(boardPosition))));
         panelPane.setMinWidth(0);
-        panelPane.setStyle("-fx-background-color: red;");
+        panelPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        panelPane.setStyle("-fx-background-color: white;");
 
         toggleButton.setOnAction(event -> {
             KeyValue end;

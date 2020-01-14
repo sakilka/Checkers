@@ -16,14 +16,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
-        <version.java.source>11</version.java.source>
-        <version.java.target>11</version.java.target>
+        <version.java.source>8</version.java.source>
+        <version.java.target>8</version.java.target>
 
         <javafx-controls.version>14-ea+2</javafx-controls.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <javafx-maven-plugin.version>0.0.3</javafx-maven-plugin.version>
+        <fontawesomefx.version>8.9</fontawesomefx.version>
     </properties>
 
     <dependencyManagement>
@@ -38,6 +40,12 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-fxml</artifactId>
                 <version>${javafx-controls.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.jensd</groupId>
+                <artifactId>fontawesomefx</artifactId>
+                <version>8.9</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

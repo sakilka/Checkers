@@ -16,6 +16,8 @@ import org.sample.checkers.board.model.Figure;
 import org.sample.checkers.board.model.FigurePosition;
 import org.sample.checkers.mesh.components.SmartGroup;
 
+import static java.lang.StrictMath.round;
+
 public class ChessBoardScene extends SubScene implements ChessBoard {
 
     private double anchorX;
@@ -201,7 +203,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         });
 
         mainStage.addEventHandler(ScrollEvent.SCROLL, event -> {
-            double delta = event.getDeltaY();
+            double delta = round(((event.getDeltaY() * 30) / 100.0));
             boardSceneGroup.translateZProperty().set(boardSceneGroup.getTranslateZ() + delta);
         });
     }
