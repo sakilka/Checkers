@@ -3,18 +3,27 @@ package org.sample.checkers.board;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.sample.checkers.board.model.BoardPosition;
+import org.sample.checkers.board.model.Cube;
 import org.sample.checkers.board.model.Figure;
 import org.sample.checkers.board.model.FigurePosition;
 import org.sample.checkers.mesh.components.SmartGroup;
+
+import java.util.Random;
 
 import static java.lang.StrictMath.round;
 
@@ -151,6 +160,35 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         boardSceneGroup.getChildren().add(pawn);
         boardSceneGroup.getChildren().add(queen);
         boardSceneGroup.getChildren().add(king);
+
+        Cube testBox = new Cube(10, 10, 10);
+        PhongMaterial textMaterial = new PhongMaterial();
+
+        Text text = new Text(" Text3D ");
+        text.setStroke(Color.DARKGOLDENROD);
+        text.setFill(Color.DARKGOLDENROD);
+        text.setFont(Font.font(Font.getFamilies().get(new Random().nextInt(Font.getFamilies().size())), 30));
+        Text text2 = new Text(" Text3D ");
+        text2.setStroke(Color.DARKCYAN);
+        text2.setFill(Color.DARKCYAN);
+        text2.setFont(Font.font(Font.getFamilies().get(new Random().nextInt(Font.getFamilies().size())), 30));
+        Group root = new Group(text, text2);
+//        Scene sceneAux = new Scene(root, root.getBoundsInLocal().getWidth(), root.getBoundsInLocal().getHeight());
+        SnapshotParameters sp = new SnapshotParameters();
+//        double s = Screen.getPrimary().getOutputScaleX();
+//        sp.setTransform(new Scale(s, s));
+        sp.setFill(Color.DARKMAGENTA);
+        Image image = root.snapshot(sp, null);
+
+        WritableImage textureImage = new Text("text").snapshot(null, null);
+        textMaterial.setDiffuseMap(new Image(getClass().getResourceAsStream("cube_texture.jpg")));
+//        testBox.setMaterial(textMaterial);
+        testBox.setMaterial();
+
+        testBox.setTranslateY(-25);
+        testBox.setTranslateZ(-25);
+
+        boardSceneGroup.getChildren().add(testBox);
     }
 
     public Camera initializeCamera() {
@@ -204,7 +242,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
 
         mainStage.addEventHandler(ScrollEvent.SCROLL, event -> {
             double delta = round(((event.getDeltaY() * 30) / 100.0));
-            boardSceneGroup.translateZProperty().set(boardSceneGroup.getTranslateZ() + delta);
+            boardSceneGroup.translateZProperty().set(boardSceneGroup.getTranslateZ() - delta);
         });
     }
 }

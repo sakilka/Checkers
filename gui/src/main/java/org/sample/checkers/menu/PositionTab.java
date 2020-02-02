@@ -7,6 +7,11 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -20,6 +25,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
+import javafx.util.converter.IntegerStringConverter;
 import org.sample.checkers.board.model.BoardPosition;
 import javafx.scene.text.Text;
 
@@ -68,7 +74,10 @@ public class PositionTab extends GridPane {
         sliderZ.setMajorTickUnit(10);
         sliderZ.setMinorTickCount(1);
         sliderZ.setBlockIncrement(1);
-        sliderZ.valueProperty().bindBidirectional(boardPosition.translateZProperty());
+        sliderZ.valueProperty().addListener((observableValue, oldValue, newValue) ->
+                boardPosition.translateZProperty().setValue(newValue.doubleValue() *-1));
+        boardPosition.translateZProperty().addListener((observableValue, oldValue, newValue) ->
+                sliderZ.valueProperty().setValue(newValue.doubleValue() *-1));
         sliderZ.setMaxWidth(250);
         sliderZ.setMinWidth(250);
 
@@ -77,23 +86,22 @@ public class PositionTab extends GridPane {
 //        GlyphIcon icon = GlyphsBuilder.create(FontAwesomeIconView.class).icon(FontAwesomeIcon.ADJUST)
 //                .size("12em").style("-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%,)").build();
 
-        GlyphIcon icon = GlyphsBuilder.create(FontAwesomeIconView.class).glyph(FontAwesomeIcon.SEARCH_PLUS)
-                .size("12em").style("-fx-fill: linear-gradient(#70b4e5 0%, #247cbc 70%, #2c85c1 85%,)").build();
-        increaseZoom.setGraphic(icon);
-        increaseZoom.setStyle("-fx-background-color: silver");
+        GlyphIcon searchPlus = GlyphsBuilder.create(FontAwesomeIconView.class).glyph(FontAwesomeIcon.SEARCH_PLUS)
+                .size("2em").style("-fx-color: black").build();
+        increaseZoom.setGraphic(searchPlus);
 
 //        increaseZoom.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("zoom-in-512.jpg"),
 //                16, 16, true, true)));
         increaseZoom.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                boardPosition.translateZProperty().set(boardPosition.getTranslateZ() + 1);
+                boardPosition.translateZProperty().set(boardPosition.getTranslateZ() - 1);
             }
         });
 
         Timeline timelineIncreaseZoom = new Timeline(
                 new KeyFrame(Duration.millis(100), e -> {
-                    boardPosition.translateZProperty().set(boardPosition.getTranslateZ() + 1);
+                    boardPosition.translateZProperty().set(boardPosition.getTranslateZ() - 1);
                 })
         );
         timelineIncreaseZoom.setCycleCount(Animation.INDEFINITE);
@@ -108,18 +116,21 @@ public class PositionTab extends GridPane {
         });
 
         Button decreaseZoom = new Button();
-        decreaseZoom.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("zoom-out-512.jpg"),
-                16, 16, true, true)));
+
+        GlyphIcon searchMinus = GlyphsBuilder.create(FontAwesomeIconView.class).glyph(FontAwesomeIcon.SEARCH_MINUS)
+                .size("2em").style("-fx-color: black").build();
+        decreaseZoom.setGraphic(searchMinus);
+
         decreaseZoom.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                boardPosition.translateZProperty().set(boardPosition.getTranslateZ() - 1);
+                boardPosition.translateZProperty().set(boardPosition.getTranslateZ() + 1);
             }
         });
 
         Timeline timelineDecreaseZoom = new Timeline(
                 new KeyFrame(Duration.millis(100), e -> {
-                    boardPosition.translateZProperty().set(boardPosition.getTranslateZ() - 1);
+                    boardPosition.translateZProperty().set(boardPosition.getTranslateZ() + 1);
                 })
         );
         timelineDecreaseZoom.setCycleCount(Animation.INDEFINITE);
@@ -136,7 +147,8 @@ public class PositionTab extends GridPane {
         Label zoomValue = new Label(String.valueOf(round(boardPosition.getTranslateZ())));
 
         boardPosition.translateZProperty().addListener((obs, oldVal, newVal) -> {
-            zoomValue.setText(String.valueOf(round(boardPosition.getTranslateZ())));
+            zoomValue.setText(String.valueOf(
+                    round(boardPosition.translateZProperty().multiply(-1).doubleValue())));
         });
 
         add(angleX, 0, 0);
