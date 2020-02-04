@@ -27,6 +27,7 @@ public class LoadObject extends MeshView {
 
         definePoints(mesh, model, size);
         defineFaces(mesh, model);
+        //defineSmoothingGroups(mesh); used only for small face size
 
         super.setMesh(mesh);
         super.setDrawMode(DrawMode.FILL);
@@ -67,5 +68,10 @@ public class LoadObject extends MeshView {
         pyramidMesh.getFaces().addAll(
                 faces
         );
+    }
+
+    private void defineSmoothingGroups(TriangleMesh mesh) {
+        int [] smoothing = new int[mesh.getFaces().size() / mesh.getFaceElementSize()];
+        mesh.getFaceSmoothingGroups().addAll(smoothing);
     }
 }

@@ -21,56 +21,75 @@ public class Cube extends MeshView {
 
     private static final float DEFAULT_HEIGHT = 150;
     private static final float DEFAULT_WIDTH = 300;
-    private static final float DEFAULT_TIGHT = 250;
+    private static final float DEFAULT_DEPTH = 250;
 
     public Cube() {
-        this(DEFAULT_HEIGHT, DEFAULT_WIDTH, DEFAULT_TIGHT);
+        this(DEFAULT_HEIGHT, DEFAULT_WIDTH, DEFAULT_DEPTH);
     }
 
     private float height;
     private float width;
-    private float tight;
+    private float depth;
 
-    public Cube(float height, float width, float tight) {
+    private CubeMaterial[] facesMaterial = new CubeMaterial[6];
+
+    public Cube(float width, float height, float depth) {
         this.height = height;
         this.width = width;
-        this.tight = tight;
+        this.depth = depth;
+
+        for(int i = 0; i< facesMaterial.length ; i++) {
+            facesMaterial[i] = new CubeMaterial(Color.SILVER, null, CubeFace.values()[i]);
+        }
 
         TriangleMesh cubeMesh = new TriangleMesh();
         setTextureCoordinates(cubeMesh);
-        definePoints(cubeMesh, height, width, tight);
+        definePoints(cubeMesh, height, width, depth);
         defineFaces(cubeMesh);
+        defineNormals(cubeMesh);
+        defineSmoothingGroups(cubeMesh);
 
         super.setMesh(cubeMesh);
         super.setDrawMode(DrawMode.FILL);
     }
 
-    public void setMaterial() {
-        PhongMaterial material = new PhongMaterial();
-        material.setDiffuseMap(createImage());
-        super.setMaterial(material);
+    public Cube setMaterial(CubeMaterial material) {
+        for(int i = 0; i< 6; i++){
+            if(material.getCubeFace() == facesMaterial[i].getCubeFace()) {
+                facesMaterial[i] = material;
+            }
+        }
+        return this;
+    }
+
+    public void initMaterial() {
+        PhongMaterial cubeMaterial = new PhongMaterial();
+        cubeMaterial.setDiffuseMap(createImage());
+        cubeMaterial.setSpecularColor(Color.WHITE);
+        cubeMaterial.setSpecularPower(32);
+        super.setMaterial(cubeMaterial);
     }
 
     private void setTextureCoordinates(TriangleMesh cubeMesh) {
 
-        float w = (2*tight) + (2*width);
-        float h = (2*tight) + (2*height);
+        float w = (2*depth) + (2*width);
+        float h = (2*depth) + (2*height);
 
         cubeMesh.getTexCoords().addAll(
-                (tight /w), 0,       //T0
-                ((tight + width) /w), 0,        //T1
-                0, (tight/h),       //T2
-                (tight /w), (tight/h),   //T3
-                ((tight + width) /w), (tight/h),    //T4
-                ((2 * tight + width) /w), (tight/h),   //T5
-                1, (tight/h),       //T6
-                0, ((tight + height)/h),        //T7
-                (tight /w), ((tight + height)/h),    //T8
-                ((tight + width) /w), ((tight + height)/h),     //T9
-                ((2 * tight + width) /w), ((tight + height)/h),    //T10
-                1, ((tight + height)/h),        //T11
-                (tight /w), ((2 * tight + height)/h),   //T12
-                ((tight + width) /w), ((2 * tight + height)/h)    //T13
+                (depth /w), 0,       //T0
+                ((depth + width) /w), 0,        //T1
+                0, (depth/h),       //T2
+                (depth /w), (depth/h),   //T3
+                ((depth + width) /w), (depth/h),    //T4
+                ((2 * depth + width) /w), (depth/h),   //T5
+                1, (depth/h),       //T6
+                0, ((depth + height)/h),        //T7
+                (depth /w), ((depth + height)/h),    //T8
+                ((depth + width) /w), ((depth + height)/h),     //T9
+                ((2 * depth + width) /w), ((depth + height)/h),    //T10
+                1, ((depth + height)/h),        //T11
+                (depth /w), ((2 * depth + height)/h),   //T12
+                ((depth + width) /w), ((2 * depth + height)/h)    //T13
         );
     }
 
@@ -109,59 +128,90 @@ public class Cube extends MeshView {
         );
     }
 
+    private void defineNormals(TriangleMesh cubeMesh) {
+        cubeMesh.getNormals().addAll(
+                1f,  0f,  0f,
+                -1f,  0f,  0f,
+                0f,  1f,  0f,
+                0f, -1f,  0f,
+                0f,  0f,  1f,
+                0f,  0f, -1f
+        );
+    }
+
+    private void defineSmoothingGroups(TriangleMesh cubeMesh) {
+        cubeMesh.getFaceSmoothingGroups().addAll(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
     private WritableImage createImage() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
 
-        Text front = new Text("Front");
-        front.setFont(javafx.scene.text.Font
-                .font(javafx.scene.text.Font.getFamilies().get(new Random().nextInt(Font.getFamilies().size())),
-                        60));
-        front.setStroke(Color.DARKGOLDENROD);
-        front.setFill(Color.DARKGOLDENROD);
+        for(CubeMaterial face : facesMaterial){
+            BorderPane backgroundPane = new BorderPane();
+            if(face.getFaceColor() != null) {
+                backgroundPane.setBackground(new Background(new BackgroundFill(face.getFaceColor(),
+                        CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            if(face.getFaceText() != null){
+                backgroundPane.setCenter(face.getFaceText());
+            }
+            GridPane.setHalignment(backgroundPane, HPos.CENTER);
 
-        GridPane.setHalignment(front, HPos.CENTER);
+            switch (face.getCubeFace()) {
+                    case UP:
+                        grid.add(backgroundPane,1,0);
+                        break;
+                    case BACK:
+                        grid.add(backgroundPane,3,0);
+                        break;
+                    case DOWN:
+                        grid.add(backgroundPane,1,2);
+                        break;
+                    case LEFT:
+                        grid.add(backgroundPane,0,1);
+                        break;
+                    case FRONT:
+                        grid.add(backgroundPane,1,1);
+                        break;
+                    case RIGHT:
+                        grid.add(backgroundPane,2,0);
+                        break;
+                    default:
+                        break;
+                }
+        }
 
-        grid.add(front, 1, 1);
-
-        Text up = new Text("Up");
-        up.setFont(javafx.scene.text.Font
-                .font(javafx.scene.text.Font.getFamilies().get(new Random().nextInt(Font.getFamilies().size())),
-                        60));
-        up.setStroke(Color.DARKGOLDENROD);
-        up.setFill(Color.DARKGOLDENROD);
-
-        grid.add(up, 1, 0);
-
-        GridPane.setHalignment(up, HPos.CENTER);
-
-        final double W = 2 * tight + 2 * width;
-        final double H = 2 * tight + 2 * height;
+        final double W = 2 * depth + 2 * width;
+        final double H = 2 * depth + 2 * height;
 
         ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(tight * 100 / W);
+        col1.setPercentWidth(depth * 100 / W);
         ColumnConstraints col2 = new ColumnConstraints();
         col2.setPercentWidth(width * 100 / W);
         ColumnConstraints col3 = new ColumnConstraints();
-        col3.setPercentWidth(tight * 100 / W);
+        col3.setPercentWidth(depth * 100 / W);
         ColumnConstraints col4 = new ColumnConstraints();
         col4.setPercentWidth(width * 100 / W);
+
         grid.getColumnConstraints().addAll(col1, col2, col3, col4);
 
         RowConstraints row1 = new RowConstraints();
-        row1.setPercentHeight(tight * 100 / H);
+        row1.setPercentHeight(depth * 100 / H);
         RowConstraints row2 = new RowConstraints();
         row2.setPercentHeight(height * 100 / H);
         RowConstraints row3 = new RowConstraints();
-        row3.setPercentHeight(tight * 100 / H);
+        row3.setPercentHeight(depth * 100 / H);
         RowConstraints row4 = new RowConstraints();
         row4.setPercentHeight(height * 100 / H);
+
         grid.getRowConstraints().addAll(row1, row2, row3, row4);
+
         grid.setPrefSize(W, H);
         grid.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
         new Scene(grid);
         SnapshotParameters sp = new SnapshotParameters();
-        sp.setFill(Color.GOLD);
+        sp.setFill(Color.BLACK);
         return grid.snapshot(sp, null);
     }
 }

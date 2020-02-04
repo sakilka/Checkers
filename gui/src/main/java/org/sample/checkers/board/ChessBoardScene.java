@@ -8,19 +8,15 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.sample.checkers.board.model.BoardPosition;
-import org.sample.checkers.board.model.Cube;
-import org.sample.checkers.board.model.Figure;
-import org.sample.checkers.board.model.FigurePosition;
+import org.sample.checkers.board.model.*;
 import org.sample.checkers.mesh.components.SmartGroup;
 
 import java.util.Random;
@@ -50,12 +46,13 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private Stage mainStage;
     private Group boardSceneGroup;
 
-    private double fieldWidth = 8;
-    private double fieldHeight = 1;
-    private double fieldDepth = 8;
-    private double fieldShift = 0.5;
-    private double fieldGap = 0.2;
-    private double fieldGapShift = 0.2;
+    private float fieldWidth = 8;
+    private float fieldHeight = 1;
+    private float fieldDepth = 8;
+    private float fieldGap = 0.2f;
+    private float fieldGapShift = 0.2f;
+    private float widthShift =  4 * fieldWidth;
+    private float depthShift = 4 * fieldWidth;
 
     public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
@@ -89,8 +86,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         PhongMaterial whiteMaterial = new PhongMaterial(Color.WHITE);
         PhongMaterial gapMaterial = new PhongMaterial(Color.WHITE);
 
-        Box[][] board = new Box[8][8];
-        Box[][][] boardBorder = new Box[8][8][4];
+        Cube[][] board = new Cube[8][8];
+        Cube[][][] boardBorder = new Cube[8][8][4];
 
         for (int fieldZ = 0; fieldZ < 8; fieldZ++) {
 
@@ -98,41 +95,44 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
 
             for (int fieldX = 0; fieldX < 8; fieldX++) {
 
-                Box field = new Box(fieldWidth - fieldGap, fieldHeight, fieldDepth - fieldGap);
+                Cube field = new Cube(fieldWidth - fieldGap, fieldHeight, fieldDepth - fieldGap);
 
-                field.setTranslateX(fieldX * fieldWidth);
-                field.setTranslateY(fieldShift);
-                field.setTranslateZ(fieldZ * fieldDepth);
+                field.setTranslateX(((fieldX * fieldWidth) - fieldWidth/2) - widthShift);
+                field.setTranslateY(0);
+                field.setTranslateZ(((fieldZ * fieldDepth) - fieldDepth/2) - depthShift);
 
-                field.setMaterial(current);
+                field.setMaterial(new CubeMaterial(current.getDiffuseColor(), null, CubeFace.UP))
+                        .setMaterial(new CubeMaterial(Color.DARKGREEN, null, CubeFace.DOWN));
+                field.initMaterial();
                 board[fieldX][fieldZ] = field;
+
                 current = current == whiteMaterial ? blackMaterial : whiteMaterial;
 
-                Box borderLeft = new Box(fieldGap / 2, fieldHeight - fieldGapShift, fieldDepth);
-                borderLeft.setTranslateX((fieldX * fieldWidth) - ((fieldWidth - fieldGap) / 2) - (fieldGap / 4));
-                borderLeft.setTranslateY(fieldShift + (fieldGapShift / 2));
-                borderLeft.setTranslateZ(fieldZ * fieldDepth);
+                Cube borderLeft = new Cube(fieldGap / 2, fieldHeight - fieldGapShift, fieldDepth);
+                borderLeft.setTranslateX(((fieldX * fieldWidth) - (fieldWidth/2) - fieldGap/2) - widthShift);
+                borderLeft.setTranslateY(fieldGapShift/2);
+                borderLeft.setTranslateZ(((fieldZ * fieldDepth) - (fieldDepth/2) - fieldGap/2) - depthShift);
                 borderLeft.setMaterial(gapMaterial);
                 boardBorder[fieldX][fieldZ][0] = borderLeft;
 
-                Box borderUp = new Box(fieldWidth, fieldHeight - fieldGapShift, fieldGap / 2);
-                borderUp.setTranslateX(fieldX * fieldWidth);
-                borderUp.setTranslateY(fieldShift + (fieldGapShift / 2));
-                borderUp.setTranslateZ((fieldZ * fieldDepth) + ((fieldDepth - fieldGap) / 2) + (fieldGap / 4));
+                Cube borderUp = new Cube(fieldWidth, fieldHeight - fieldGapShift, fieldGap / 2);
+                borderUp.setTranslateX(((fieldX * fieldWidth) - (fieldWidth/2) - fieldGap/2) - widthShift);
+                borderUp.setTranslateY(fieldGapShift/2);
+                borderUp.setTranslateZ(((fieldZ * fieldDepth) + (fieldDepth/2) - fieldGap) - depthShift);
                 borderUp.setMaterial(gapMaterial);
                 boardBorder[fieldX][fieldZ][1] = borderUp;
 
-                Box borderRight = new Box(fieldGap / 2, fieldHeight - fieldGapShift, fieldDepth);
-                borderRight.setTranslateX((fieldX * fieldWidth) + ((fieldWidth - fieldGap) / 2) + (fieldGap / 4));
-                borderRight.setTranslateY(fieldShift + (fieldGapShift / 2));
-                borderRight.setTranslateZ(fieldZ * fieldDepth);
+                Cube borderRight = new Cube(fieldGap / 2, fieldHeight - fieldGapShift, fieldDepth);
+                borderRight.setTranslateX(((fieldX * fieldWidth) + (fieldWidth/2) - fieldGap) - widthShift);
+                borderRight.setTranslateY(fieldGapShift/2);
+                borderRight.setTranslateZ(((fieldZ * fieldDepth) - (fieldDepth/2) - fieldGap/2) - depthShift);
                 borderRight.setMaterial(gapMaterial);
                 boardBorder[fieldX][fieldZ][2] = borderRight;
 
-                Box borderDown = new Box(fieldWidth, fieldHeight - fieldGapShift, fieldGap / 2);
-                borderDown.setTranslateX(fieldX * fieldWidth);
-                borderDown.setTranslateY(fieldShift + (fieldGapShift / 2));
-                borderDown.setTranslateZ((fieldZ * fieldDepth) - ((fieldDepth - fieldGap) / 2) - (fieldGap / 4));
+                Cube borderDown = new Cube(fieldWidth, fieldHeight - fieldGapShift, fieldGap / 2);
+                borderDown.setTranslateX(((fieldX * fieldWidth) - (fieldWidth/2) - fieldGap/2) - widthShift);
+                borderDown.setTranslateY(fieldGapShift/2);
+                borderDown.setTranslateZ(((fieldZ * fieldDepth) - (fieldDepth/2) - fieldGap/2) - depthShift);
                 borderDown.setMaterial(gapMaterial);
                 boardBorder[fieldX][fieldZ][3] = borderDown;
             }
@@ -150,7 +150,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     }
 
     private void initializeFigures() {
-        Figure pawn = new Figure("pawn.obj", new FigurePosition(fieldWidth, 0, fieldDepth),
+        Figure pawn = new Figure("pawn.obj", new FigurePosition(0, 0, 0),
                 new PhongMaterial(Color.WHITE));
         Figure queen = new Figure("queen.obj", new FigurePosition(fieldWidth * 4, 0, 0),
                 new PhongMaterial(Color.WHITE));
@@ -164,7 +164,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         Cube testBox = new Cube(10, 10, 10);
         PhongMaterial textMaterial = new PhongMaterial();
 
-        Text text = new Text(" Text3D ");
+        Text text = new Text(" Up ");
         text.setStroke(Color.DARKGOLDENROD);
         text.setFill(Color.DARKGOLDENROD);
         text.setFont(Font.font(Font.getFamilies().get(new Random().nextInt(Font.getFamilies().size())), 30));
@@ -183,12 +183,31 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         WritableImage textureImage = new Text("text").snapshot(null, null);
         textMaterial.setDiffuseMap(new Image(getClass().getResourceAsStream("cube_texture.jpg")));
 //        testBox.setMaterial(textMaterial);
-        testBox.setMaterial();
+        Text h = new Text("H");
+        h.setFont(Font.font(Font.getFamilies().get(new Random().nextInt(Font.getFamilies().size())), 100));
+
+        Text up = new Text("Up");
+        up.setFont(Font.font(Font.getFamilies().get(new Random().nextInt(Font.getFamilies().size())), 100));
+        testBox
+                .setMaterial(new CubeMaterial(Color.GOLD, h, CubeFace.FRONT))
+                .setMaterial(new CubeMaterial(Color.SILVER, up, CubeFace.UP))
+        .initMaterial();
 
         testBox.setTranslateY(-25);
         testBox.setTranslateZ(-25);
 
+        Cube testBox2 = new Cube(10, 10, 10);
+        PhongMaterial material = new PhongMaterial(Color.GOLD);
+        material.setSpecularColor(Color.WHITE);
+        material.setSpecularPower(15);
+        testBox2.setMaterial(material);
+
+        testBox2.setTranslateX(20);
+        testBox2.setTranslateY(-25);
+        testBox2.setTranslateZ(-25);
+
         boardSceneGroup.getChildren().add(testBox);
+        boardSceneGroup.getChildren().add(testBox2);
     }
 
     public Camera initializeCamera() {
