@@ -181,7 +181,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
 
         for(int border = 0; border < 8; border++) {
             Cube frontBorder = new Cube(fieldWidth/2, fieldHeight, fieldDepth);
-            frontBorder.setTranslateX(-fieldWidth/2 - widthShift - fieldGap/2);
+            frontBorder.setTranslateX(-fieldWidth/2 - widthShift - fieldGap);
             frontBorder.setTranslateY(0);
             frontBorder.setTranslateZ((fieldDepth * border) - depthShift - fieldGap/2);
             Text text = new Text("\n   " + borderNumbers.charAt(border) + "   \n");
@@ -268,6 +268,20 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         corner2.setTranslateZ((- fieldDepth/2) - depthShift - fieldGapShift);
         boardSceneGroup.getChildren().add(corner2);
 
+        Cube corner21 = new Cube(fieldGap*2, fieldHeight, fieldDepth/2);
+        corner21.setMaterial(blackMaterial);
+        corner21.setTranslateX(- widthShift - fieldGap);
+        corner21.setTranslateY(0);
+        corner21.setTranslateZ((- fieldDepth/2) - depthShift - fieldGapShift);
+        boardSceneGroup.getChildren().add(corner21);
+
+        Cube corner22 = new Cube(fieldWidth/2, fieldHeight, fieldGap);
+        corner22.setMaterial(blackMaterial);
+        corner22.setTranslateX(-fieldWidth/2 - widthShift - fieldGap);
+        corner22.setTranslateY(0);
+        corner22.setTranslateZ(- depthShift - fieldGapShift);
+        boardSceneGroup.getChildren().add(corner22);
+
         Cube corner3 = new Cube(fieldWidth/2, fieldHeight, fieldDepth/2);
         corner3.setMaterial(blackMaterial);
         corner3.setTranslateX(widthShift + fieldGap);
@@ -275,12 +289,40 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         corner3.setTranslateZ(depthShift + fieldGapShift);
         boardSceneGroup.getChildren().add(corner3);
 
+        Cube corner31 = new Cube(fieldGap*2, fieldHeight, fieldDepth/2);
+        corner31.setMaterial(blackMaterial);
+        corner31.setTranslateX(- widthShift - fieldGap);
+        corner31.setTranslateY(0);
+        corner31.setTranslateZ(depthShift + fieldGapShift);
+        boardSceneGroup.getChildren().add(corner31);
+
+        Cube corner32 = new Cube(fieldWidth/2, fieldHeight, fieldGap*2);
+        corner32.setMaterial(blackMaterial);
+        corner32.setTranslateX(-fieldWidth/2 - widthShift - fieldGap);
+        corner32.setTranslateY(0);
+        corner32.setTranslateZ(depthShift - fieldGapShift);
+        boardSceneGroup.getChildren().add(corner32);
+
         Cube corner4 = new Cube(fieldWidth/2, fieldHeight, fieldDepth/2);
         corner4.setMaterial(blackMaterial);
         corner4.setTranslateX(-fieldWidth/2 - widthShift - fieldGap);
         corner4.setTranslateY(0);
         corner4.setTranslateZ(depthShift + fieldGapShift);
         boardSceneGroup.getChildren().add(corner4);
+
+        Cube corner41 = new Cube(fieldGap*2, fieldHeight, fieldDepth/2);
+        corner41.setMaterial(blackMaterial);
+        corner41.setTranslateX(widthShift - fieldGap);
+        corner41.setTranslateY(0);
+        corner41.setTranslateZ(depthShift + fieldGapShift);
+        boardSceneGroup.getChildren().add(corner41);
+
+        Cube corner42 = new Cube(fieldWidth/2, fieldHeight, fieldGap*2);
+        corner42.setMaterial(blackMaterial);
+        corner42.setTranslateX(widthShift + fieldGapShift);
+        corner42.setTranslateY(0);
+        corner42.setTranslateZ(depthShift - fieldGapShift);
+        boardSceneGroup.getChildren().add(corner42);
     }
 
     private void initializeFigures() {
