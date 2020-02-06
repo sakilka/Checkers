@@ -3,19 +3,16 @@ package org.sample.checkers.board.model;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.DepthTest;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-
-import java.util.Random;
 
 public class Cube extends MeshView {
 
@@ -51,6 +48,7 @@ public class Cube extends MeshView {
 
         super.setMesh(cubeMesh);
         super.setDrawMode(DrawMode.FILL);
+        super.setDepthTest(DepthTest.ENABLE);
     }
 
     public Cube setMaterial(CubeMaterial material) {
@@ -163,7 +161,7 @@ public class Cube extends MeshView {
                         grid.add(backgroundPane,1,0);
                         break;
                     case BACK:
-                        grid.add(backgroundPane,3,0);
+                        grid.add(backgroundPane,3,1);
                         break;
                     case DOWN:
                         grid.add(backgroundPane,1,2);
@@ -175,7 +173,7 @@ public class Cube extends MeshView {
                         grid.add(backgroundPane,1,1);
                         break;
                     case RIGHT:
-                        grid.add(backgroundPane,2,0);
+                        grid.add(backgroundPane,2,1);
                         break;
                     default:
                         break;
@@ -186,9 +184,9 @@ public class Cube extends MeshView {
         final double H = 2 * depth + 2 * height;
 
         ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(depth * 100 / W);
+        col1.setPercentWidth((depth - 0.1) * 100 / W);
         ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPercentWidth(width * 100 / W);
+        col2.setPercentWidth((width + 0.2) * 100 / W);
         ColumnConstraints col3 = new ColumnConstraints();
         col3.setPercentWidth(depth * 100 / W);
         ColumnConstraints col4 = new ColumnConstraints();
@@ -208,10 +206,10 @@ public class Cube extends MeshView {
         grid.getRowConstraints().addAll(row1, row2, row3, row4);
 
         grid.setPrefSize(W, H);
-        grid.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
         new Scene(grid);
         SnapshotParameters sp = new SnapshotParameters();
-        sp.setFill(Color.BLACK);
+        sp.setFill(Color.WHITE);
+        sp.setDepthBuffer(true);
         return grid.snapshot(sp, null);
     }
 }
