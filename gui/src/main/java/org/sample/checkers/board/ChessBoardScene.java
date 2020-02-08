@@ -17,8 +17,6 @@ import javafx.stage.Stage;
 import org.sample.checkers.board.model.*;
 import org.sample.checkers.mesh.components.SmartGroup;
 
-import java.util.Random;
-
 import static java.lang.StrictMath.round;
 
 public class ChessBoardScene extends SubScene implements ChessBoard {
@@ -33,13 +31,13 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private DoubleProperty angleY = new SimpleDoubleProperty(0);
 
     private double distX;
-    private double distY;
+    private double distZ;
 
     private double anchorDistX = 0;
-    private double anchorDistY = 0;
+    private double anchorDistZ = 0;
 
     private DoubleProperty deltaX = new SimpleDoubleProperty(0);
-    private DoubleProperty deltaY = new SimpleDoubleProperty(0);
+    private DoubleProperty deltaZ = new SimpleDoubleProperty(0);
 
     private Stage mainStage;
     private Group boardSceneGroup;
@@ -69,10 +67,10 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         initializeBoard();
         initializeFigures();
 
-        boardPosition.deltaXProperty().bind(deltaX);
-        boardPosition.deltaYProperty().bind(deltaY);
-        boardPosition.angleXProperty().bind(angleX);
-        boardPosition.angleYProperty().bind(angleY);
+        boardPosition.deltaXProperty().bindBidirectional(deltaX);
+        boardPosition.deltaYProperty().bindBidirectional(deltaZ);
+        boardPosition.angleXProperty().bindBidirectional(angleX);
+        boardPosition.angleYProperty().bindBidirectional(angleY);
         boardPosition.translateZProperty().bindBidirectional(boardSceneGroup.translateZProperty());
 
         this.setCamera(initializeCamera());
@@ -81,8 +79,12 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
 
     private void initializeBoard() {
         PhongMaterial blackMaterial = new PhongMaterial(Color.BLACK);
+        blackMaterial.setSpecularColor(Color.WHITE);
+        blackMaterial.setSpecularPower(32);
         PhongMaterial borderMaterial = new PhongMaterial(Color.BLACK);
         PhongMaterial whiteMaterial = new PhongMaterial(Color.WHITE);
+        whiteMaterial.setSpecularColor(Color.WHITE);
+        whiteMaterial.setSpecularPower(32);
         PhongMaterial gapMaterial = new PhongMaterial(Color.WHITE);
         PhongMaterial fieldDown = new PhongMaterial(Color.BLACK);
         String borderLetters = "ABCDEFGH";
@@ -237,7 +239,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         bottom.setTranslateX(0);
         bottom.setTranslateY(fieldHeight + fieldGap);
         bottom.setTranslateZ(0);
-        bottom.setMaterial(whiteMaterial);
+        bottom.setMaterial(blackMaterial);
         boardSceneGroup.getChildren().add(bottom);
 
         Cube corner1 = new Cube(fieldWidth/2, fieldHeight, fieldDepth/2);
@@ -355,13 +357,13 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         boardSceneGroup.getTransforms().addAll(
                 xRotate = new Rotate(0, Rotate.X_AXIS),
                 yRotate = new Rotate(0, Rotate.Y_AXIS),
-                translate = new Translate(distX, distY)
+                translate = new Translate(distX, distZ)
         );
 
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
         translate.xProperty().bind(deltaX);
-        translate.yProperty().bind(deltaY);
+        translate.zProperty().bind(deltaZ);
 
         boardScene.setOnMousePressed(event -> {
             if (event.getButton() == MouseButton.MIDDLE) {
@@ -371,9 +373,9 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 anchorAngleY = angleY.get();
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 distX = event.getSceneX();
-                distY = event.getSceneY();
+                distZ = event.getSceneY();
                 anchorDistX = deltaX.get();
-                anchorDistY = deltaY.get();
+                anchorDistZ = deltaZ.get();
             }
         });
 
@@ -383,7 +385,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 angleY.set(anchorAngleY - (anchorX - event.getSceneX()));
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 deltaX.set(anchorDistX - (distX - event.getSceneX()));
-                deltaY.set(anchorDistY - (distY - event.getSceneY()));
+                deltaZ.set(anchorDistZ + (distZ - event.getSceneY()));
             }
         });
 
