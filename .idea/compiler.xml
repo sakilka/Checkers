@@ -6,11 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="common" />
         <module name="gui" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Checkers" target="1.8" />
+      <module name="common" target="1.8" />
       <module name="gui" target="1.8" />
     </bytecodeTargetLevel>
   </component>

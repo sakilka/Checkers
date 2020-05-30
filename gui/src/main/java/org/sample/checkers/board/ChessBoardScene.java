@@ -14,8 +14,12 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import org.sample.checkers.Checkers;
 import org.sample.checkers.board.model.*;
+import org.sample.checkers.config.CheckersConfiguration;
 import org.sample.checkers.mesh.components.SmartGroup;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static java.lang.StrictMath.round;
 
@@ -53,6 +57,11 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
+
+        ApplicationContext context
+                = new AnnotationConfigApplicationContext(Checkers.class);
+
+        CheckersConfiguration configuration = context.getBean(CheckersConfiguration.class);
 
         mainStage = stage;
         boardSceneGroup = root;

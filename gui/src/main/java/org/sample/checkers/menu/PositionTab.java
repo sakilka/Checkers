@@ -20,8 +20,8 @@ public class PositionTab extends ScrollPane {
                 FontAwesomeIcon.ROTATE_RIGHT, 1);
         content.getChildren().add(panelAngleY);
         PositionPanel panelDeltaX = new PositionPanel(boardPosition.deltaXProperty(), -100, 100, 0,
-                RIGHT_PANEL_WIDTH -20, 20, "deltaX", FontAwesomeIcon.ARROW_LEFT,
-                FontAwesomeIcon.ARROW_RIGHT, 1);
+                RIGHT_PANEL_WIDTH -20, 20, "deltaX", FontAwesomeIcon.ARROW_RIGHT,
+                FontAwesomeIcon.ARROW_LEFT, -1);
         content.getChildren().add(panelDeltaX);
         PositionPanel panelDeltaY = new PositionPanel(boardPosition.deltaYProperty(), -100, 100, 0,
                 RIGHT_PANEL_WIDTH -20, 20, "deltaZ", FontAwesomeIcon.ARROW_DOWN,

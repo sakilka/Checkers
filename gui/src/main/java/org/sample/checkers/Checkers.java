@@ -19,9 +19,11 @@ import org.sample.checkers.board.ChessBoardScene;
 import org.sample.checkers.board.model.BoardPosition;
 import org.sample.checkers.menu.RightPanel;
 import org.sample.checkers.mesh.components.SmartGroup;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
 
+@ComponentScan(basePackages = "org.sample.checkers")
 public class Checkers extends Application {
 
     final BorderPane root = new BorderPane();
