@@ -27,7 +27,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <javafx-maven-plugin.version>0.0.3</javafx-maven-plugin.version>
         <fontawesomefx.version>8.9</fontawesomefx.version>
-        <spring.version>5.2.6.RELEASE</spring.version>
+        <spring.version>5.2.22.RELEASE</spring.version>
     </properties>
 
     <dependencyManagement>
