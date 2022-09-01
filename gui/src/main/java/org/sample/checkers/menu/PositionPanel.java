@@ -66,7 +66,7 @@ public class PositionPanel extends GridPane {
     }
 
     private Label initializeValueLabel(SimpleDoubleProperty property) {
-        Label value = new Label(String.valueOf(round(property.doubleValue())));
+        Label value = new Label(String.valueOf(round(-property.doubleValue())));
 
         property.addListener((obs, oldVal, newVal) -> {
             value.setText(String.valueOf(

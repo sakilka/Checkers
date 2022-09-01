@@ -14,54 +14,69 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import org.sample.checkers.Checkers;
 import org.sample.checkers.board.model.*;
-import org.sample.checkers.config.CheckersConfiguration;
 import org.sample.checkers.mesh.components.SmartGroup;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static java.lang.StrictMath.round;
+import static javafx.scene.transform.Rotate.Y_AXIS;
+import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
+import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
+import static org.sample.checkers.config.PropertyUtil.getConfig;
+import static org.sample.checkers.config.PropertyUtil.getPositions;
 
 public class ChessBoardScene extends SubScene implements ChessBoard {
 
     private double anchorX;
     private double anchorY;
 
-    private double anchorAngleX = 0;
-    private double anchorAngleY = 0;
+    private double anchorAngleX;
+    private double anchorAngleY;
 
-    private DoubleProperty angleX = new SimpleDoubleProperty(0);
-    private DoubleProperty angleY = new SimpleDoubleProperty(0);
+    private DoubleProperty angleX;
+    private DoubleProperty angleY;
+
+    private DoubleProperty translateZ;
 
     private double distX;
     private double distZ;
 
-    private double anchorDistX = 0;
-    private double anchorDistZ = 0;
+    private double anchorDistX;
+    private double anchorDistZ;
 
-    private DoubleProperty deltaX = new SimpleDoubleProperty(0);
-    private DoubleProperty deltaZ = new SimpleDoubleProperty(0);
+    private final DoubleProperty deltaX;
+    private final DoubleProperty deltaZ;
 
-    private Stage mainStage;
-    private Group boardSceneGroup;
+    private final Stage mainStage;
+    private final Group boardSceneGroup;
 
-    private float fieldWidth = 8;
-    private float fieldHeight = 1;
-    private float fieldDepth = 8;
-    private float fieldGap = 0.2f;
-    private float fieldGapShift = 0.2f;
-    private float widthShift =  4 * fieldWidth;
-    private float depthShift = 4 * fieldWidth;
+    private final float fieldWidth;
+    private final float fieldHeight;
+    private final float fieldDepth;
+    private final float fieldGap;
+    private final float fieldGapShift;
+    private final float widthShift;
+    private final float depthShift;
 
     public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
 
-        ApplicationContext context
-                = new AnnotationConfigApplicationContext(Checkers.class);
-
-        CheckersConfiguration configuration = context.getBean(CheckersConfiguration.class);
+        this.angleX = new SimpleDoubleProperty(getConfig().getAngleX());
+        this.angleY = new SimpleDoubleProperty(getConfig().getAngleY());
+        this.anchorAngleX = 0;
+        this.anchorAngleY = 0;
+        this.anchorDistX = 0;
+        this.anchorDistZ = 0;
+        this.deltaX = new SimpleDoubleProperty(getConfig().getDeltaX());
+        this.deltaZ = new SimpleDoubleProperty(getConfig().getDeltaZ());
+        this.translateZ = new SimpleDoubleProperty(getConfig().getTranslateZ());
+        this.fieldWidth = getConfig().getFieldWidth();
+        this.fieldHeight = getConfig().getFieldHeight();
+        this.fieldDepth = getConfig().getFieldDepth();
+        this.fieldGap = getConfig().getFieldGap();
+        this.fieldGapShift = getConfig().getFieldGapShift();
+        this.widthShift =  4 * fieldWidth;
+        this.depthShift = 4 * fieldWidth;
 
         mainStage = stage;
         boardSceneGroup = root;
@@ -77,10 +92,11 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         initializeFigures();
 
         boardPosition.deltaXProperty().bindBidirectional(deltaX);
-        boardPosition.deltaYProperty().bindBidirectional(deltaZ);
+        boardPosition.deltaZProperty().bindBidirectional(deltaZ);
         boardPosition.angleXProperty().bindBidirectional(angleX);
         boardPosition.angleYProperty().bindBidirectional(angleY);
         boardPosition.translateZProperty().bindBidirectional(boardSceneGroup.translateZProperty());
+        boardPosition.translateZProperty().bindBidirectional(translateZ);
 
         this.setCamera(initializeCamera());
         this.setFill(Color.SILVER);
@@ -337,16 +353,149 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     }
 
     private void initializeFigures() {
-        Figure pawn = new Figure("pawn.obj", new FigurePosition(0, 0, 0),
-                new PhongMaterial(Color.WHITE));
-        Figure queen = new Figure("queen.obj", new FigurePosition(fieldWidth * 4, 0, 0),
-                new PhongMaterial(Color.WHITE));
-        Figure king = new Figure("king.obj", new FigurePosition(fieldWidth * 5, 0, 0),
-                new PhongMaterial(Color.WHITE));
+        //white
+        Color whiteColor = Color.WHITE;
 
-        boardSceneGroup.getChildren().add(pawn);
-        boardSceneGroup.getChildren().add(queen);
-        boardSceneGroup.getChildren().add(king);
+        Figure whiteBishopFirst = new Figure("bishop.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteBishopFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteBishopFirstX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whiteBishopSecond = new Figure("bishop.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteBishopSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteBishopSecondX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whiteKnightFirst = new Figure("knight.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteKnightFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteKnightFirstX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whiteKnightSecond = new Figure("knight.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteKnightSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteKnightSecondX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whiteRookFirst = new Figure("rook.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteRookFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteRookFirstX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whiteRookSecond = new Figure("rook.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteRookSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteRookSecondX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whiteKing = new Figure("king.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteKingY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteKingX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whiteQueen = new Figure("queen.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhiteQueenY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhiteQueenX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnOne = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnFirstX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnTwo = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnSecondX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnThree = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnThirdY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnThirdX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnFour = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnFourthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnFourthX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnFive = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnFifthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnFifthX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnSix = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnSixthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnSixthX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnSeven = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnSeventhY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnSeventhX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+        Figure whitePawnEight = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessWhitePawnEighthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessWhitePawnEighthX(), fieldWidth)),
+                new PhongMaterial(whiteColor));
+
+        boardSceneGroup.getChildren().addAll(whiteBishopFirst, whiteBishopSecond, whiteKnightFirst, whiteKnightSecond,
+                whiteRookFirst, whiteRookSecond, whiteKing, whiteQueen, whitePawnOne, whitePawnTwo, whitePawnThree,
+                whitePawnFour, whitePawnFive, whitePawnSix, whitePawnSeven, whitePawnEight);
+
+        //black
+        Color blackColor = Color.DARKGREY;
+
+        Figure blackBishopFirst = new Figure("bishop.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackBishopFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackBishopFirstX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackBishopSecond = new Figure("bishop.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackBishopSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackBishopSecondX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackKnightFirst = new Figure("knight.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackKnightFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackKnightFirstX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackKnightSecond = new Figure("knight.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackKnightSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackKnightSecondX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackRookFirst = new Figure("rook.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackRookFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackRookFirstX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackRookSecond = new Figure("rook.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackRookSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackRookSecondX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackKing = new Figure("king.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackKingY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackKingX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackQueen = new Figure("queen.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackQueenY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackQueenX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnOne = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnFirstX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnTwo = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnSecondX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnThree = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnThirdY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnThirdX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnFour = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnFourthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnFourthX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnFive = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnFifthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnFifthX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnSix = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnSixthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnSixthX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnSeven = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnSeventhY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnSeventhX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+        Figure blackPawnEight = new Figure("pawn.obj", new FigurePosition(
+                getAbsolutePositionX(getPositions().getChessBlackPawnEighthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getChessBlackPawnEighthX(), fieldWidth)),
+                new PhongMaterial(blackColor), Y_AXIS, 180);
+
+        boardSceneGroup.getChildren().addAll(blackBishopFirst, blackBishopSecond, blackKnightFirst, blackKnightSecond,
+                blackRookFirst, blackRookSecond, blackKing, blackQueen, blackPawnOne, blackPawnTwo, blackPawnThree,
+                blackPawnFour, blackPawnFive, blackPawnSix, blackPawnSeven, blackPawnEight);
     }
 
     public Camera initializeCamera() {

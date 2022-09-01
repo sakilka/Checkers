@@ -17,20 +17,19 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.sample.checkers.board.ChessBoardScene;
 import org.sample.checkers.board.model.BoardPosition;
+import org.sample.checkers.config.PropertyUtil;
 import org.sample.checkers.menu.RightPanel;
 import org.sample.checkers.mesh.components.SmartGroup;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
 
+import static org.sample.checkers.config.PropertyUtil.getConfig;
+
 @ComponentScan
 public class Checkers extends Application {
 
     final BorderPane root = new BorderPane();
-
-    private static final float WIDTH = 1200;
-    private static final float HEIGHT = 600;
-    public static final int RIGHT_PANEL_WIDTH = 300;
 
     private double anchorX;
     private double anchorY;
@@ -44,7 +43,7 @@ public class Checkers extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");
-        Scene scene = new Scene(root, WIDTH, HEIGHT);
+        Scene scene = new Scene(root, getConfig().getWidth(), getConfig().getHeight());
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
         MenuBar menu = (MenuBar) loadFXML("menu");
@@ -53,17 +52,18 @@ public class Checkers extends Application {
         SplitPane content = new SplitPane();
 
         BoardPosition boardPosition = new BoardPosition();
-        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(), WIDTH - RIGHT_PANEL_WIDTH, HEIGHT, true,
+        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(),
+                getConfig().getWidth() - getConfig().getRightPanelWidth(), getConfig().getHeight(), true,
                 SceneAntialiasing.BALANCED, boardPosition);
 
         StackPane boardPane = new StackPane(boardScene);
         boardPane.setStyle("-fx-background-color: silver;");
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
-        splitPaneDividerPosition.set((scene.getWidth() - RIGHT_PANEL_WIDTH) / scene.getWidth());
+        splitPaneDividerPosition.set((scene.getWidth() - getConfig().getRightPanelWidth()) / scene.getWidth());
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
         RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty(), scene.widthProperty(),
                 shownRightPanel, boardScene, boardPosition);
-        boardScene.widthProperty().bind(scene.widthProperty().subtract(RIGHT_PANEL_WIDTH));
+        boardScene.widthProperty().bind(scene.widthProperty().subtract(getConfig().getRightPanelWidth()));
         boardScene.heightProperty().bind(scene.heightProperty());
 
         content.getItems().addAll(boardPane, rightPanel);
@@ -72,7 +72,7 @@ public class Checkers extends Application {
         splitPaneDividerPosition.addListener((observable, oldValue, newValue) -> {
             if (rightPanel.isMouseDragOnDivider()) {
                 if (shownRightPanel.getValue()) {
-                    splitPaneDividerPosition.set(1 - (RIGHT_PANEL_WIDTH / scene.widthProperty().doubleValue()));
+                    splitPaneDividerPosition.set(1 - (getConfig().getRightPanelWidth() / scene.widthProperty().doubleValue()));
                 } else {
                     splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
                 }
@@ -82,8 +82,8 @@ public class Checkers extends Application {
 
         stage.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (shownRightPanel.getValue()) {
-                rightPanel.setMinWidth(RIGHT_PANEL_WIDTH);
-                splitPaneDividerPosition.set(1 - (RIGHT_PANEL_WIDTH / newVal.doubleValue()));
+                rightPanel.setMinWidth(getConfig().getRightPanelWidth());
+                splitPaneDividerPosition.set(1 - (getConfig().getRightPanelWidth() / newVal.doubleValue()));
             } else {
                 rightPanel.minWidth(rightPanel.getButtonWidth());
                 splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / newVal.doubleValue()));

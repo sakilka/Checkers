@@ -2,20 +2,22 @@ package org.sample.checkers.board.model;
 
 import javafx.beans.property.SimpleDoubleProperty;
 
+import static org.sample.checkers.config.PropertyUtil.getConfig;
+
 public class BoardPosition {
 
     private SimpleDoubleProperty angleX;
     private SimpleDoubleProperty angleY;
     private SimpleDoubleProperty deltaX;
-    private SimpleDoubleProperty deltaY;
+    private SimpleDoubleProperty deltaZ;
     private SimpleDoubleProperty translateZ;
 
     public BoardPosition() {
-        this.angleX = new SimpleDoubleProperty();
-        this.angleY = new SimpleDoubleProperty();
-        this.deltaX = new SimpleDoubleProperty();
-        this.deltaY = new SimpleDoubleProperty();
-        this.translateZ = new SimpleDoubleProperty();
+        this.angleX = new SimpleDoubleProperty(getConfig().getAngleX());
+        this.angleY = new SimpleDoubleProperty(getConfig().getAngleY());
+        this.deltaX = new SimpleDoubleProperty(getConfig().getDeltaX());
+        this.deltaZ = new SimpleDoubleProperty(getConfig().getDeltaZ());
+        this.translateZ = new SimpleDoubleProperty(getConfig().getTranslateZ());
     }
 
     public double getAngleX() {
@@ -42,12 +44,12 @@ public class BoardPosition {
         return deltaX;
     }
 
-    public double getDeltaY() {
-        return deltaY.get();
+    public double getDeltaZ() {
+        return deltaZ.get();
     }
 
-    public SimpleDoubleProperty deltaYProperty() {
-        return deltaY;
+    public SimpleDoubleProperty deltaZProperty() {
+        return deltaZ;
     }
 
     public double getTranslateZ() {
