@@ -17,8 +17,14 @@ import javafx.stage.Stage;
 import org.sample.checkers.board.model.*;
 import org.sample.checkers.mesh.components.SmartGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static java.lang.StrictMath.round;
 import static javafx.scene.transform.Rotate.Y_AXIS;
+import static org.sample.checkers.board.action.MoveUtil.handlePrimaryClick;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
 import static org.sample.checkers.config.PropertyUtil.getConfig;
@@ -57,6 +63,9 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private final float widthShift;
     private final float depthShift;
 
+    private final Cube[][] board;
+    private final List<Figure> figures;
+
     public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
@@ -77,6 +86,9 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         this.fieldGapShift = getConfig().getFieldGapShift();
         this.widthShift =  4 * fieldWidth;
         this.depthShift = 4 * fieldWidth;
+
+        this.board = new Cube[8][8];
+        this.figures = new ArrayList<>();
 
         mainStage = stage;
         boardSceneGroup = root;
@@ -115,7 +127,6 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         String borderLetters = "ABCDEFGH";
         String borderNumbers = "12345678";
 
-        Cube[][] board = new Cube[8][8];
         Cube[][][] fieldGaps = new Cube[8][8][4];
         Cube[][] boardBorder = new Cube[8][4];
 
@@ -425,6 +436,10 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 whiteRookFirst, whiteRookSecond, whiteKing, whiteQueen, whitePawnOne, whitePawnTwo, whitePawnThree,
                 whitePawnFour, whitePawnFive, whitePawnSix, whitePawnSeven, whitePawnEight);
 
+        figures.addAll(Stream.of(whiteBishopFirst, whiteBishopSecond, whiteKnightFirst, whiteKnightSecond,
+                whiteRookFirst, whiteRookSecond, whiteKing, whiteQueen, whitePawnOne, whitePawnTwo, whitePawnThree,
+                whitePawnFour, whitePawnFive, whitePawnSix, whitePawnSeven, whitePawnEight).collect(Collectors.toList()));
+
         //black
         Color blackColor = Color.DARKGREY;
 
@@ -496,6 +511,10 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         boardSceneGroup.getChildren().addAll(blackBishopFirst, blackBishopSecond, blackKnightFirst, blackKnightSecond,
                 blackRookFirst, blackRookSecond, blackKing, blackQueen, blackPawnOne, blackPawnTwo, blackPawnThree,
                 blackPawnFour, blackPawnFive, blackPawnSix, blackPawnSeven, blackPawnEight);
+
+        figures.addAll(Stream.of(blackBishopFirst, blackBishopSecond, blackKnightFirst, blackKnightSecond,
+                blackRookFirst, blackRookSecond, blackKing, blackQueen, blackPawnOne, blackPawnTwo, blackPawnThree,
+                blackPawnFour, blackPawnFive, blackPawnSix, blackPawnSeven, blackPawnEight).collect(Collectors.toList()));
     }
 
     public Camera initializeCamera() {
@@ -534,6 +553,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 distZ = event.getSceneY();
                 anchorDistX = deltaX.get();
                 anchorDistZ = deltaZ.get();
+            } else if(event.getButton() == MouseButton.PRIMARY) {
+                handlePrimaryClick(event, board, figures, fieldWidth);
             }
         });
 
