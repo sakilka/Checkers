@@ -2,3 +2,8 @@
 /target/
 /gui/target/
 /.idea/
+*.iml
+.classpath
+.project
+.settings/
+target/
