@@ -23,12 +23,12 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
 
-@ComponentScan(basePackages = "org.sample.checkers")
+@ComponentScan
 public class Checkers extends Application {
 
     final BorderPane root = new BorderPane();
 
-    private static final float WIDTH = 800;
+    private static final float WIDTH = 1200;
     private static final float HEIGHT = 600;
     public static final int RIGHT_PANEL_WIDTH = 300;
 
