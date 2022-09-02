@@ -12,6 +12,8 @@ public class Figure extends LoadObject {
 
     private static final double NO_ROTATE = 0;
 
+    private final PhongMaterial DEFAULT_MATERIAL;
+
     public Figure(String path, FigurePosition position, PhongMaterial material) {
         this(new File((Figure.class.getResource(path).getFile())), 1, position, material, Y_AXIS, NO_ROTATE);
     }
@@ -27,6 +29,8 @@ public class Figure extends LoadObject {
     public Figure(File f, int size, FigurePosition position, PhongMaterial material, Point3D axis, double rotation) {
         super(f, size);
 
+        DEFAULT_MATERIAL = material;
+
         this.setMaterial(material);
         this.setTranslateX(position.getTranslateX());
         this.setTranslateY(position.getTranslateY());
@@ -35,5 +39,9 @@ public class Figure extends LoadObject {
             this.setRotationAxis(axis);
             this.setRotate(rotation);
         }
+    }
+
+    public void changeMaterialToDefault() {
+        this.setMaterial(DEFAULT_MATERIAL);
     }
 }

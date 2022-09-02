@@ -1,5 +1,7 @@
 package org.sample.checkers.board;
 
+import com.sun.javafx.geom.Dimension2D;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.*;
@@ -24,6 +26,7 @@ import java.util.stream.Stream;
 
 import static java.lang.StrictMath.round;
 import static javafx.scene.transform.Rotate.Y_AXIS;
+import static org.sample.checkers.board.action.MoveUtil.handleMarkedMove;
 import static org.sample.checkers.board.action.MoveUtil.handlePrimaryClick;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
@@ -63,6 +66,9 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private final float widthShift;
     private final float depthShift;
 
+    private Dimension2D marked;
+    private Dimension2D highlight;
+
     private final Cube[][] board;
     private final List<Figure> figures;
 
@@ -76,6 +82,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         this.anchorAngleY = 0;
         this.anchorDistX = 0;
         this.anchorDistZ = 0;
+        this.marked = null;
         this.deltaX = new SimpleDoubleProperty(getConfig().getDeltaX());
         this.deltaZ = new SimpleDoubleProperty(getConfig().getDeltaZ());
         this.translateZ = new SimpleDoubleProperty(getConfig().getTranslateZ());
@@ -143,6 +150,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 field.setTranslateZ((fieldZ * fieldDepth) - depthShift);
 
                 field.setMaterial(current);
+                field.setDefaultMaterial(current);
                 board[fieldX][fieldZ] = field;
 
                 current = current == whiteMaterial ? blackMaterial : whiteMaterial;
@@ -554,7 +562,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 anchorDistX = deltaX.get();
                 anchorDistZ = deltaZ.get();
             } else if(event.getButton() == MouseButton.PRIMARY) {
-                handlePrimaryClick(event, board, figures, fieldWidth);
+                marked = handlePrimaryClick(event, board, figures, fieldWidth, marked, highlight);
             }
         });
 
@@ -565,6 +573,12 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 deltaX.set(anchorDistX - (distX - event.getSceneX()));
                 deltaZ.set(anchorDistZ + (distZ - event.getSceneY()));
+            }
+        });
+
+        boardScene.setOnMouseMoved(event -> {
+            if (marked != null){
+                highlight = handleMarkedMove(event, board, figures, fieldWidth, marked, highlight);
             }
         });
 

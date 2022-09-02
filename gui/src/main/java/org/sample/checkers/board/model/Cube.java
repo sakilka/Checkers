@@ -9,6 +9,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
@@ -19,6 +20,8 @@ public class Cube extends MeshView {
     private static final float DEFAULT_HEIGHT = 150;
     private static final float DEFAULT_WIDTH = 300;
     private static final float DEFAULT_DEPTH = 250;
+
+    private Material DEFAULT_MATERIAL = null;
 
     public Cube() {
         this(DEFAULT_HEIGHT, DEFAULT_WIDTH, DEFAULT_DEPTH);
@@ -51,6 +54,10 @@ public class Cube extends MeshView {
         super.setDepthTest(DepthTest.ENABLE);
     }
 
+    public void setDefaultMaterial(Material value) {
+        this.DEFAULT_MATERIAL = value;
+    }
+
     public Cube setMaterial(CubeMaterial material) {
         for(int i = 0; i< 6; i++){
             if(material.getCubeFace() == facesMaterial[i].getCubeFace()) {
@@ -58,6 +65,10 @@ public class Cube extends MeshView {
             }
         }
         return this;
+    }
+
+    public void setMaterialToDefault() {
+        this.setMaterial(DEFAULT_MATERIAL);
     }
 
     public void initMaterial() {
