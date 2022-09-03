@@ -1,31 +1,31 @@
 package org.sample.checkers.board.action;
 
 import com.sun.javafx.geom.Dimension2D;
-import javafx.animation.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.EventTarget;
 import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.util.Duration;
 import org.sample.checkers.board.model.Cube;
 import org.sample.checkers.board.model.Figure;
+import org.sample.checkers.config.*;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-import static javax.xml.datatype.DatatypeConstants.DURATION;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
 
 public class MoveUtil {
 
     public static Dimension2D handlePrimaryClick(MouseEvent event, Cube[][] board, List<Figure> figures, float fieldWidth,
-                                          Dimension2D marked, Dimension2D highlight) {
+                                          Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
+                                                 MoveHistory moveHistory) {
         EventTarget target = event.getTarget();
 
         if (marked == null) {
@@ -38,35 +38,69 @@ public class MoveUtil {
                 if (targetNode instanceof Cube) {
                     Cube targetCube = (Cube) targetNode;
                     if (isField(board, targetCube)) {
-                        targetCube.setMaterial(blueMaterial);
                         Dimension2D position = getFieldPosition(board, targetCube);
                         Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
-                        if (targetFigure != null) {
-                            targetFigure.setMaterial(new PhongMaterial(Color.BLUE));
-                        }
 
-                        return position;
+                        if (targetFigure != null) {
+                            targetCube.setMaterial(blueMaterial);
+                            targetFigure.setMaterial(new PhongMaterial(Color.BLUE));
+                            highlightPotentialMoves(position, targetFigure.getChessFigure(), targetFigure.getChessSide(),
+                                    currentBoard, board, moveHistory);
+                            return position;
+                        }
                     }
                 } else if (targetNode instanceof Figure) {
                     Figure targetFigure = (Figure) targetNode;
-                    targetFigure.setMaterial(new PhongMaterial(Color.BLUE));
                     Dimension2D position = getFigurePosition(figures, targetFigure, fieldWidth);
+
                     if (position != null) {
+                        targetFigure.setMaterial(new PhongMaterial(Color.BLUE));
                         board[(int) position.width - 1][(int) position.height - 1].setMaterial(blueMaterial);
                     }
 
+                    highlightPotentialMoves(position, targetFigure.getChessFigure(), targetFigure.getChessSide(),
+                            currentBoard, board, moveHistory);
                     return position;
                 }
             }
             return marked;
         } else {
             Figure targetFigure = getFigureForPosition(figures, marked, fieldWidth);
-            if (targetFigure != null && highlight.width != 0 && highlight.height != 0) {
-                moveFigure(targetFigure, highlight, fieldWidth);
+
+            if (targetFigure != null && highlight != null && highlight.width != 0 && highlight.height != 0) {
+                List<Dimension2D> potentialMoves = CheckersMoves.potentialMoves(targetFigure.getChessFigure(),
+                        targetFigure.getChessSide(), moveHistory, new Dimension2D(marked.width-1, marked.height-1),
+                        currentBoard);
+
+                if(potentialMoves.stream().anyMatch(position -> (position.width +1) == highlight.width
+                        && (position.height + 1) == highlight.height)) {
+                    moveFigure(targetFigure, highlight, fieldWidth);
+                }
             }
-            changeBackForPosition(marked, figures, fieldWidth, board);
-            changeBackForPosition(highlight, figures, fieldWidth, board);
+            changeBackAll(figures, fieldWidth, board);
             return null;
+        }
+    }
+
+    private static void changeBackAll(List<Figure> figures, float fieldWidth, Cube[][] board) {
+        for (int i=0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                changeBackForPosition(new Dimension2D(i+1,j+1), figures, fieldWidth, board);
+            }
+        }
+    }
+
+    private static void highlightPotentialMoves(Dimension2D position, ChessFigure chessFigure, ChessSide chessSide,
+                                                ChessBoardPositions currentBoard, Cube[][] board, MoveHistory moveHistory) {
+        PhongMaterial redMaterial = new PhongMaterial(Color.RED);
+        redMaterial.setSpecularColor(Color.WHITE);
+        redMaterial.setSpecularPower(32);
+
+        List<Dimension2D> potentialMoves = CheckersMoves.potentialMoves(chessFigure, chessSide, moveHistory,
+                new Dimension2D(position.width-1, position.height-1), currentBoard);
+
+        for(Dimension2D potentialMove : potentialMoves) {
+            board[(int) potentialMove.width][(int) potentialMove.height].setMaterial(redMaterial);
         }
     }
 
@@ -83,7 +117,7 @@ public class MoveUtil {
         KeyValue keyX = new KeyValue(figure.translateXProperty(), p2.getX());
         KeyValue keyY = new KeyValue(figure.translateYProperty(), p2.getY());
         KeyValue keyZ = new KeyValue(figure.translateZProperty(), p2.getZ());
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(2), keyX, keyY, keyZ);
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(1), keyX, keyY, keyZ);
         t.getKeyFrames().add(keyFrame);
         return t;
     }
@@ -220,5 +254,11 @@ public class MoveUtil {
         }
 
         return null;
+    }
+
+    public static ChessFigure getBoardFigure(Cube[][] board, List<Figure> figures, Dimension2D position, float fieldWidth) {
+        Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
+
+        return targetFigure == null ? null : targetFigure.getChessFigure();
     }
 }
