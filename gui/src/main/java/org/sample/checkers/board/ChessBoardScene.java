@@ -461,35 +461,35 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         Figure blackBishopFirst = new Figure("bishop.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackBishopFirstY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackBishopFirstX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.BISHOP, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, BISHOP, BLACK);
         Figure blackBishopSecond = new Figure("bishop.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackBishopSecondY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackBishopSecondX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.BISHOP, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, BISHOP, BLACK);
         Figure blackKnightFirst = new Figure("knight.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackKnightFirstY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackKnightFirstX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.KNIGHT, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, KNIGHT, BLACK);
         Figure blackKnightSecond = new Figure("knight.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackKnightSecondY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackKnightSecondX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.KNIGHT, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, KNIGHT, BLACK);
         Figure blackRookFirst = new Figure("rook.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackRookFirstY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackRookFirstX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.ROOK, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, ROOK, BLACK);
         Figure blackRookSecond = new Figure("rook.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackRookSecondY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackRookSecondX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.ROOK, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, ROOK, BLACK);
         Figure blackKing = new Figure("king.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackKingY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackKingX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.KING, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, KING, BLACK);
         Figure blackQueen = new Figure("queen.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackQueenY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackQueenX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ChessFigure.KING, BLACK);
+                new PhongMaterial(blackColor), Y_AXIS, 180, QUEEN, BLACK);
         Figure blackPawnOne = new Figure("pawn.obj", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackPawnFirstY(), fieldWidth), 0,
                 getAbsolutePositionY(getPositions().getChessBlackPawnFirstX(), fieldWidth)),
