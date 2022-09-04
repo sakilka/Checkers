@@ -5,11 +5,11 @@ import com.sun.javafx.geom.Dimension2D;
 
 public class ChessMove {
 
-    public static final Dimension2D FIRST_MOVE = new Dimension2D(0,0);
-
     private Dimension2D position;
 
     private Dimension2D previousPosition;
+
+    private boolean firstMove;
 
     public ChessMove(Dimension2D position, Dimension2D previousPosition) {
         this.position = position;
@@ -30,5 +30,13 @@ public class ChessMove {
 
     public void setPreviousPosition(Dimension2D previousPosition) {
         this.previousPosition = previousPosition;
+    }
+
+    public boolean isFirstMove() {
+        return firstMove;
+    }
+
+    public void setFirstMove(boolean firstMove) {
+        this.firstMove = firstMove;
     }
 }

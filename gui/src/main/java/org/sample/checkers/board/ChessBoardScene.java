@@ -586,7 +586,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
 
         boardScene.setOnMouseMoved(event -> {
             if (marked != null){
-                highlight = handleMarkedMove(event, board, figures, fieldWidth, marked, highlight);
+                highlight = handleMarkedMove(event, board, figures, fieldWidth, marked, highlight, getCurrentBoard(),
+                        moveHistory);
             }
         });
 

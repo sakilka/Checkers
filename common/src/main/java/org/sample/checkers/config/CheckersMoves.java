@@ -5,8 +5,6 @@ import com.sun.javafx.geom.Dimension2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.sample.checkers.config.ChessMove.FIRST_MOVE;
-
 public class CheckersMoves {
 
     public static List<Dimension2D> potentialMoves(ChessFigure figure, ChessSide side, MoveHistory moveHistory,
@@ -351,7 +349,7 @@ public class CheckersMoves {
 
     private static boolean isFirstMove(MoveHistory moveHistory, Dimension2D currentPosition) {
         for(ChessMove move : moveHistory.getMoves()) {
-            if(isSamePosition(move.getPosition(), currentPosition) && move.getPreviousPosition() != FIRST_MOVE){
+            if(isSamePosition(move.getPosition(), currentPosition)){
                 return false;
             }
         }
@@ -364,7 +362,7 @@ public class CheckersMoves {
             return false;
         }
 
-        return position1.height == position2.height && position1.width == position2.width;
+        return position1.height == position2.height + 1 && position1.width == position2.width + 1;
     }
 
 }
