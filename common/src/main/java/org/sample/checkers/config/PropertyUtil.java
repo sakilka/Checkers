@@ -5,13 +5,24 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class PropertyUtil {
 
+    private static CheckersConfiguration configuration;
+    private static FiguresPositions figuresPositions;
+
     public static CheckersConfiguration getConfig() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(CheckersConfiguration.class);
-        return context.getBean(CheckersConfiguration.class);
+        if(configuration == null) {
+            ApplicationContext context = new AnnotationConfigApplicationContext(CheckersConfiguration.class);
+            configuration = context.getBean(CheckersConfiguration.class);
+        }
+
+        return configuration;
     }
 
     public static FiguresPositions getPositions() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(FiguresPositions.class);
-        return context.getBean(FiguresPositions.class);
+        if(figuresPositions == null) {
+            ApplicationContext context = new AnnotationConfigApplicationContext(FiguresPositions.class);
+            figuresPositions = context.getBean(FiguresPositions.class);
+        }
+
+        return figuresPositions;
     }
 }
