@@ -5,11 +5,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import org.sample.checkers.config.LoadModel;
 import org.sample.checkers.config.PropertyUtil;
-import org.sample.checkers.loader.ObjLoader;
 import org.sample.checkers.loader.model.Model;
-
-import java.io.File;
-import java.io.IOException;
 
 public class LoadObject extends MeshView {
 
