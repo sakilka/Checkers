@@ -23,10 +23,6 @@ import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
 
 public class MoveUtil {
 
-    // blue
-    // red
-    // yellow
-
     private static Color shineColor = Color.rgb(229,206,0, 0.3);
     private static Color highlightColor = Color.rgb(62,177,90, 0.6);
     private static Color moveColor = Color.rgb(229,1,0, 0.8);
@@ -136,10 +132,6 @@ public class MoveUtil {
                                         Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
                                                MoveHistory moveHistory) {
         EventTarget target = event.getTarget();
-
-//        PhongMaterial yellowMaterial = new PhongMaterial(Color.YELLOW);
-//        yellowMaterial.setSpecularColor(Color.WHITE);
-//        yellowMaterial.setSpecularPower(32);
 
         if (target instanceof Node) {
             Node targetNode = (Node) target;

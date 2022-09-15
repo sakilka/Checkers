@@ -31,17 +31,17 @@ public class LoadModel {
 
         model = new HashMap<>(6);
 
-        ExecutorService EXEC = Executors.newCachedThreadPool();
+        ExecutorService executor = Executors.newCachedThreadPool();
         List<Callable<Model>> tasks = new ArrayList<>();
         for (final Resource resource: Stream.of(bishop, king, knight, queen, pawn, rook).collect(Collectors.toList())) {
             Callable<Model> c = () -> ObjLoader.loadModel(resource.getFile());
             tasks.add(c);
         }
 
-        List<Future<Model>> results = EXEC.invokeAll(tasks);
+        List<Future<Model>> results = executor.invokeAll(tasks);
 
         for (Future<Model> result : results){
-            Model resultModel = result.get(2, TimeUnit.SECONDS);
+            Model resultModel = result.get(10, TimeUnit.SECONDS);
             model.put(resultModel.modelName, resultModel);
         }
     }
