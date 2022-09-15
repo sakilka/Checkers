@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,8 @@ public class LoadModel {
             Model resultModel = result.get(10, TimeUnit.SECONDS);
             model.put(resultModel.modelName, resultModel);
         }
+
+        executor.shutdown();
     }
 
     public Map<String, Model> getModel() {
