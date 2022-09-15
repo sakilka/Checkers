@@ -9,7 +9,6 @@ import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.util.Duration;
 import org.sample.checkers.board.model.Cube;
@@ -23,6 +22,14 @@ import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
 
 public class MoveUtil {
+
+    // blue
+    // red
+    // yellow
+
+    private static Color shineColor = Color.rgb(229,206,0, 0.3);
+    private static Color highlightColor = Color.rgb(62,177,90, 0.6);
+    private static Color moveColor = Color.rgb(229,1,0, 0.8);
 
     public static Dimension2D handlePrimaryClick(MouseEvent event, Cube[][] board, List<Figure> figures, float fieldWidth,
                                           Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
@@ -43,8 +50,8 @@ public class MoveUtil {
                         Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
 
                         if (targetFigure != null && targetFigure.getChessSide() == moveHistory.getOnMove()) {
-                            targetCube.setMaterial(blueMaterial);
-                            targetFigure.setMaterial(new PhongMaterial(Color.BLUE));
+                            targetCube.highlightField(true, shineColor);
+                            targetFigure.highlightFigure(true, shineColor);
                             highlightPotentialMoves(position, targetFigure.getChessFigure(), targetFigure.getChessSide(),
                                     currentBoard, board, moveHistory);
                             return position;
@@ -58,8 +65,8 @@ public class MoveUtil {
                         Dimension2D position = getFigurePosition(figures, targetFigure, fieldWidth);
 
                         if (position != null) {
-                            targetFigure.setMaterial(new PhongMaterial(Color.BLUE));
-                            board[(int) position.width - 1][(int) position.height - 1].setMaterial(blueMaterial);
+                            targetFigure.highlightFigure(true, shineColor);
+                            board[(int) position.width - 1][(int) position.height - 1].highlightField(true, shineColor);
                         }
 
                         highlightPotentialMoves(position, targetFigure.getChessFigure(), targetFigure.getChessSide(),
@@ -98,15 +105,12 @@ public class MoveUtil {
 
     private static void highlightPotentialMoves(Dimension2D position, ChessFigure chessFigure, ChessSide chessSide,
                                                 ChessBoardPositions currentBoard, Cube[][] board, MoveHistory moveHistory) {
-        PhongMaterial redMaterial = new PhongMaterial(Color.RED);
-        redMaterial.setSpecularColor(Color.WHITE);
-        redMaterial.setSpecularPower(32);
 
         List<Dimension2D> potentialMoves = CheckersMoves.potentialMoves(chessFigure, chessSide, moveHistory,
                 new Dimension2D(position.width-1, position.height-1), currentBoard);
 
         for(Dimension2D potentialMove : potentialMoves) {
-            board[(int) potentialMove.width][(int) potentialMove.height].setMaterial(redMaterial);
+            board[(int) potentialMove.width][(int) potentialMove.height].highlightField(true, highlightColor);
         }
     }
 
@@ -133,13 +137,9 @@ public class MoveUtil {
                                                MoveHistory moveHistory) {
         EventTarget target = event.getTarget();
 
-        PhongMaterial yellowMaterial = new PhongMaterial(Color.YELLOW);
-        yellowMaterial.setSpecularColor(Color.WHITE);
-        yellowMaterial.setSpecularPower(32);
-
-        PhongMaterial redMaterial = new PhongMaterial(Color.RED);
-        redMaterial.setSpecularColor(Color.WHITE);
-        redMaterial.setSpecularPower(32);
+//        PhongMaterial yellowMaterial = new PhongMaterial(Color.YELLOW);
+//        yellowMaterial.setSpecularColor(Color.WHITE);
+//        yellowMaterial.setSpecularPower(32);
 
         if (target instanceof Node) {
             Node targetNode = (Node) target;
@@ -150,19 +150,19 @@ public class MoveUtil {
 
                     if (isSamePosition(position, marked) || isSamePosition(position, highlight)) {
                         if(isSamePosition(position, marked) ) {
-                            highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, redMaterial);
+                            highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, highlightColor);
                             return null;
                         }
                         return highlight;
                     }
 
-                    targetCube.setMaterial(yellowMaterial);
+                    targetCube.highlightField(true, moveColor);
                     Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
                     if (targetFigure != null) {
-                        targetFigure.setMaterial(yellowMaterial);
+                        targetFigure.highlightFigure(true, moveColor);
                     }
 
-                    highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, redMaterial);
+                    highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, highlightColor);
 
                     return position;
                 }
@@ -172,18 +172,18 @@ public class MoveUtil {
 
                 if (isSamePosition(position, marked) || isSamePosition(position, highlight)) {
                     if(isSamePosition(position, marked)) {
-                        highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, redMaterial);
+                        highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, highlightColor);
                         return null;
                     }
                     return highlight;
                 }
 
-                targetFigure.setMaterial(yellowMaterial);
+                targetFigure.highlightFigure(true, moveColor);
                 if (position != null) {
-                    board[(int) position.width - 1][(int) position.height - 1].setMaterial(yellowMaterial);
+                    board[(int) position.width - 1][(int) position.height - 1].highlightField(true, moveColor);
                 }
 
-                highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, redMaterial);
+                highlightBack(figures, marked, fieldWidth, moveHistory, currentBoard, highlight, board, highlightColor);
 
                 return position;
             }
@@ -193,16 +193,16 @@ public class MoveUtil {
     }
 
     private static void highlightBackForPosition(Dimension2D position, List<Figure> figures, float fieldWidth,
-                                                 Cube[][] board, Material highlightMaterial) {
+                                                 Cube[][] board, Color highlightColor) {
         if(position == null || position.width == 0 || position.height == 0) {
             return;
         }
 
         Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
         if (targetFigure != null) {
-            targetFigure.setMaterial(highlightMaterial);
+            targetFigure.highlightFigure(true, highlightColor);
         }
-        board[(int) position.width - 1][(int) position.height - 1].setMaterial(highlightMaterial);
+        board[(int) position.width - 1][(int) position.height - 1].highlightField(true, highlightColor);
     }
 
     private static void changeBackForPosition(Dimension2D position, List<Figure> figures, float fieldWidth,
@@ -214,7 +214,9 @@ public class MoveUtil {
         Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
         if (targetFigure != null) {
             targetFigure.changeMaterialToDefault();
+            targetFigure.highlightFigure(false, shineColor);
         }
+        board[(int) position.width - 1][(int) position.height - 1].highlightField(false, shineColor);
         board[(int) position.width - 1][(int) position.height - 1].setMaterialToDefault();
     }
 
@@ -282,7 +284,7 @@ public class MoveUtil {
 
     private static void highlightBack(List<Figure> figures, Dimension2D marked, float fieldWidth, MoveHistory moveHistory,
                                       ChessBoardPositions currentBoard, Dimension2D highlight, Cube[][] board,
-                                      Material redMaterial){
+                                      Color highlightColor){
         Figure markedFigure = getFigureForPosition(figures, marked, fieldWidth);
         if (markedFigure != null) {
             List<Dimension2D> potentialMoves = CheckersMoves.potentialMoves(markedFigure.getChessFigure(),
@@ -293,7 +295,7 @@ public class MoveUtil {
                     && move.width + 1 == highlight.width)) {
                 changeBackForPosition(highlight, figures, fieldWidth, board);
             } else {
-                highlightBackForPosition(highlight, figures, fieldWidth, board, redMaterial);
+                highlightBackForPosition(highlight, figures, fieldWidth, board, highlightColor);
             }
         }
     }

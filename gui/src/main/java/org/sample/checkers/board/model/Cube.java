@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.DepthTest;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -56,6 +57,15 @@ public class Cube extends MeshView {
 
     public void setDefaultMaterial(Material value) {
         this.DEFAULT_MATERIAL = value;
+    }
+
+    public void highlightField(boolean on, Color color) {
+        double power = on ? 0.9 : 1.0;
+        Image texture = EffectUtils.createImage(Color.rgb(0,0,0, power), on ? color : Color.BLACK);
+        PhongMaterial phongMaterial = (PhongMaterial) this.getMaterial();
+        PhongMaterial shine = new PhongMaterial(phongMaterial.getDiffuseColor());
+        shine.setSelfIlluminationMap(texture);
+        this.setMaterial(shine);
     }
 
     public Cube setMaterial(CubeMaterial material) {
