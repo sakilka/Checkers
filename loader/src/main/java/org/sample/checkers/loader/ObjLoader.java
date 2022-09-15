@@ -12,7 +12,7 @@ public class ObjLoader {
     public static Model loadModel(File f) throws FileNotFoundException, IOException {
         BufferedReader reader = new BufferedReader(new FileReader(f));
 
-        Model m = new Model();
+        Model m = new Model(f.getName().substring(0, f.getName().lastIndexOf('.')));
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("v ")) {

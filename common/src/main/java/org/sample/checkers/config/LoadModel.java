@@ -4,14 +4,16 @@ import org.sample.checkers.loader.ObjLoader;
 import org.sample.checkers.loader.model.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class LoadModel {
@@ -24,15 +26,24 @@ public class LoadModel {
                      @Value("org/sample/checkers/board/model/knight.obj")Resource knight,
                      @Value("org/sample/checkers/board/model/pawn.obj")Resource pawn,
                      @Value("org/sample/checkers/board/model/queen.obj")Resource queen,
-                     @Value("org/sample/checkers/board/model/rook.obj")Resource rook) throws IOException {
+                     @Value("org/sample/checkers/board/model/rook.obj")Resource rook)
+            throws InterruptedException, ExecutionException, TimeoutException {
+
         model = new HashMap<>(6);
 
-        model.put("bishop", ObjLoader.loadModel(bishop.getFile()));
-        model.put("king", ObjLoader.loadModel(king.getFile()));
-        model.put("knight", ObjLoader.loadModel(knight.getFile()));
-        model.put("pawn", ObjLoader.loadModel(pawn.getFile()));
-        model.put("queen", ObjLoader.loadModel(queen.getFile()));
-        model.put("rook", ObjLoader.loadModel(rook.getFile()));
+        ExecutorService EXEC = Executors.newCachedThreadPool();
+        List<Callable<Model>> tasks = new ArrayList<>();
+        for (final Resource resource: Stream.of(bishop, king, knight, queen, pawn, rook).collect(Collectors.toList())) {
+            Callable<Model> c = () -> ObjLoader.loadModel(resource.getFile());
+            tasks.add(c);
+        }
+
+        List<Future<Model>> results = EXEC.invokeAll(tasks);
+
+        for (Future<Model> result : results){
+            Model resultModel = result.get(2, TimeUnit.SECONDS);
+            model.put(resultModel.modelName, resultModel);
+        }
     }
 
     public Map<String, Model> getModel() {
