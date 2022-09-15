@@ -23,6 +23,7 @@ public class Cube extends MeshView {
     private static final float DEFAULT_DEPTH = 250;
 
     private Material DEFAULT_MATERIAL = null;
+    private boolean WHITE;
 
     public Cube() {
         this(DEFAULT_HEIGHT, DEFAULT_WIDTH, DEFAULT_DEPTH);
@@ -55,15 +56,24 @@ public class Cube extends MeshView {
         super.setDepthTest(DepthTest.ENABLE);
     }
 
-    public void setDefaultMaterial(Material value) {
+    public void setDefaultMaterial(Material value, boolean white) {
         this.DEFAULT_MATERIAL = value;
+        this.WHITE = white;
     }
 
     public void highlightField(boolean on, Color color) {
         double power = on ? 0.9 : 1.0;
         Image texture = EffectUtils.createImage(Color.rgb(0,0,0, power), on ? color : Color.BLACK);
         PhongMaterial phongMaterial = (PhongMaterial) this.getMaterial();
-        PhongMaterial shine = new PhongMaterial(phongMaterial.getDiffuseColor());
+        Color shineColor = ((PhongMaterial)DEFAULT_MATERIAL).getDiffuseColor();
+
+        if(WHITE) {
+            shineColor = shineColor.darker();
+        } else {
+            shineColor = shineColor.brighter();
+        }
+
+        PhongMaterial shine = new PhongMaterial(shineColor);
         shine.setSelfIlluminationMap(texture);
         this.setMaterial(shine);
     }

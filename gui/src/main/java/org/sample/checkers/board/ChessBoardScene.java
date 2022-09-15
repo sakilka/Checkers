@@ -158,7 +158,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 field.setTranslateZ((fieldZ * fieldDepth) - depthShift);
 
                 field.setMaterial(current);
-                field.setDefaultMaterial(current);
+                field.setDefaultMaterial(current, current == whiteMaterial);
                 board[fieldX][fieldZ] = field;
 
                 current = current == whiteMaterial ? blackMaterial : whiteMaterial;
