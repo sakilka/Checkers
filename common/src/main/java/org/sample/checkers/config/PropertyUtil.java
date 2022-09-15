@@ -7,6 +7,7 @@ public class PropertyUtil {
 
     private static CheckersConfiguration configuration;
     private static FiguresPositions figuresPositions;
+    private static LoadModel loadModel;
 
     public static CheckersConfiguration getConfig() {
         if(configuration == null) {
@@ -24,5 +25,14 @@ public class PropertyUtil {
         }
 
         return figuresPositions;
+    }
+
+    public static LoadModel getModel() {
+        if(loadModel == null) {
+            ApplicationContext context = new AnnotationConfigApplicationContext(LoadModel.class);
+            loadModel = context.getBean(LoadModel.class);
+        }
+
+        return loadModel;
     }
 }

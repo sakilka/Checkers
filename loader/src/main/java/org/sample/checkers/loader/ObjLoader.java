@@ -5,6 +5,7 @@ import org.sample.checkers.loader.model.Model;
 import org.sample.checkers.loader.model.Vector3f;
 
 import java.io.*;
+import java.time.Instant;
 
 public class ObjLoader {
 

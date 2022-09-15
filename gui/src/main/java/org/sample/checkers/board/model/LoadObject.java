@@ -3,6 +3,8 @@ package org.sample.checkers.board.model;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
+import org.sample.checkers.config.LoadModel;
+import org.sample.checkers.config.PropertyUtil;
 import org.sample.checkers.loader.ObjLoader;
 import org.sample.checkers.loader.model.Model;
 
@@ -11,15 +13,12 @@ import java.io.IOException;
 
 public class LoadObject extends MeshView {
 
-    public LoadObject(File f, int size) {
+    public LoadObject(String modelName, int size) {
 
         Model model = null;
-        try {
-            model = ObjLoader.loadModel(f);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+
+        LoadModel loadModel = PropertyUtil.getModel();
+        model = loadModel.getModel().get(modelName);
 
         TriangleMesh mesh = new TriangleMesh();
 

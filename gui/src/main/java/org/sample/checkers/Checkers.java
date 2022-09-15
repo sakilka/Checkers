@@ -23,6 +23,7 @@ import org.sample.checkers.mesh.components.SmartGroup;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import static org.sample.checkers.config.PropertyUtil.getConfig;
 
