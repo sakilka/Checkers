@@ -39,6 +39,18 @@ public class PawnMove implements CheckersMove {
                     potentialMoves.add(new Dimension2D(currentPosition.width, currentPosition.height + 1));
                 }
             }
+
+            if(currentPosition.width > 0 &&
+                    currentBoard.getSides()[(int) currentPosition.width-1][(int) currentPosition.height + 1]
+                            == side.oposite())  {
+                potentialMoves.add(new Dimension2D(currentPosition.width-1, currentPosition.height + 1));
+            }
+
+            if(currentPosition.width < 7 &&
+                    currentBoard.getSides()[(int) currentPosition.width+1][(int) currentPosition.height + 1]
+                            == side.oposite())  {
+                potentialMoves.add(new Dimension2D(currentPosition.width+1, currentPosition.height + 1));
+            }
         } else {
             if (isFirstMove(moveHistory, currentPosition)) {
                 if (((currentPosition.height - 1) >= 0) &&
@@ -56,18 +68,18 @@ public class PawnMove implements CheckersMove {
                     potentialMoves.add(new Dimension2D(currentPosition.width, currentPosition.height - 1));
                 }
             }
-        }
 
-        if(currentPosition.width >=0 &&
-                currentBoard.getSides()[(int) currentPosition.width-1][(int) currentPosition.height + 1]
-                        == side.oposite())  {
-            potentialMoves.add(new Dimension2D(currentPosition.width-1, currentPosition.height + 1));
-        }
+            if(currentPosition.width > 0 &&
+                    currentBoard.getSides()[(int) currentPosition.width-1][(int) currentPosition.height - 1]
+                            == side.oposite())  {
+                potentialMoves.add(new Dimension2D(currentPosition.width-1, currentPosition.height - 1));
+            }
 
-        if(currentPosition.width < 8 &&
-                currentBoard.getSides()[(int) currentPosition.width+1][(int) currentPosition.height + 1]
-                        == side.oposite())  {
-            potentialMoves.add(new Dimension2D(currentPosition.width+1, currentPosition.height + 1));
+            if(currentPosition.width < 7 &&
+                    currentBoard.getSides()[(int) currentPosition.width+1][(int) currentPosition.height - 1]
+                            == side.oposite())  {
+                potentialMoves.add(new Dimension2D(currentPosition.width+1, currentPosition.height - 1));
+            }
         }
 
         return potentialMoves;
