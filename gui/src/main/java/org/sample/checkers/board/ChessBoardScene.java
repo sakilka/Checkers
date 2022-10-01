@@ -19,6 +19,7 @@ import org.sample.checkers.board.action.MoveUtil;
 import org.sample.checkers.board.model.*;
 import org.sample.checkers.config.ChessBoardPositions;
 import org.sample.checkers.config.ChessFigure;
+import org.sample.checkers.config.ChessSide;
 import org.sample.checkers.config.MoveHistory;
 import org.sample.checkers.mesh.components.SmartGroup;
 
@@ -571,7 +572,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 anchorDistZ = deltaZ.get();
             } else if(event.getButton() == MouseButton.PRIMARY) {
                 marked = handlePrimaryClick(event, board, figures, fieldWidth, marked, highlight, getCurrentBoard(),
-                        moveHistory);
+                        moveHistory, boardSceneGroup);
             }
         });
 
@@ -599,12 +600,13 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     }
 
     private ChessBoardPositions getCurrentBoard() {
-        ChessBoardPositions chessBoardPositions = new ChessBoardPositions(new ChessFigure[8][8]);
+        ChessBoardPositions chessBoardPositions = new ChessBoardPositions(new ChessFigure[8][8], new ChessSide[8][8]);
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                chessBoardPositions.getPositions()[i][j] = getBoardFigure(board, figures, new Dimension2D(i+1,j+1),
+                chessBoardPositions.getPositions()[i][j] = getBoardFigure(figures, new Dimension2D(i+1,j+1),
                         fieldWidth);
+                chessBoardPositions.getSides()[i][j] = getBoardSide(figures, new Dimension2D(i+1,j+1), fieldWidth);
             }
         }
 

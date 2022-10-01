@@ -6,6 +6,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.event.EventTarget;
 import javafx.geometry.Point3D;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -28,8 +29,8 @@ public class MoveUtil {
     private static Color moveColor = Color.rgb(229,1,0, 0.8);
 
     public static Dimension2D handlePrimaryClick(MouseEvent event, Cube[][] board, List<Figure> figures, float fieldWidth,
-                                          Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
-                                                 MoveHistory moveHistory) {
+                                                 Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
+                                                 MoveHistory moveHistory, Group boardSceneGroup) {
         EventTarget target = event.getTarget();
 
         if (marked == null) {
@@ -76,12 +77,13 @@ public class MoveUtil {
             Figure targetFigure = getFigureForPosition(figures, marked, fieldWidth);
 
             if (targetFigure != null && highlight != null && highlight.width != 0 && highlight.height != 0) {
-                List<Dimension2D> potentialMoves = CheckersMoves.potentialMoves(targetFigure.getChessFigure(),
-                        targetFigure.getChessSide(), moveHistory, new Dimension2D(marked.width-1, marked.height-1),
-                        currentBoard);
+                List<Dimension2D> potentialMoves = CheckersMoveFactory.getMove(targetFigure.getChessFigure())
+                        .potentialMoves(targetFigure.getChessSide(), moveHistory,
+                                new Dimension2D(marked.width-1, marked.height-1), currentBoard);
 
                 if(potentialMoves.stream().anyMatch(position -> (position.width +1) == highlight.width
                         && (position.height + 1) == highlight.height)) {
+                    captureFigure(currentBoard, highlight, figures, fieldWidth, boardSceneGroup);
                     moveFigure(targetFigure, highlight, fieldWidth);
                     moveHistory.addMove(new ChessMove(highlight, marked));
                 }
@@ -102,11 +104,21 @@ public class MoveUtil {
     private static void highlightPotentialMoves(Dimension2D position, ChessFigure chessFigure, ChessSide chessSide,
                                                 ChessBoardPositions currentBoard, Cube[][] board, MoveHistory moveHistory) {
 
-        List<Dimension2D> potentialMoves = CheckersMoves.potentialMoves(chessFigure, chessSide, moveHistory,
-                new Dimension2D(position.width-1, position.height-1), currentBoard);
+        List<Dimension2D> potentialMoves = CheckersMoveFactory.getMove(chessFigure)
+                .potentialMoves(chessSide, moveHistory,  new Dimension2D(position.width-1, position.height-1),
+                        currentBoard);
 
         for(Dimension2D potentialMove : potentialMoves) {
             board[(int) potentialMove.width][(int) potentialMove.height].highlightField(true, highlightColor);
+        }
+    }
+
+    private static void captureFigure(ChessBoardPositions currentBoard, Dimension2D highlight, List<Figure> figures,
+            float fieldWidth, Group boardSceneGroup){
+        if(currentBoard.getPositions()[(int) highlight.width - 1][(int)highlight.height - 1] != null) {
+            Figure captured = getFigureForPosition(figures, highlight, fieldWidth);
+            boardSceneGroup.getChildren().remove(captured);
+            figures.remove(captured);
         }
     }
 
@@ -254,11 +266,11 @@ public class MoveUtil {
         return null;
     }
 
-    public static long getRelativePositionX(double positionX, float fieldWidth) {
+    private static long getRelativePositionX(double positionX, float fieldWidth) {
         return Math.round(((positionX - (fieldWidth/2)) / fieldWidth) + 5);
     }
 
-    public static long getRelativePositionY(double positionY, float fieldWidth) {
+    private static long getRelativePositionY(double positionY, float fieldWidth) {
         return Math.round(((positionY - (fieldWidth/2)) / fieldWidth) + 5);
     }
 
@@ -279,9 +291,9 @@ public class MoveUtil {
                                       Color highlightColor){
         Figure markedFigure = getFigureForPosition(figures, marked, fieldWidth);
         if (markedFigure != null) {
-            List<Dimension2D> potentialMoves = CheckersMoves.potentialMoves(markedFigure.getChessFigure(),
-                    markedFigure.getChessSide(), moveHistory,
-                    new Dimension2D(marked.width-1, marked.height-1), currentBoard);
+            List<Dimension2D> potentialMoves = CheckersMoveFactory.getMove(markedFigure.getChessFigure())
+                    .potentialMoves(markedFigure.getChessSide(), moveHistory,
+                            new Dimension2D(marked.width-1, marked.height-1), currentBoard);
 
             if(potentialMoves.stream().noneMatch(move -> highlight != null && move.height +1 == highlight.height
                     && move.width + 1 == highlight.width)) {
@@ -292,9 +304,15 @@ public class MoveUtil {
         }
     }
 
-    public static ChessFigure getBoardFigure(Cube[][] board, List<Figure> figures, Dimension2D position, float fieldWidth) {
+    public static ChessFigure getBoardFigure(List<Figure> figures, Dimension2D position, float fieldWidth) {
         Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
 
         return targetFigure == null ? null : targetFigure.getChessFigure();
+    }
+
+    public static ChessSide getBoardSide(List<Figure> figures, Dimension2D position, float fieldWidth) {
+        Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
+
+        return targetFigure == null ? null : targetFigure.getChessSide();
     }
 }

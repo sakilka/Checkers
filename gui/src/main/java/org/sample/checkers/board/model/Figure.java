@@ -1,19 +1,11 @@
 package org.sample.checkers.board.model;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Point3D;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import org.sample.checkers.config.ChessFigure;
 import org.sample.checkers.config.ChessSide;
-
-import java.io.File;
-import java.time.Instant;
 
 import static javafx.scene.transform.Rotate.Y_AXIS;
 import static org.sample.checkers.board.model.EffectUtils.createImage;

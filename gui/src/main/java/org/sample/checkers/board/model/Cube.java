@@ -64,7 +64,6 @@ public class Cube extends MeshView {
     public void highlightField(boolean on, Color color) {
         double power = on ? 0.9 : 1.0;
         Image texture = EffectUtils.createImage(Color.rgb(0,0,0, power), on ? color : Color.BLACK);
-        PhongMaterial phongMaterial = (PhongMaterial) this.getMaterial();
         Color shineColor = ((PhongMaterial)DEFAULT_MATERIAL).getDiffuseColor();
 
         if(WHITE) {
