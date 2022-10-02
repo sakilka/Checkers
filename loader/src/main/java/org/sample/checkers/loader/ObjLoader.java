@@ -1,16 +1,25 @@
 package org.sample.checkers.loader;
 
+import org.sample.checkers.loader.loaded.ModelFactory;
 import org.sample.checkers.loader.model.Face;
 import org.sample.checkers.loader.model.Model;
 import org.sample.checkers.loader.model.Vector3f;
 
-import java.io.*;
-import java.time.Instant;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class ObjLoader {
 
-    public static Model loadModel(File f) throws FileNotFoundException, IOException {
+    public static Model loadModel(File f) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(f));
+
+//        Model load = ModelFactory.getModel(f.getName().substring(0, f.getName().lastIndexOf('.')));
+//
+//        if(load.faces != null && load.normals!= null && load.vertices != null) {
+//            return load;
+//        }
 
         Model m = new Model(f.getName().substring(0, f.getName().lastIndexOf('.')));
         String line;

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,8 @@ public class LoadModel {
 
         model = new HashMap<>(6);
 
+        System.out.println("Start " + Instant.now());
+
         ExecutorService executor = Executors.newCachedThreadPool();
         List<Callable<Model>> tasks = new ArrayList<>();
         for (final Resource resource: Stream.of(bishop, king, knight, queen, pawn, rook).collect(Collectors.toList())) {
@@ -46,6 +49,7 @@ public class LoadModel {
         }
 
         executor.shutdown();
+        System.out.println("End " + Instant.now());
     }
 
     public Map<String, Model> getModel() {

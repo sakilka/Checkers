@@ -1,6 +1,12 @@
 package org.sample.checkers.loader.model;
 
-public class Face {
+import java.io.Serializable;
+
+public class Face implements Serializable {
+
+    //default serialVersion id
+    private static final long serialVersionUID = 1L;
+
     public Vector3f vertex = new Vector3f();
     public Vector3f normal = new Vector3f();
 
