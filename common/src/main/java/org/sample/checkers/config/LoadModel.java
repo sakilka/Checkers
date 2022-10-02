@@ -32,8 +32,6 @@ public class LoadModel {
 
         model = new HashMap<>(6);
 
-        System.out.println("Start " + Instant.now());
-
         ExecutorService executor = Executors.newCachedThreadPool();
         List<Callable<Model>> tasks = new ArrayList<>();
         for (final Resource resource: Stream.of(bishop, king, knight, queen, pawn, rook).collect(Collectors.toList())) {
@@ -49,7 +47,6 @@ public class LoadModel {
         }
 
         executor.shutdown();
-        System.out.println("End " + Instant.now());
     }
 
     public Map<String, Model> getModel() {
