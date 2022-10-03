@@ -4,12 +4,10 @@ import com.sun.javafx.geom.Dimension2D;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.EventTarget;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -26,13 +24,11 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.sample.checkers.config.ChessFigure.BISHOP;
-import static org.sample.checkers.config.ChessFigure.PAWN;
+import static org.sample.checkers.config.ChessFigure.*;
 import static org.sample.checkers.config.ChessSide.BLACK;
 import static org.sample.checkers.config.ChessSide.WHITE;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
-import static org.sample.checkers.config.PropertyUtil.getPositions;
 
 public class MoveUtil {
 
@@ -99,6 +95,8 @@ public class MoveUtil {
                     captureFigure(currentBoard, highlight, figures, fieldWidth, boardSceneGroup);
                     moveFigure(targetFigure, highlight, fieldWidth);
                     moveHistory.addMove(new ChessMove(highlight, marked));
+                    castling(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup,
+                            moveHistory);
                 }
             }
             changeBackAll(figures, fieldWidth, board);
@@ -177,6 +175,44 @@ public class MoveUtil {
                 targetFigure);
         animation.play();
     }
+
+    private static void castling(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight,
+                                 List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup,
+                                 MoveHistory moveHistory) {
+        if(targetFigure.getChessFigure() == KING &&
+                ((targetFigure.getChessSide() == WHITE && !moveHistory.isCastlingWhiteDone()) ||
+                        (targetFigure.getChessSide() == BLACK && !moveHistory.isCastlingBlackDone()))) {
+
+            long x = getRelativePositionX(targetFigure.getTranslateX(), fieldWidth);
+            ChessSide side = targetFigure.getChessSide();
+
+            if(Math.abs(highlight.width - x) > 1) {
+                if(highlight.width == 3){
+                    Dimension2D position = side == WHITE ? new Dimension2D(1,1) : new Dimension2D(1,8);
+                    Dimension2D target = side == WHITE ? new Dimension2D(4,1) : new Dimension2D(4,8);
+                    Figure castleFigure = getFigureForPosition(figures, position, fieldWidth);
+
+                    moveFigure(castleFigure, target, fieldWidth);
+                    moveHistory.addMove(new ChessMove(target, position));
+                } else {
+                    Dimension2D position = side == WHITE ? new Dimension2D(8,1) : new Dimension2D(8,8);
+                    Dimension2D target = side == WHITE ? new Dimension2D(6,1) : new Dimension2D(6,8);
+                    Figure castleFigure = getFigureForPosition(figures, position, fieldWidth);
+
+                    moveFigure(castleFigure, target, fieldWidth);
+                    moveHistory.addMove(new ChessMove(target, position));
+                }
+            }
+
+            if(side == WHITE) {
+                moveHistory.setCastlingWhiteDone(true);
+            } else {
+                moveHistory.setCastlingBlackDone(true);
+            }
+        }
+    }
+
+
 
     private static Timeline createTimeline(Point3D p1, Point3D p2, Node figure) {
         Timeline t = new Timeline();

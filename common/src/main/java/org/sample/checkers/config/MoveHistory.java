@@ -6,12 +6,13 @@ public class MoveHistory {
 
     private List<ChessMove> moves;
 
-    private boolean castlingDone;
+    private boolean castlingWhiteDone;
+    private boolean castlingBlackDone;
     private ChessSide onMove;
 
     public MoveHistory(List<ChessMove> moves) {
         this.moves = moves;
-        this.castlingDone = false;
+        this.castlingWhiteDone = false;
         this.onMove = ChessSide.WHITE;
     }
 
@@ -29,12 +30,20 @@ public class MoveHistory {
         onMove = onMove == ChessSide.WHITE ? ChessSide.BLACK : ChessSide.WHITE;
     }
 
-    public boolean isCastlingDone() {
-        return castlingDone;
+    public boolean isCastlingWhiteDone() {
+        return castlingWhiteDone;
     }
 
-    public void setCastlingDone(boolean castlingDone) {
-        this.castlingDone = castlingDone;
+    public void setCastlingWhiteDone(boolean castlingWhiteDone) {
+        this.castlingWhiteDone = castlingWhiteDone;
+    }
+
+    public boolean isCastlingBlackDone() {
+        return castlingBlackDone;
+    }
+
+    public void setCastlingBlackDone(boolean castlingBlackDone) {
+        this.castlingBlackDone = castlingBlackDone;
     }
 
     public ChessSide getOnMove() {
