@@ -4,23 +4,35 @@ import com.sun.javafx.geom.Dimension2D;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.EventTarget;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.sample.checkers.board.PromotionDialog;
 import org.sample.checkers.board.model.Cube;
 import org.sample.checkers.board.model.Figure;
+import org.sample.checkers.board.model.FigurePosition;
 import org.sample.checkers.config.*;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.sample.checkers.config.ChessFigure.BISHOP;
+import static org.sample.checkers.config.ChessFigure.PAWN;
+import static org.sample.checkers.config.ChessSide.BLACK;
+import static org.sample.checkers.config.ChessSide.WHITE;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionY;
+import static org.sample.checkers.config.PropertyUtil.getPositions;
 
 public class MoveUtil {
 
@@ -30,7 +42,7 @@ public class MoveUtil {
 
     public static Dimension2D handlePrimaryClick(MouseEvent event, Cube[][] board, List<Figure> figures, float fieldWidth,
                                                  Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
-                                                 MoveHistory moveHistory, Group boardSceneGroup) {
+                                                 MoveHistory moveHistory, Group boardSceneGroup, Stage mainStage) {
         EventTarget target = event.getTarget();
 
         if (marked == null) {
@@ -83,6 +95,7 @@ public class MoveUtil {
 
                 if(potentialMoves.stream().anyMatch(position -> (position.width +1) == highlight.width
                         && (position.height + 1) == highlight.height)) {
+                    promoteFigure(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup);
                     captureFigure(currentBoard, highlight, figures, fieldWidth, boardSceneGroup);
                     moveFigure(targetFigure, highlight, fieldWidth);
                     moveHistory.addMove(new ChessMove(highlight, marked));
@@ -110,6 +123,41 @@ public class MoveUtil {
 
         for(Dimension2D potentialMove : potentialMoves) {
             board[(int) potentialMove.width][(int) potentialMove.height].highlightField(true, highlightColor);
+        }
+    }
+
+    private static void promoteFigure(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight,
+                                      List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup){
+        if(targetFigure.getChessFigure() == PAWN) {
+            if(highlight.height == 8 && targetFigure.getChessSide() == WHITE) {
+                Optional<ChessFigure> promote = new PromotionDialog(mainStage).showDialog();
+                ChessFigure chessFigure = promote.orElse(ChessFigure.QUEEN);
+                PhongMaterial promotedMaterial = (PhongMaterial) targetFigure.getMaterial();
+                boardSceneGroup.getChildren().remove(targetFigure);
+                figures.remove(targetFigure);
+                Figure promotedFigure = new Figure(chessFigure.name().toLowerCase(Locale.ROOT),
+                        new FigurePosition(
+                        getAbsolutePositionX((int) highlight.width, fieldWidth), 0,
+                        getAbsolutePositionY((int) highlight.height, fieldWidth)),
+                        promotedMaterial, chessFigure, WHITE);
+                boardSceneGroup.getChildren().add(promotedFigure);
+                figures.add(promotedFigure);
+            }
+
+            if(highlight.height == 1 && targetFigure.getChessSide() == BLACK) {
+                Optional<ChessFigure> promote = new PromotionDialog(mainStage).showDialog();
+                ChessFigure chessFigure = promote.orElse(ChessFigure.QUEEN);
+                PhongMaterial promotedMaterial = (PhongMaterial) targetFigure.getMaterial();
+                boardSceneGroup.getChildren().remove(targetFigure);
+                figures.remove(targetFigure);
+                Figure promotedFigure = new Figure(chessFigure.name().toLowerCase(Locale.ROOT),
+                        new FigurePosition(
+                                getAbsolutePositionX((int) highlight.width, fieldWidth), 0,
+                                getAbsolutePositionY((int) highlight.height, fieldWidth)),
+                        promotedMaterial, chessFigure, BLACK);
+                boardSceneGroup.getChildren().add(promotedFigure);
+                figures.add(promotedFigure);
+            }
         }
     }
 

@@ -15,7 +15,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import org.sample.checkers.board.action.MoveUtil;
 import org.sample.checkers.board.model.*;
 import org.sample.checkers.config.ChessBoardPositions;
 import org.sample.checkers.config.ChessFigure;
@@ -23,7 +22,6 @@ import org.sample.checkers.config.ChessSide;
 import org.sample.checkers.config.MoveHistory;
 import org.sample.checkers.mesh.components.SmartGroup;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -572,7 +570,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 anchorDistZ = deltaZ.get();
             } else if(event.getButton() == MouseButton.PRIMARY) {
                 marked = handlePrimaryClick(event, board, figures, fieldWidth, marked, highlight, getCurrentBoard(),
-                        moveHistory, boardSceneGroup);
+                        moveHistory, boardSceneGroup, mainStage);
             }
         });
 
