@@ -5,6 +5,8 @@ import com.sun.javafx.geom.Dimension2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.sample.checkers.config.ChessSide.WHITE;
+
 public class PawnMove implements CheckersMove {
 
     //Pešiaci majú najzložitejšie pravidlá pohybu:
@@ -21,7 +23,9 @@ public class PawnMove implements CheckersMove {
     public List<Dimension2D> potentialMoves(ChessSide side, MoveHistory moveHistory, Dimension2D currentPosition, ChessBoardPositions currentBoard) {
         List<Dimension2D> potentialMoves = new ArrayList<>();
 
-        if(side == ChessSide.WHITE) {
+        enPassant(potentialMoves, side, moveHistory, currentBoard, currentPosition);
+
+        if(side == WHITE) {
 
             if (isFirstMove(moveHistory, currentPosition)) {
                 if ((((int) currentPosition.height + 1) < 8) &&
@@ -83,6 +87,49 @@ public class PawnMove implements CheckersMove {
         }
 
         return potentialMoves;
+    }
+
+    // Keď pešiak urobí dvojkrokový postup zo svojej východiskovej pozície a na poli vedľa cieľového poľa v susednom súbore je súperov pešiak,
+    // potom ho môže súperov pešiak zajať en passant ("prechádzajúc") a posunúť sa na pole,
+    // cez ktoré pešiak prešiel. Toto je možné vykonať iba na ťahu bezprostredne nasledujúcom po postupe nepriateľského pešiaka o dve políčka;
+    // inak právo na to zaniká.
+    private void enPassant(List<Dimension2D> potentialMoves, ChessSide side, MoveHistory moveHistory, ChessBoardPositions currentBoard, Dimension2D currentPosition) {
+        if(side == WHITE) {
+            if(currentPosition.height == 4
+                    && lastMoveOppositePawnTwoStepsAndIsNear(side, moveHistory, currentBoard, currentPosition)){
+                potentialMoves.add(getEnPassant(side, moveHistory));
+            }
+        } else {
+            if(currentPosition.height == 3
+                    && lastMoveOppositePawnTwoStepsAndIsNear(side, moveHistory, currentBoard, currentPosition)){
+                potentialMoves.add(getEnPassant(side, moveHistory));
+            }
+        }
+    }
+
+    private Dimension2D getEnPassant(ChessSide side, MoveHistory moveHistory) {
+        ChessMove lastMove = moveHistory.getMoves().get(moveHistory.getMoves().size() - 1);
+
+        if(side == WHITE) {
+            return new Dimension2D(lastMove.getPosition().width -1, lastMove.getPosition().height);
+        } else {
+            return new Dimension2D(lastMove.getPosition().width -1, lastMove.getPosition().height - 2);
+        }
+    }
+
+    private boolean lastMoveOppositePawnTwoStepsAndIsNear(ChessSide side, MoveHistory moveHistory,
+                                                          ChessBoardPositions currentBoard, Dimension2D currentPosition) {
+        ChessMove lastMove = moveHistory.getMoves().get(moveHistory.getMoves().size() - 1);
+        if(currentBoard.getPositions()[(int) lastMove.getPosition().width-1][(int)lastMove.getPosition().height-1]
+                == ChessFigure.PAWN && currentBoard.getSides()[(int) lastMove.getPosition().width-1]
+                [(int)lastMove.getPosition().height-1] == side.oposite()) {
+            if(Math.abs(lastMove.getPreviousPosition().height - lastMove.getPosition().height) == 2){
+                return ((currentPosition.height+1) == (lastMove.getPosition().height))
+                        && (Math.abs((currentPosition.width + 1) - lastMove.getPosition().width) == 1);
+            }
+        }
+
+        return false;
     }
 
     private static boolean isFirstMove(MoveHistory moveHistory, Dimension2D currentPosition) {

@@ -97,6 +97,8 @@ public class MoveUtil {
                     moveHistory.addMove(new ChessMove(highlight, marked));
                     castling(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup,
                             moveHistory);
+                    enPassant(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup,
+                            moveHistory);
                 }
             }
             changeBackAll(figures, fieldWidth, board);
@@ -212,7 +214,19 @@ public class MoveUtil {
         }
     }
 
+    private static void enPassant(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight, List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup, MoveHistory moveHistory) {
+        if(targetFigure.getChessFigure() == PAWN) {
+            ChessMove lastMove = moveHistory.getMoves().get(moveHistory.getMoves().size() -1);
 
+            if(Math.abs(lastMove.getPosition().width - lastMove.getPreviousPosition().width) == 1
+            && Math.abs(lastMove.getPosition().height - lastMove.getPreviousPosition().height) == 1){
+                if(currentBoard.getPositions()[(int) highlight.width - 1][(int)highlight.height - 1] == null) {
+                    captureFigure(currentBoard, new Dimension2D(lastMove.getPosition().width,
+                            lastMove.getPreviousPosition().height), figures, fieldWidth, boardSceneGroup);
+                }
+            }
+        }
+    }
 
     private static Timeline createTimeline(Point3D p1, Point3D p2, Node figure) {
         Timeline t = new Timeline();
