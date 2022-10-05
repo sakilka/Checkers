@@ -28,7 +28,7 @@ public class RookMove implements CheckersMove {
             potentialMoves.add(new Dimension2D(currentPosition.width+shift, currentPosition.height));
         }
 
-        for(int shift = 1; (currentPosition.width - shift) > 0; shift ++) {
+        for(int shift = 1; (currentPosition.width - shift) >= 0; shift ++) {
 
             if(currentBoard.getPositions()[(int) currentPosition.width-shift][(int) currentPosition.height] != null) {
 
@@ -58,7 +58,7 @@ public class RookMove implements CheckersMove {
             potentialMoves.add(new Dimension2D(currentPosition.width, currentPosition.height+shift));
         }
 
-        for(int shift = 1; (currentPosition.height - shift) > 0; shift ++) {
+        for(int shift = 1; (currentPosition.height - shift) >= 0; shift ++) {
 
             if(currentBoard.getPositions()[(int) currentPosition.width][(int) currentPosition.height- shift] != null) {
 
