@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.sample.checkers.board.CheckDialog;
 import org.sample.checkers.board.PromotionDialog;
 import org.sample.checkers.board.model.Cube;
 import org.sample.checkers.board.model.Figure;
@@ -24,7 +25,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.sample.checkers.config.ChessFigure.*;
+import static org.sample.checkers.config.ChessFigure.KING;
+import static org.sample.checkers.config.ChessFigure.PAWN;
 import static org.sample.checkers.config.ChessSide.BLACK;
 import static org.sample.checkers.config.ChessSide.WHITE;
 import static org.sample.checkers.config.FiguresPositions.getAbsolutePositionX;
@@ -99,6 +101,7 @@ public class MoveUtil {
                             moveHistory);
                     enPassant(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup,
                             moveHistory);
+                    checkAndCheckmate(moveHistory, mainStage);
                 }
             }
             changeBackAll(figures, fieldWidth, board);
@@ -229,6 +232,163 @@ public class MoveUtil {
                             lastMove.getPreviousPosition().height), figures, fieldWidth, boardSceneGroup);
                 }
             }
+        }
+    }
+
+    //Kontrola a mat
+    //Keď je kráľ pod bezprostredným útokom, hovorí sa, že je pod kontrolou.
+    // Ťah v reakcii na kontrolu je legálny iba vtedy, ak vedie k pozícii, v ktorej kráľ už nie je v šachu.
+    // To môže zahŕňať zachytenie kontrolného kusu;
+    // vloženie figúry medzi kontrolnú figúrku a kráľa
+    // (čo je možné len vtedy, ak je útočiacou figúrkou dáma, veža alebo strelec a medzi ňou a kráľom je pole);
+    // alebo presunúť kráľa na pole, kde nie je napadnutý. Rošáda nie je prípustnou odpoveďou na šek.[1]
+    //
+    //Cieľom hry je dať súperovi mat; k tomu dochádza, keď je súperov kráľ v šachu a neexistuje žiadny legálny spôsob,
+    // ako ho dostať mimo kontrolu. Nikdy nie je legálne, aby hráč urobil ťah,
+    // ktorý postaví alebo nechá vlastného kráľa hráča v šachu.
+    // V príležitostných hrách je bežné oznámiť „check“ pri uvedení súperovho kráľa do šachu,
+    // ale pravidlá šachu to nevyžadujú a na turnajoch sa to zvyčajne nerobí.[2]
+    private static void checkAndCheckmate(MoveHistory moveHistory, Stage mainStage) {
+        ChessBoardPositions currentBoard = moveHistory.getCurrentBoardFromHistory();
+
+        boolean check = false;
+        boolean checkmate = false;
+        ChessSide side = BLACK;
+
+        for(int width = 0; width <8 ; width++) {
+            for (int heigth = 0; heigth < 8; heigth++) {
+                if(currentBoard.getPositions()[width][heigth] == KING){
+                    ChessSide kingSide = currentBoard.getSides()[width][heigth];
+
+                    if(checkmate(kingSide, currentBoard, moveHistory, new Dimension2D(width, heigth))) {
+                        checkmate = true;
+                        side = kingSide;
+                    }
+
+                    if (check(kingSide, currentBoard, moveHistory, new Dimension2D(width, heigth))) {
+                        check = true;
+                        side = kingSide;
+                    }
+                }
+            }
+        }
+
+        if(checkmate) {
+            new CheckDialog(mainStage, "Checkmate " + side).showDialog();
+        } else if (check) {
+            new CheckDialog(mainStage, "Check " + side).showDialog();
+        }
+    }
+
+    private static boolean check(ChessSide side, ChessBoardPositions currentBoard, MoveHistory moveHistory,
+                                 Dimension2D currentPosition){
+        for(int width = 0; width <8 ; width++) {
+            for (int heigth = 0; heigth <8; heigth++) {
+                if(side.oposite() == currentBoard.getSides()[width][heigth]) {
+                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    Dimension2D checkPosition = new Dimension2D(width, heigth);
+
+                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
+                        continue;
+                    }
+
+                    List<Dimension2D> potentialMoves = CheckersMoveFactory
+                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, checkPosition, currentBoard);
+                    if(potentialMoves.stream().anyMatch(move -> move.width == currentPosition.width &&
+                            move.height == currentPosition.height)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean checkmate(ChessSide side, ChessBoardPositions currentBoard, MoveHistory moveHistory,
+                                 Dimension2D currentPosition){
+        for(int width = 0; width <8 ; width++) {
+            for (int heigth = 0; heigth <8; heigth++) {
+                if(side.oposite() == currentBoard.getSides()[width][heigth]) {
+                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    Dimension2D checkPosition = new Dimension2D(width, heigth);
+
+                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
+                        continue;
+                    }
+
+                    List<Dimension2D> potentialMoves = CheckersMoveFactory
+                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, checkPosition, currentBoard);
+                    if(potentialMoves.stream().anyMatch(move -> move.width == currentPosition.width &&
+                            move.height == currentPosition.height)) {
+
+                        if(!existTurnFromCheck(side.oposite(), currentBoard, moveHistory, currentPosition)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean existTurnFromCheck(ChessSide side, ChessBoardPositions currentBoard,
+                                                 MoveHistory moveHistory, Dimension2D kingPosition) {
+        for(int width = 0; width <8 ; width++) {
+            for (int heigth = 0; heigth <8; heigth++) {
+                if(side.oposite() == currentBoard.getSides()[width][heigth]) {
+                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    Dimension2D helpPosition = new Dimension2D(width, heigth);
+
+                    List<Dimension2D> potentialMoves = CheckersMoveFactory
+                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, helpPosition, currentBoard);
+
+                    for(Dimension2D potentialMove : potentialMoves) {
+                        ChessBoardPositions potentialBoard = moveHistory
+                                .getCurrentBoardFromHistoryAndWithMove(new ChessMove(new Dimension2D(width +1, heigth +1),
+                                new Dimension2D(potentialMove.width +1, potentialMove.height +1)));
+                        if(!stillInCheck(side.oposite(), potentialBoard, moveHistory, kingPosition)){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean stillInCheck(ChessSide side, ChessBoardPositions currentBoard, MoveHistory moveHistory,
+                                        Dimension2D kingPosition) {
+        for(int width = 0; width <8 ; width++) {
+            for (int heigth = 0; heigth <8; heigth++) {
+                if(side.oposite() == currentBoard.getSides()[width][heigth]) {
+                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    Dimension2D checkPosition = new Dimension2D(width, heigth);
+
+                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
+                        continue;
+                    }
+
+                    List<Dimension2D> potentialMoves = CheckersMoveFactory
+                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, checkPosition, currentBoard);
+                    if(potentialMoves.stream().anyMatch(move -> move.width == kingPosition.width &&
+                            move.height == kingPosition.height)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean kingInStartPosition(int width, int height, ChessSide side) {
+        if(side == BLACK){
+            return width == 4 && height == 7;
+        } else {
+            return width == 4 && height == 0;
         }
     }
 
