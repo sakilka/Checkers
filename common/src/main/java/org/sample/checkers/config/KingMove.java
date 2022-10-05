@@ -26,9 +26,10 @@ public class KingMove  implements CheckersMove {
         //Rošáda je stále povolená, ak je veža pod útokom, alebo ak veža prekročí napadnuté pole.x
         if((side == WHITE && !moveHistory.isCastlingWhiteDone())
                 || (side == BLACK && !moveHistory.isCastlingBlackDone())) {
+
             if(!kingNotMove(side, moveHistory, currentPosition)
-                    || !leftRookNotMove(side, moveHistory, currentBoard)
-                    || !rightRookNotMove(side, moveHistory, currentBoard)) {
+                    || (!leftRookNotMove(side, moveHistory, currentBoard)
+                    && !rightRookNotMove(side, moveHistory, currentBoard))) {
                 if(side == WHITE){
                     moveHistory.setCastlingWhiteDone(true);
                 } else {
@@ -145,7 +146,7 @@ public class KingMove  implements CheckersMove {
                         &&  move.getPreviousPosition().height == 1);
             }
         } else {
-            if(currentBoard.getPositions()[7][0] == ChessFigure.ROOK) {
+            if(currentBoard.getPositions()[0][7] == ChessFigure.ROOK) {
                 return moveHistory.getMoves().stream().noneMatch(move -> move.getPreviousPosition().width == 8
                         &&  move.getPreviousPosition().height == 1);
             }
@@ -194,13 +195,14 @@ public class KingMove  implements CheckersMove {
             for (int heigth = 0; heigth <8; heigth++) {
                 if(side.oposite() == currentBoard.getSides()[width][heigth]) {
                     ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    Dimension2D checkPosition = new Dimension2D(width, heigth);
 
-                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side) ){
+                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
                         continue;
                     }
 
                     List<Dimension2D> potentialMoves = CheckersMoveFactory
-                            .getMove(figure).potentialMoves(side, moveHistory, currentPosition, currentBoard);
+                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, checkPosition, currentBoard);
                     if(potentialMoves.stream().noneMatch(move -> move.width == currentPosition.width &&
                             move.height == currentPosition.height)) {
                         return true;
@@ -213,7 +215,7 @@ public class KingMove  implements CheckersMove {
     }
 
     private static boolean kingInStartPosition(int width, int height, ChessSide side) {
-        if(side == WHITE){
+        if(side == BLACK){
             return width == 4 && height == 7;
         } else {
             return width == 4 && height == 0;
@@ -227,14 +229,14 @@ public class KingMove  implements CheckersMove {
             for (int heigth = 0; heigth <8; heigth++) {
                 if(side.oposite() == currentBoard.getSides()[width][heigth]) {
                     ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    Dimension2D checkPosition = new Dimension2D(width, heigth);
 
-                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side) ){
+                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
                         continue;
                     }
 
                     List<Dimension2D> potentialMoves = CheckersMoveFactory
-                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, new Dimension2D(width, heigth),
-                                    currentBoard);
+                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, checkPosition, currentBoard);
                     if(side == WHITE && potentialMoves.stream().anyMatch(move -> (move.width == 2 &&
                             move.height == 1) || (move.width == 3 &&
                             move.height == 1) || (move.width == 4 &&
@@ -259,13 +261,14 @@ public class KingMove  implements CheckersMove {
             for (int heigth = 0; heigth <8; heigth++) {
                 if(side.oposite() == currentBoard.getSides()[width][heigth]) {
                     ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    Dimension2D checkPosition = new Dimension2D(width, heigth);
 
-                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side) ){
+                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite())){
                         continue;
                     }
 
                     List<Dimension2D> potentialMoves = CheckersMoveFactory
-                            .getMove(figure).potentialMoves(side, moveHistory, currentPosition, currentBoard);
+                            .getMove(figure).potentialMoves(side.oposite(), moveHistory, checkPosition, currentBoard);
                     if(side == WHITE && potentialMoves.stream().anyMatch(move -> (move.width == 6 &&
                             move.height == 1) || (move.width == 7 && move.height == 1))) {
                         return true;

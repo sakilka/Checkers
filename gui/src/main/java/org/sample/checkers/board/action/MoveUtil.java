@@ -208,13 +208,17 @@ public class MoveUtil {
 
             if(side == WHITE) {
                 moveHistory.setCastlingWhiteDone(true);
+                moveHistory.setOnMove(BLACK);
             } else {
                 moveHistory.setCastlingBlackDone(true);
+                moveHistory.setOnMove(WHITE);
             }
         }
     }
 
-    private static void enPassant(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight, List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup, MoveHistory moveHistory) {
+    private static void enPassant(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight,
+                                  List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup,
+                                  MoveHistory moveHistory) {
         if(targetFigure.getChessFigure() == PAWN) {
             ChessMove lastMove = moveHistory.getMoves().get(moveHistory.getMoves().size() -1);
 
