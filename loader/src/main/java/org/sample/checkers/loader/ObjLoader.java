@@ -1,6 +1,5 @@
 package org.sample.checkers.loader;
 
-import org.sample.checkers.loader.loaded.ModelFactory;
 import org.sample.checkers.loader.model.Face;
 import org.sample.checkers.loader.model.Model;
 import org.sample.checkers.loader.model.Vector3f;

@@ -16,22 +16,20 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.sample.checkers.board.ChessBoardScene;
 import org.sample.checkers.board.model.BoardPosition;
-import org.sample.checkers.config.PropertyUtil;
 import org.sample.checkers.menu.RightPanel;
+import org.sample.checkers.menu.controller.MenuController;
 import org.sample.checkers.mesh.components.SmartGroup;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
-import java.time.Instant;
 
 import static org.sample.checkers.config.PropertyUtil.getConfig;
 
 @ComponentScan
 public class Checkers extends Application {
-
-    final BorderPane root = new BorderPane();
 
     private double anchorX;
     private double anchorY;
@@ -45,10 +43,17 @@ public class Checkers extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");
-        Scene scene = new Scene(root, getConfig().getWidth(), getConfig().getHeight());
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        initializeScene(stage);
+        stage.show();
+    }
 
-        MenuBar menu = (MenuBar) loadFXML("menu");
+    public static void initializeScene(Stage stage) throws IOException {
+        final BorderPane root = new BorderPane();
+        Scene scene = new Scene(root, getConfig().getWidth(), getConfig().getHeight());
+        scene.getStylesheets().add(Checkers.class.getResource("styles.css").toExternalForm());
+
+        MenuBar menu = (MenuBar) loadFXML("menu", stage);
+
         root.setTop(menu);
 
         SplitPane content = new SplitPane();
@@ -59,7 +64,7 @@ public class Checkers extends Application {
                 SceneAntialiasing.BALANCED, boardPosition);
 
         StackPane boardPane = new StackPane(boardScene);
-        boardPane.setStyle("-fx-background-color: silver;");
+        boardPane.setStyle("-fx-background-color: green;");
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
         splitPaneDividerPosition.set((scene.getWidth() - getConfig().getRightPanelWidth()) / scene.getWidth());
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
@@ -96,13 +101,27 @@ public class Checkers extends Application {
 
         root.setCenter(content);
         rightPanel.disableDrag(content);
-
         stage.setScene(scene);
-        stage.show();
     }
 
-    private static Parent loadFXML(String fxml) throws IOException {
+    private static Parent loadFXML(String fxml, Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Checkers.class.getResource(fxml + ".fxml"));
+        fxmlLoader.setControllerFactory(new Callback<Class<?>, Object>() {
+            @Override
+            public Object call(Class<?> controllerClass) {
+                if (controllerClass == MenuController.class) {
+                    MenuController controller = new MenuController();
+                    controller.setStage(stage);
+                    return controller ;
+                } else {
+                    try {
+                        return controllerClass.newInstance();
+                    } catch (Exception exc) {
+                        throw new RuntimeException(exc); // just bail
+                    }
+                }
+            }
+        });
         return fxmlLoader.load();
     }
 
