@@ -14,6 +14,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.board.ChessBoardScene;
 import org.sample.checkers.board.model.BoardPosition;
@@ -66,6 +67,7 @@ public class Checkers extends Application {
                 shownRightPanel, boardScene, boardPosition);
         boardScene.widthProperty().bind(scene.widthProperty().subtract(getConfig().getRightPanelWidth()));
         boardScene.heightProperty().bind(scene.heightProperty());
+        boardScene.setFill(Color.rgb(0,100,0, 1));
 
         content.getItems().addAll(boardPane, rightPanel);
         content.getDividers().get(0).positionProperty().bindBidirectional(splitPaneDividerPosition);

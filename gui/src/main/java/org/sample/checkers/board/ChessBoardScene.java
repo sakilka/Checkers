@@ -456,7 +456,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 whitePawnFour, whitePawnFive, whitePawnSix, whitePawnSeven, whitePawnEight).collect(Collectors.toList()));
 
         //black
-        Color blackColor = Color.DARKGREY;
+        Color blackColor = Color.DIMGRAY;
 
         Figure blackBishopFirst = new Figure("bishop", new FigurePosition(
                 getAbsolutePositionX(getPositions().getChessBlackBishopFirstY(), fieldWidth), 0,
