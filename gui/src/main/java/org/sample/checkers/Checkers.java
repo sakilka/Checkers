@@ -32,15 +32,6 @@ import static org.sample.checkers.config.PropertyUtil.getConfig;
 @ComponentScan
 public class Checkers extends Application {
 
-    private double anchorX;
-    private double anchorY;
-
-    private double anchorAngleX = 0;
-    private double anchorAngleY = 0;
-
-    private DoubleProperty angleX = new SimpleDoubleProperty(0);
-    private DoubleProperty angleY = new SimpleDoubleProperty(0);
-
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");

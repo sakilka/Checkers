@@ -15,7 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.board.model.BoardPosition;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
