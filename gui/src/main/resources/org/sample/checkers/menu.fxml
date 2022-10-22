@@ -4,11 +4,20 @@
 <MenuBar fx:id="menuBar" onKeyPressed="#handleKeyInput" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          fx:controller="org.sample.checkers.menu.controller.MenuController">
+    <fx:define>
+        <ToggleGroup fx:id="toggleGroupGame"/>
+    </fx:define>
     <menus>
         <Menu text="File">
             <items>
                 <MenuItem text="New" onAction="#newAction"/>
                 <MenuItem text="Exit" onAction="#quitAction"/>
+            </items>
+        </Menu>
+        <Menu text="Game">
+            <items>
+                <RadioMenuItem text="Chess" selected="true" toggleGroup="$toggleGroupGame" onAction="#chessInit"/>
+                <RadioMenuItem text="Checkers" toggleGroup="$toggleGroupGame" onAction="#checkersInit"/>
             </items>
         </Menu>
         <Menu text="Help">

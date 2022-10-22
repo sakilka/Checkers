@@ -12,11 +12,12 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.sample.checkers.board.ChessBoardScene;
 import org.sample.checkers.board.model.BoardPosition;
 import org.sample.checkers.menu.RightPanel;
@@ -47,14 +48,10 @@ public class Checkers extends Application {
         stage.show();
     }
 
-    public static void initializeScene(Stage stage) throws IOException {
+    private void initializeScene(Stage stage) throws IOException {
         final BorderPane root = new BorderPane();
         Scene scene = new Scene(root, getConfig().getWidth(), getConfig().getHeight());
         scene.getStylesheets().add(Checkers.class.getResource("styles.css").toExternalForm());
-
-        MenuBar menu = (MenuBar) loadFXML("menu", stage);
-
-        root.setTop(menu);
 
         SplitPane content = new SplitPane();
 
@@ -64,7 +61,7 @@ public class Checkers extends Application {
                 SceneAntialiasing.BALANCED, boardPosition);
 
         StackPane boardPane = new StackPane(boardScene);
-        boardPane.setStyle("-fx-background-color: green;");
+        boardPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,100,0, 1), null, null)));
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
         splitPaneDividerPosition.set((scene.getWidth() - getConfig().getRightPanelWidth()) / scene.getWidth());
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
@@ -76,6 +73,9 @@ public class Checkers extends Application {
 
         content.getItems().addAll(boardPane, rightPanel);
         content.getDividers().get(0).positionProperty().bindBidirectional(splitPaneDividerPosition);
+
+        MenuBar menu = (MenuBar) loadFXML("menu", stage, boardScene, boardPane, boardPosition);
+        root.setTop(menu);
 
         splitPaneDividerPosition.addListener((observable, oldValue, newValue) -> {
             if (rightPanel.isMouseDragOnDivider()) {
@@ -104,21 +104,26 @@ public class Checkers extends Application {
         stage.setScene(scene);
     }
 
-    private static Parent loadFXML(String fxml, Stage stage) throws IOException {
+    public static ChessBoardScene newGame(Stage stage, BoardPosition boardPosition){
+        return new ChessBoardScene(stage, new SmartGroup(),
+                getConfig().getWidth() - getConfig().getRightPanelWidth(), getConfig().getHeight(), true,
+                SceneAntialiasing.BALANCED, boardPosition);
+    }
+
+    private static Parent loadFXML(String fxml, Stage stage, SubScene boardScene, StackPane boardPane,
+                                   BoardPosition boardPosition) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Checkers.class.getResource(fxml + ".fxml"));
-        fxmlLoader.setControllerFactory(new Callback<Class<?>, Object>() {
-            @Override
-            public Object call(Class<?> controllerClass) {
-                if (controllerClass == MenuController.class) {
-                    MenuController controller = new MenuController();
-                    controller.setStage(stage);
-                    return controller ;
-                } else {
-                    try {
-                        return controllerClass.newInstance();
-                    } catch (Exception exc) {
-                        throw new RuntimeException(exc); // just bail
-                    }
+        fxmlLoader.setControllerFactory(controllerClass -> {
+            if (controllerClass == MenuController.class) {
+                MenuController controller = new MenuController();
+                controller.setStage(stage);
+                controller.setBoardPosition(boardPosition);
+                return controller ;
+            } else {
+                try {
+                    return controllerClass.newInstance();
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
                 }
             }
         });
