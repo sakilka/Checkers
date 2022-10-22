@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <MenuBar fx:id="menuBar" onKeyPressed="#handleKeyInput" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
-         fx:controller="org.sample.checkers.menu.controller.MenuController">
+         fx:controller="org.sample.checkers.chess.menu.controller.MenuController">
     <fx:define>
         <ToggleGroup fx:id="toggleGroupGame"/>
     </fx:define>

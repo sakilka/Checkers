@@ -1,18 +1,21 @@
 package org.sample.checkers.config;
 
+import org.sample.checkers.config.BoardConfiguration;
+import org.sample.checkers.config.chess.FiguresPositions;
+import org.sample.checkers.config.chess.LoadModel;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class PropertyUtil {
 
-    private static CheckersConfiguration configuration;
+    private static BoardConfiguration configuration;
     private static FiguresPositions figuresPositions;
     private static LoadModel loadModel;
 
-    public static CheckersConfiguration getConfig() {
+    public static BoardConfiguration getConfig() {
         if(configuration == null) {
-            ApplicationContext context = new AnnotationConfigApplicationContext(CheckersConfiguration.class);
-            configuration = context.getBean(CheckersConfiguration.class);
+            ApplicationContext context = new AnnotationConfigApplicationContext(BoardConfiguration.class);
+            configuration = context.getBean(BoardConfiguration.class);
         }
 
         return configuration;

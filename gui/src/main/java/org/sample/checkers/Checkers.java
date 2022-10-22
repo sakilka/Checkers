@@ -18,11 +18,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.sample.checkers.board.ChessBoardScene;
-import org.sample.checkers.board.model.BoardPosition;
-import org.sample.checkers.menu.RightPanel;
-import org.sample.checkers.menu.controller.MenuController;
-import org.sample.checkers.mesh.components.SmartGroup;
+import org.sample.checkers.chess.BoardPosition;
+import org.sample.checkers.chess.ChessBoardScene;
+import org.sample.checkers.chess.components.SmartGroup;
+import org.sample.checkers.chess.menu.RightPanel;
+import org.sample.checkers.chess.menu.controller.MenuController;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
