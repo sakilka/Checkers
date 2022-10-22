@@ -14,12 +14,6 @@ public class ObjLoader {
     public static Model loadModel(File f) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(f));
 
-//        Model load = ModelFactory.getModel(f.getName().substring(0, f.getName().lastIndexOf('.')));
-//
-//        if(load.faces != null && load.normals!= null && load.vertices != null) {
-//            return load;
-//        }
-
         Model m = new Model(f.getName().substring(0, f.getName().lastIndexOf('.')));
         String line;
         while ((line = reader.readLine()) != null) {
