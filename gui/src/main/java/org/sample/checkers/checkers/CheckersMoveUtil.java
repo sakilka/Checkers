@@ -182,7 +182,7 @@ public class CheckersMoveUtil {
                 }
             }
         } else {
-            //TODO
+            //TODO queen jump
         }
     }
 
