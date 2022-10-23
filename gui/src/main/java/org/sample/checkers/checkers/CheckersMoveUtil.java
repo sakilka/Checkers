@@ -90,8 +90,8 @@ public class CheckersMoveUtil {
 
                 if(potentialMoves.stream().anyMatch(position -> (position.width +1) == highlight.width
                         && (position.height + 1) == highlight.height)) {
-                    promoteFigure(targetCheckersFigure, currentBoard, highlight, checkersFigures, fieldWidth, mainStage, boardSceneGroup);
                     jumpFigure(targetCheckersFigure, checkersMoveHistory, highlight, checkersFigures, fieldWidth, boardSceneGroup);
+                    promoteFigure(targetCheckersFigure, highlight, checkersFigures, fieldWidth, boardSceneGroup);
                     moveFigure(targetCheckersFigure, highlight, fieldWidth);
                     checkersMoveHistory.addMove(new CheckersMovePosition(highlight, marked));
                 }
@@ -121,8 +121,8 @@ public class CheckersMoveUtil {
         }
     }
 
-    private static void promoteFigure(CheckersFigureModel targetChessFigure, CheckersBoardPositions currentBoard, Dimension2D highlight,
-                                      List<CheckersFigureModel> checkersFigures, float fieldWidth, Stage mainStage, Group boardSceneGroup){
+    private static void promoteFigure(CheckersFigureModel targetChessFigure, Dimension2D highlight,
+                                      List<CheckersFigureModel> checkersFigures, float fieldWidth, Group boardSceneGroup){
         if(targetChessFigure.getCheckersFigure() == PAWN) {
             if(highlight.height == 8 && targetChessFigure.getCheckersSide() == WHITE) {
                 CheckersFigure checkersFigure = CheckersFigure.QUEEN;
