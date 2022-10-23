@@ -15,7 +15,7 @@ public class QueenMove implements CheckersMove {
     //Hráč, který je na tahu a nemůže hrát (nemá kameny, nebo má všechny zablokované), prohrál. Partie končí remízou tehdy, když je teoreticky nemožné vzít soupeři při pozorné hře žádnou další figuru.
     //Jestliže některý z hráčů zahraje tah v rozporu s pravidly (např. opomenutí skákání), je na jeho protihráči, jestli bude vyžadovat opravu tahu, nebo ne.
     @Override
-    public List<Dimension2D> potentialMoves(CheckersSide side, CheckersMoveHistory checkersMoveHistory, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
+    public List<Dimension2D> potentialMoves(CheckersSide side, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
         return null;
     }
 }

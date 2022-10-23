@@ -67,25 +67,25 @@ public class CheckersMoveHistory {
 
         public CheckersBoardPositions getCurrentBoardFromHistory() {
             CheckersFigure[][] initialFigures = new CheckersFigure[][]{
-                    { null, PAWN, null, null, null, null, PAWN, null },
-                    { null, PAWN, null, null, null, null, PAWN, null },
-                    { null, PAWN, null, null, null, null, PAWN, null },
-                    { QUEEN, PAWN, null, null, null, null, PAWN, QUEEN },
-                    { null, PAWN, null, null, null, null, PAWN, null },
-                    { null, PAWN, null, null, null, null, PAWN, null },
-                    { null, PAWN, null, null, null, null, PAWN, null },
-                    { null, PAWN, null, null, null, null, PAWN, null }
+                    { PAWN, null, null, null, null, null, PAWN, null },
+                    { null, PAWN, null, null, null, null, null, PAWN },
+                    { PAWN, null, null, null, null, null, PAWN, null },
+                    { null, PAWN, null, null, null, null, null, PAWN },
+                    { PAWN, null, null, null, null, null, PAWN, null },
+                    { null, PAWN, null, null, null, null, null, PAWN },
+                    { PAWN, null, null, null, null, null, PAWN, null },
+                    { null, PAWN, null, null, null, null, null, PAWN }
             };
 
             CheckersSide[][] initialSides = new CheckersSide[][]{
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK },
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK },
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK },
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK },
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK },
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK },
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK },
-                    { WHITE, WHITE, null, null, null, null, BLACK, BLACK }
+                    { WHITE, null, null, null, null, null, BLACK, null },
+                    { null, WHITE, null, null, null, null, null, BLACK },
+                    { WHITE, null, null, null, null, null, BLACK, null },
+                    { null, WHITE, null, null, null, null, null, BLACK },
+                    { WHITE, null, null, null, null, null, BLACK, null },
+                    { null, WHITE, null, null, null, null, null, BLACK },
+                    { WHITE, null, null, null, null, null, BLACK, null },
+                    { null, WHITE, null, null, null, null, null, BLACK }
             };
 
             for (CheckersMovePosition move : moves) {
@@ -105,9 +105,9 @@ public class CheckersMoveHistory {
         }
 
         public CheckersBoardPositions getCurrentBoardFromHistoryAndWithMove(CheckersMovePosition move) {
-            CheckersBoardPositions chessBoardPositions = getCurrentBoardFromHistory();
-            CheckersFigure[][] figures = chessBoardPositions.getPositions();
-            CheckersSide[][] sides = chessBoardPositions.getSides();
+            CheckersBoardPositions checkersBoardPositions = getCurrentBoardFromHistory();
+            CheckersFigure[][] figures = checkersBoardPositions.getPositions();
+            CheckersSide[][] sides = checkersBoardPositions.getSides();
 
             Dimension2D from = move.getPreviousPosition();
             Dimension2D to = move.getPosition();

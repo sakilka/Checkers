@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface CheckersMove {
 
-    List<Dimension2D> potentialMoves(CheckersSide side, CheckersMoveHistory checkersMoveHistory, Dimension2D currentPosition,
+    List<Dimension2D> potentialMoves(CheckersSide side, Dimension2D currentPosition,
                                      CheckersBoardPositions currentBoard);
 }

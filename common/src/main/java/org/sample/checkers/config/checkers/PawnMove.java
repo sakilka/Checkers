@@ -16,14 +16,14 @@ public class PawnMove implements CheckersMove {
     //Hráč, který je na tahu a nemůže hrát (nemá kameny, nebo má všechny zablokované), prohrál. Partie končí remízou tehdy, když je teoreticky nemožné vzít soupeři při pozorné hře žádnou další figuru.
     //Jestliže některý z hráčů zahraje tah v rozporu s pravidly (např. opomenutí skákání), je na jeho protihráči, jestli bude vyžadovat opravu tahu, nebo ne.
     @Override
-    public List<Dimension2D> potentialMoves(CheckersSide side, CheckersMoveHistory checkersMoveHistory, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
+    public List<Dimension2D> potentialMoves(CheckersSide side, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
         List<Dimension2D> potentialMoves = new ArrayList<>();
 
-        if(queenMustJump(side, checkersMoveHistory, currentPosition, currentBoard)) {
+        if(queenMustJump(side, currentPosition, currentBoard)) {
             return new ArrayList<>();
         }
 
-        if(mustJumpAnotherFigure(side, checkersMoveHistory, currentPosition, currentBoard)){
+        if(mustJumpAnotherFigure(side, currentPosition, currentBoard)){
             return new ArrayList<>();
         }
 
@@ -31,7 +31,7 @@ public class PawnMove implements CheckersMove {
             if(side == CheckersSide.WHITE) {
                 if ((currentPosition.width -2) >=0 && (currentPosition.height +2) <8 &&
                         (currentBoard.getSides()[(int) currentPosition.width -1][(int) currentPosition.height +1]
-                                == side.oposite()) && (currentBoard.getSides()[(int) currentPosition.height -2]
+                                == side.oposite()) && (currentBoard.getSides()[(int) currentPosition.width -2]
                         [(int) currentPosition.height +2] == null)){
                     potentialMoves.add(new Dimension2D(currentPosition.width -2, currentPosition.height +2));
                 }
@@ -84,8 +84,7 @@ public class PawnMove implements CheckersMove {
         return potentialMoves;
     }
 
-    private boolean queenMustJump(CheckersSide side, CheckersMoveHistory checkersMoveHistory,
-                                  Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
+    private boolean queenMustJump(CheckersSide side, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
         for (int width = 0; width < 8; width++) {
             for (int height = 0; height < 8; height++) {
                 if(currentBoard.getSides()[width][height] == side
@@ -151,8 +150,7 @@ public class PawnMove implements CheckersMove {
         return false;
     }
 
-    private boolean mustJumpAnotherFigure(CheckersSide side, CheckersMoveHistory checkersMoveHistory,
-                                          Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
+    private boolean mustJumpAnotherFigure(CheckersSide side, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
 
         if(currentPositionMustJump(side, currentPosition, currentBoard)) {
            return false;

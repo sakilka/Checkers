@@ -15,7 +15,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.sample.checkers.chess.*;
 import org.sample.checkers.config.checkers.*;
-import org.sample.checkers.config.chess.*;
+import org.sample.checkers.config.chess.ChessBoardPositions;
+import org.sample.checkers.config.chess.ChessMovePosition;
 
 import java.util.List;
 import java.util.Locale;
@@ -57,7 +58,7 @@ public class CheckersMoveUtil {
                             targetCube.highlightField(true, shineColor);
                             targetChessFigure.highlightFigure(true, shineColor);
                             highlightPotentialMoves(position, targetChessFigure.getCheckersFigure(), targetChessFigure.getCheckersSide(),
-                                    currentBoard, board, checkersMoveHistory);
+                                    currentBoard, board);
                             return position;
                         }
                     }
@@ -73,8 +74,8 @@ public class CheckersMoveUtil {
                             board[(int) position.width - 1][(int) position.height - 1].highlightField(true, shineColor);
                         }
 
-                        highlightPotentialMoves(position, targetChessFigure.getCheckersFigure(), targetChessFigure.getCheckersSide(),
-                                currentBoard, board, checkersMoveHistory);
+                        highlightPotentialMoves(position, targetChessFigure.getCheckersFigure(),
+                                targetChessFigure.getCheckersSide(), currentBoard, board);
                         return position;
                     }
                 }
@@ -85,13 +86,12 @@ public class CheckersMoveUtil {
 
             if (targetCheckersFigure != null && highlight != null && highlight.width != 0 && highlight.height != 0) {
                 List<Dimension2D> potentialMoves = CheckersMoveFactory.getMove(targetCheckersFigure.getCheckersFigure())
-                        .potentialMoves(targetCheckersFigure.getCheckersSide(), checkersMoveHistory,
-                                new Dimension2D(marked.width-1, marked.height-1), currentBoard);
+                        .potentialMoves(targetCheckersFigure.getCheckersSide(), new Dimension2D(marked.width-1, marked.height-1), currentBoard);
 
                 if(potentialMoves.stream().anyMatch(position -> (position.width +1) == highlight.width
                         && (position.height + 1) == highlight.height)) {
                     promoteFigure(targetCheckersFigure, currentBoard, highlight, checkersFigures, fieldWidth, mainStage, boardSceneGroup);
-                    captureFigure(currentBoard, highlight, checkersFigures, fieldWidth, boardSceneGroup);
+                    jumpFigure(targetCheckersFigure, checkersMoveHistory, highlight, checkersFigures, fieldWidth, boardSceneGroup);
                     moveFigure(targetCheckersFigure, highlight, fieldWidth);
                     checkersMoveHistory.addMove(new CheckersMovePosition(highlight, marked));
                 }
@@ -110,10 +110,10 @@ public class CheckersMoveUtil {
     }
 
     private static void highlightPotentialMoves(Dimension2D position, CheckersFigure checkersFigure, CheckersSide checkersSide,
-                                                CheckersBoardPositions currentBoard, Cube[][] board, CheckersMoveHistory checkersMoveHistory) {
+                                                CheckersBoardPositions currentBoard, Cube[][] board) {
 
         List<Dimension2D> potentialMoves = CheckersMoveFactory.getMove(checkersFigure)
-                .potentialMoves(checkersSide, checkersMoveHistory,  new Dimension2D(position.width-1, position.height-1),
+                .potentialMoves(checkersSide, new Dimension2D(position.width-1, position.height-1),
                         currentBoard);
 
         for(Dimension2D potentialMove : potentialMoves) {
@@ -125,7 +125,6 @@ public class CheckersMoveUtil {
                                       List<CheckersFigureModel> checkersFigures, float fieldWidth, Stage mainStage, Group boardSceneGroup){
         if(targetChessFigure.getCheckersFigure() == PAWN) {
             if(highlight.height == 8 && targetChessFigure.getCheckersSide() == WHITE) {
-                Optional<org.sample.checkers.config.chess.ChessFigure> promote = new PromotionDialog(mainStage).showDialog();
                 CheckersFigure checkersFigure = CheckersFigure.QUEEN;
                 PhongMaterial promotedMaterial = (PhongMaterial) targetChessFigure.getMaterial();
                 boardSceneGroup.getChildren().remove(targetChessFigure);
@@ -140,9 +139,7 @@ public class CheckersMoveUtil {
             }
 
             if(highlight.height == 1 && targetChessFigure.getCheckersSide() == BLACK) {
-                //Optional<CheckersFigure> promote = new PromotionDialog(mainStage).showDialog();
-                CheckersFigure promote = QUEEN;
-                CheckersFigure checkersFigure = promote;
+                CheckersFigure checkersFigure = QUEEN;
                 PhongMaterial promotedMaterial = (PhongMaterial) targetChessFigure.getMaterial();
                 boardSceneGroup.getChildren().remove(targetChessFigure);
                 checkersFigures.remove(targetChessFigure);
@@ -157,24 +154,47 @@ public class CheckersMoveUtil {
         }
     }
 
-    private static void captureFigure(CheckersBoardPositions currentBoard, Dimension2D highlight, List<CheckersFigureModel> checkersFigures,
-                                      float fieldWidth, Group boardSceneGroup){
-        if(currentBoard.getPositions()[(int) highlight.width - 1][(int)highlight.height - 1] != null) {
-            CheckersFigureModel captured = getFigureForPosition(checkersFigures, highlight, fieldWidth);
-            boardSceneGroup.getChildren().remove(captured);
-            checkersFigures.remove(captured);
+    private static void jumpFigure(CheckersFigureModel targetCheckersFigure, CheckersMoveHistory checkersMoveHistory,
+                                   Dimension2D highlight, List<CheckersFigureModel> checkersFigures, float fieldWidth,
+                                   Group boardSceneGroup){
+        if(targetCheckersFigure.getCheckersFigure() == PAWN) {
+            Dimension2D position = getFigurePosition(checkersFigures, targetCheckersFigure, fieldWidth);
+            if (Math.abs(position.width - highlight.width) == 2 && Math.abs(position.height - highlight.height) == 2) {
+                Dimension2D jumpPosition = new Dimension2D((position.width + ((highlight.width - position.width)/2)),
+                        (position.height + ((highlight.height - position.height)/2)));
+                CheckersFigureModel jumped = getFigureForPosition(checkersFigures, jumpPosition, fieldWidth);
+                boardSceneGroup.getChildren().remove(jumped);
+                checkersFigures.remove(jumped);
+
+                CheckersBoardPositions potentialBoard = checkersMoveHistory
+                        .getCurrentBoardFromHistoryAndWithMove(new CheckersMovePosition(highlight,position));
+
+                List<Dimension2D> nextMoves = CheckersMoveFactory.getMove(PAWN)
+                        .potentialMoves(targetCheckersFigure.getCheckersSide(), new Dimension2D(highlight.width-1,
+                                highlight.height-1), potentialBoard);
+                if(nextMoves.size() > 0) {
+                    for (Dimension2D potentialJump : nextMoves) {
+                        if (Math.abs(highlight.width - (potentialJump.width + 1)) == 2
+                                && Math.abs(highlight.height - (potentialJump.height+1)) == 2) {
+                            checkersMoveHistory.setOnMove(targetCheckersFigure.getCheckersSide().oposite());
+                        }
+                    }
+                }
+            }
+        } else {
+            //TODO
         }
     }
 
     private static void moveFigure(CheckersFigureModel targetChessFigure, Dimension2D highlight, float fieldWidth) {
         Timeline animation = createTimeline(
-                new Point3D(targetChessFigure.getTranslateX(), targetChessFigure.getTranslateY(), targetChessFigure.getTranslateZ()),
-                new Point3D(getAbsolutePositionX((int) highlight.width, fieldWidth), 0, getAbsolutePositionY((int) highlight.height, fieldWidth)),
+                new Point3D(getAbsolutePositionX((int) highlight.width, fieldWidth), 0,
+                        getAbsolutePositionY((int) highlight.height, fieldWidth)),
                 targetChessFigure);
         animation.play();
     }
 
-    private static Timeline createTimeline(Point3D p1, Point3D p2, Node figure) {
+    private static Timeline createTimeline(Point3D p2, Node figure) {
         Timeline t = new Timeline();
         KeyValue keyX = new KeyValue(figure.translateXProperty(), p2.getX());
         KeyValue keyY = new KeyValue(figure.translateYProperty(), p2.getY());
@@ -336,8 +356,7 @@ public class CheckersMoveUtil {
         CheckersFigureModel markedChessFigure = getFigureForPosition(checkersFigures, marked, fieldWidth);
         if (markedChessFigure != null) {
             List<Dimension2D> potentialMoves = CheckersMoveFactory.getMove(markedChessFigure.getCheckersFigure())
-                    .potentialMoves(markedChessFigure.getCheckersSide(), checkersMoveHistory,
-                            new Dimension2D(marked.width-1, marked.height-1), currentBoard);
+                    .potentialMoves(markedChessFigure.getCheckersSide(), new Dimension2D(marked.width-1, marked.height-1), currentBoard);
 
             if(potentialMoves.stream().noneMatch(move -> highlight != null && move.height +1 == highlight.height
                     && move.width + 1 == highlight.width)) {
