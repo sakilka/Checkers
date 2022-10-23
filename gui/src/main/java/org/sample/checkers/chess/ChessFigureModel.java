@@ -4,29 +4,28 @@ import javafx.geometry.Point3D;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import org.sample.checkers.config.chess.ChessFigure;
 import org.sample.checkers.config.chess.ChessSide;
 
 import static javafx.scene.transform.Rotate.Y_AXIS;
 import static org.sample.checkers.chess.EffectUtils.createImage;
 
-public class Figure extends LoadObject {
+public class ChessFigureModel extends ChessLoadObject {
 
     private static final double NO_ROTATE = 0;
 
     private final PhongMaterial DEFAULT_MATERIAL;
-    private final ChessFigure chessFigure;
+    private final org.sample.checkers.config.chess.ChessFigure chessFigure;
     private final ChessSide chessSide;
 
-    public Figure(String modelName, FigurePosition position, PhongMaterial material, ChessFigure chessFigure, ChessSide chessSide) {
+    public ChessFigureModel(String modelName, FigurePosition position, PhongMaterial material, org.sample.checkers.config.chess.ChessFigure chessFigure, ChessSide chessSide) {
         this(modelName, 1, position, material, Y_AXIS, NO_ROTATE, chessFigure, chessSide);
     }
 
-    public Figure(String modelName, FigurePosition position, PhongMaterial material, Point3D axis, double rotation, ChessFigure chessFigure, ChessSide chessSide) {
+    public ChessFigureModel(String modelName, FigurePosition position, PhongMaterial material, Point3D axis, double rotation, org.sample.checkers.config.chess.ChessFigure chessFigure, ChessSide chessSide) {
         this(modelName, 1, position, material, axis, rotation, chessFigure, chessSide);
     }
 
-    public Figure(String modelName, int size, FigurePosition position, PhongMaterial material, Point3D axis, double rotation, ChessFigure chessFigure, ChessSide chessSide) {
+    public ChessFigureModel(String modelName, int size, FigurePosition position, PhongMaterial material, Point3D axis, double rotation, org.sample.checkers.config.chess.ChessFigure chessFigure, ChessSide chessSide) {
         super(modelName, size);
 
         DEFAULT_MATERIAL = material;
@@ -53,7 +52,7 @@ public class Figure extends LoadObject {
         this.setMaterial(DEFAULT_MATERIAL);
     }
 
-    public ChessFigure getChessFigure() {
+    public org.sample.checkers.config.chess.ChessFigure getChessFigure() {
         return chessFigure;
     }
 

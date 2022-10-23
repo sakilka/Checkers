@@ -1,4 +1,4 @@
-package org.sample.checkers.config;
+package org.sample.checkers.config.chess;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

@@ -24,16 +24,16 @@ import static org.sample.checkers.config.chess.ChessFigure.KING;
 import static org.sample.checkers.config.chess.ChessFigure.PAWN;
 import static org.sample.checkers.config.chess.ChessSide.BLACK;
 import static org.sample.checkers.config.chess.ChessSide.WHITE;
-import static org.sample.checkers.config.chess.FiguresPositions.getAbsolutePositionX;
-import static org.sample.checkers.config.chess.FiguresPositions.getAbsolutePositionY;
+import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionX;
+import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionY;
 
-public class MoveUtil {
+public class ChessMoveUtil {
 
     private static Color shineColor = Color.rgb(229,206,0, 0.3);
     private static Color highlightColor = Color.rgb(62,177,90, 0.6);
     private static Color moveColor = Color.rgb(229,1,0, 0.8);
 
-    public static Dimension2D handlePrimaryClick(MouseEvent event, Cube[][] board, List<Figure> figures, float fieldWidth,
+    public static Dimension2D handlePrimaryClick(MouseEvent event, Cube[][] board, List<ChessFigureModel> chessFigureModels, float fieldWidth,
                                                  Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
                                                  ChessMoveHistory chessMoveHistory, Group boardSceneGroup, Stage mainStage) {
         EventTarget target = event.getTarget();
@@ -49,29 +49,29 @@ public class MoveUtil {
                     Cube targetCube = (Cube) targetNode;
                     if (isField(board, targetCube)) {
                         Dimension2D position = getFieldPosition(board, targetCube);
-                        Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
+                        ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
 
-                        if (targetFigure != null && targetFigure.getChessSide() == chessMoveHistory.getOnMove()) {
+                        if (targetChessFigureModel != null && targetChessFigureModel.getChessSide() == chessMoveHistory.getOnMove()) {
                             targetCube.highlightField(true, shineColor);
-                            targetFigure.highlightFigure(true, shineColor);
-                            highlightPotentialMoves(position, targetFigure.getChessFigure(), targetFigure.getChessSide(),
+                            targetChessFigureModel.highlightFigure(true, shineColor);
+                            highlightPotentialMoves(position, targetChessFigureModel.getChessFigure(), targetChessFigureModel.getChessSide(),
                                     currentBoard, board, chessMoveHistory);
                             return position;
                         }
                     }
-                } else if (targetNode instanceof Figure) {
-                    Figure targetFigure = (Figure) targetNode;
+                } else if (targetNode instanceof ChessFigureModel) {
+                    ChessFigureModel targetChessFigureModel = (ChessFigureModel) targetNode;
 
-                    if(targetFigure.getChessSide() == chessMoveHistory.getOnMove()) {
+                    if(targetChessFigureModel.getChessSide() == chessMoveHistory.getOnMove()) {
 
-                        Dimension2D position = getFigurePosition(figures, targetFigure, fieldWidth);
+                        Dimension2D position = getFigurePosition(chessFigureModels, targetChessFigureModel, fieldWidth);
 
                         if (position != null) {
-                            targetFigure.highlightFigure(true, shineColor);
+                            targetChessFigureModel.highlightFigure(true, shineColor);
                             board[(int) position.width - 1][(int) position.height - 1].highlightField(true, shineColor);
                         }
 
-                        highlightPotentialMoves(position, targetFigure.getChessFigure(), targetFigure.getChessSide(),
+                        highlightPotentialMoves(position, targetChessFigureModel.getChessFigure(), targetChessFigureModel.getChessSide(),
                                 currentBoard, board, chessMoveHistory);
                         return position;
                     }
@@ -79,40 +79,40 @@ public class MoveUtil {
             }
             return marked;
         } else {
-            Figure targetFigure = getFigureForPosition(figures, marked, fieldWidth);
+            ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, marked, fieldWidth);
 
-            if (targetFigure != null && highlight != null && highlight.width != 0 && highlight.height != 0) {
-                List<Dimension2D> potentialMoves = ChessMoveFactory.getMove(targetFigure.getChessFigure())
-                        .potentialMoves(targetFigure.getChessSide(), chessMoveHistory,
+            if (targetChessFigureModel != null && highlight != null && highlight.width != 0 && highlight.height != 0) {
+                List<Dimension2D> potentialMoves = ChessMoveFactory.getMove(targetChessFigureModel.getChessFigure())
+                        .potentialMoves(targetChessFigureModel.getChessSide(), chessMoveHistory,
                                 new Dimension2D(marked.width-1, marked.height-1), currentBoard);
 
                 if(potentialMoves.stream().anyMatch(position -> (position.width +1) == highlight.width
                         && (position.height + 1) == highlight.height)) {
-                    promoteFigure(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup);
-                    captureFigure(currentBoard, highlight, figures, fieldWidth, boardSceneGroup);
-                    moveFigure(targetFigure, highlight, fieldWidth);
+                    promoteFigure(targetChessFigureModel, currentBoard, highlight, chessFigureModels, fieldWidth, mainStage, boardSceneGroup);
+                    captureFigure(currentBoard, highlight, chessFigureModels, fieldWidth, boardSceneGroup);
+                    moveFigure(targetChessFigureModel, highlight, fieldWidth);
                     chessMoveHistory.addMove(new ChessMovePosition(highlight, marked));
-                    castling(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup,
+                    castling(targetChessFigureModel, currentBoard, highlight, chessFigureModels, fieldWidth, mainStage, boardSceneGroup,
                             chessMoveHistory);
-                    enPassant(targetFigure, currentBoard, highlight, figures, fieldWidth, mainStage, boardSceneGroup,
+                    enPassant(targetChessFigureModel, currentBoard, highlight, chessFigureModels, fieldWidth, mainStage, boardSceneGroup,
                             chessMoveHistory);
                     checkAndCheckmate(chessMoveHistory, mainStage);
                 }
             }
-            changeBackAll(figures, fieldWidth, board);
+            changeBackAll(chessFigureModels, fieldWidth, board);
             return null;
         }
     }
 
-    private static void changeBackAll(List<Figure> figures, float fieldWidth, Cube[][] board) {
+    private static void changeBackAll(List<ChessFigureModel> chessFigureModels, float fieldWidth, Cube[][] board) {
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
-                changeBackForPosition(new Dimension2D(i+1,j+1), figures, fieldWidth, board);
+                changeBackForPosition(new Dimension2D(i+1,j+1), chessFigureModels, fieldWidth, board);
             }
         }
     }
 
-    private static void highlightPotentialMoves(Dimension2D position, ChessFigure chessFigure, ChessSide chessSide,
+    private static void highlightPotentialMoves(Dimension2D position, org.sample.checkers.config.chess.ChessFigure chessFigure, ChessSide chessSide,
                                                 ChessBoardPositions currentBoard, Cube[][] board, ChessMoveHistory chessMoveHistory) {
 
         List<Dimension2D> potentialMoves = ChessMoveFactory.getMove(chessFigure)
@@ -124,82 +124,82 @@ public class MoveUtil {
         }
     }
 
-    private static void promoteFigure(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight,
-                                      List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup){
-        if(targetFigure.getChessFigure() == PAWN) {
-            if(highlight.height == 8 && targetFigure.getChessSide() == WHITE) {
-                Optional<ChessFigure> promote = new PromotionDialog(mainStage).showDialog();
-                ChessFigure chessFigure = promote.orElse(ChessFigure.QUEEN);
-                PhongMaterial promotedMaterial = (PhongMaterial) targetFigure.getMaterial();
-                boardSceneGroup.getChildren().remove(targetFigure);
-                figures.remove(targetFigure);
-                Figure promotedFigure = new Figure(chessFigure.name().toLowerCase(Locale.ROOT),
+    private static void promoteFigure(ChessFigureModel targetChessFigureModel, ChessBoardPositions currentBoard, Dimension2D highlight,
+                                      List<ChessFigureModel> chessFigureModels, float fieldWidth, Stage mainStage, Group boardSceneGroup){
+        if(targetChessFigureModel.getChessFigure() == PAWN) {
+            if(highlight.height == 8 && targetChessFigureModel.getChessSide() == WHITE) {
+                Optional<org.sample.checkers.config.chess.ChessFigure> promote = new PromotionDialog(mainStage).showDialog();
+                org.sample.checkers.config.chess.ChessFigure chessFigure = promote.orElse(org.sample.checkers.config.chess.ChessFigure.QUEEN);
+                PhongMaterial promotedMaterial = (PhongMaterial) targetChessFigureModel.getMaterial();
+                boardSceneGroup.getChildren().remove(targetChessFigureModel);
+                chessFigureModels.remove(targetChessFigureModel);
+                ChessFigureModel promotedChessFigureModel = new ChessFigureModel(chessFigure.name().toLowerCase(Locale.ROOT),
                         new FigurePosition(
                         getAbsolutePositionX((int) highlight.width, fieldWidth), 0,
                         getAbsolutePositionY((int) highlight.height, fieldWidth)),
                         promotedMaterial, chessFigure, WHITE);
-                boardSceneGroup.getChildren().add(promotedFigure);
-                figures.add(promotedFigure);
+                boardSceneGroup.getChildren().add(promotedChessFigureModel);
+                chessFigureModels.add(promotedChessFigureModel);
             }
 
-            if(highlight.height == 1 && targetFigure.getChessSide() == BLACK) {
-                Optional<ChessFigure> promote = new PromotionDialog(mainStage).showDialog();
-                ChessFigure chessFigure = promote.orElse(ChessFigure.QUEEN);
-                PhongMaterial promotedMaterial = (PhongMaterial) targetFigure.getMaterial();
-                boardSceneGroup.getChildren().remove(targetFigure);
-                figures.remove(targetFigure);
-                Figure promotedFigure = new Figure(chessFigure.name().toLowerCase(Locale.ROOT),
+            if(highlight.height == 1 && targetChessFigureModel.getChessSide() == BLACK) {
+                Optional<org.sample.checkers.config.chess.ChessFigure> promote = new PromotionDialog(mainStage).showDialog();
+                org.sample.checkers.config.chess.ChessFigure chessFigure = promote.orElse(org.sample.checkers.config.chess.ChessFigure.QUEEN);
+                PhongMaterial promotedMaterial = (PhongMaterial) targetChessFigureModel.getMaterial();
+                boardSceneGroup.getChildren().remove(targetChessFigureModel);
+                chessFigureModels.remove(targetChessFigureModel);
+                ChessFigureModel promotedChessFigureModel = new ChessFigureModel(chessFigure.name().toLowerCase(Locale.ROOT),
                         new FigurePosition(
                                 getAbsolutePositionX((int) highlight.width, fieldWidth), 0,
                                 getAbsolutePositionY((int) highlight.height, fieldWidth)),
                         promotedMaterial, chessFigure, BLACK);
-                boardSceneGroup.getChildren().add(promotedFigure);
-                figures.add(promotedFigure);
+                boardSceneGroup.getChildren().add(promotedChessFigureModel);
+                chessFigureModels.add(promotedChessFigureModel);
             }
         }
     }
 
-    private static void captureFigure(ChessBoardPositions currentBoard, Dimension2D highlight, List<Figure> figures,
+    private static void captureFigure(ChessBoardPositions currentBoard, Dimension2D highlight, List<ChessFigureModel> chessFigureModels,
             float fieldWidth, Group boardSceneGroup){
         if(currentBoard.getPositions()[(int) highlight.width - 1][(int)highlight.height - 1] != null) {
-            Figure captured = getFigureForPosition(figures, highlight, fieldWidth);
+            ChessFigureModel captured = getFigureForPosition(chessFigureModels, highlight, fieldWidth);
             boardSceneGroup.getChildren().remove(captured);
-            figures.remove(captured);
+            chessFigureModels.remove(captured);
         }
     }
 
-    private static void moveFigure(Figure targetFigure, Dimension2D highlight, float fieldWidth) {
+    private static void moveFigure(ChessFigureModel targetChessFigureModel, Dimension2D highlight, float fieldWidth) {
         Timeline animation = createTimeline(
-                new Point3D(targetFigure.getTranslateX(),targetFigure.getTranslateY(), targetFigure.getTranslateZ()),
+                new Point3D(targetChessFigureModel.getTranslateX(), targetChessFigureModel.getTranslateY(), targetChessFigureModel.getTranslateZ()),
                 new Point3D(getAbsolutePositionX((int) highlight.width, fieldWidth), 0, getAbsolutePositionY((int) highlight.height, fieldWidth)),
-                targetFigure);
+                targetChessFigureModel);
         animation.play();
     }
 
-    private static void castling(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight,
-                                 List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup,
+    private static void castling(ChessFigureModel targetChessFigureModel, ChessBoardPositions currentBoard, Dimension2D highlight,
+                                 List<ChessFigureModel> chessFigureModels, float fieldWidth, Stage mainStage, Group boardSceneGroup,
                                  ChessMoveHistory chessMoveHistory) {
-        if(targetFigure.getChessFigure() == KING &&
-                ((targetFigure.getChessSide() == WHITE && !chessMoveHistory.isCastlingWhiteDone()) ||
-                        (targetFigure.getChessSide() == BLACK && !chessMoveHistory.isCastlingBlackDone()))) {
+        if(targetChessFigureModel.getChessFigure() == KING &&
+                ((targetChessFigureModel.getChessSide() == WHITE && !chessMoveHistory.isCastlingWhiteDone()) ||
+                        (targetChessFigureModel.getChessSide() == BLACK && !chessMoveHistory.isCastlingBlackDone()))) {
 
-            long x = getRelativePositionX(targetFigure.getTranslateX(), fieldWidth);
-            ChessSide side = targetFigure.getChessSide();
+            long x = getRelativePositionX(targetChessFigureModel.getTranslateX(), fieldWidth);
+            ChessSide side = targetChessFigureModel.getChessSide();
 
             if(Math.abs(highlight.width - x) > 1) {
                 if(highlight.width == 3){
                     Dimension2D position = side == WHITE ? new Dimension2D(1,1) : new Dimension2D(1,8);
                     Dimension2D target = side == WHITE ? new Dimension2D(4,1) : new Dimension2D(4,8);
-                    Figure castleFigure = getFigureForPosition(figures, position, fieldWidth);
+                    ChessFigureModel castleChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
 
-                    moveFigure(castleFigure, target, fieldWidth);
+                    moveFigure(castleChessFigureModel, target, fieldWidth);
                     chessMoveHistory.addMove(new ChessMovePosition(target, position));
                 } else {
                     Dimension2D position = side == WHITE ? new Dimension2D(8,1) : new Dimension2D(8,8);
                     Dimension2D target = side == WHITE ? new Dimension2D(6,1) : new Dimension2D(6,8);
-                    Figure castleFigure = getFigureForPosition(figures, position, fieldWidth);
+                    ChessFigureModel castleChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
 
-                    moveFigure(castleFigure, target, fieldWidth);
+                    moveFigure(castleChessFigureModel, target, fieldWidth);
                     chessMoveHistory.addMove(new ChessMovePosition(target, position));
                 }
             }
@@ -214,17 +214,17 @@ public class MoveUtil {
         }
     }
 
-    private static void enPassant(Figure targetFigure, ChessBoardPositions currentBoard, Dimension2D highlight,
-                                  List<Figure> figures, float fieldWidth, Stage mainStage, Group boardSceneGroup,
+    private static void enPassant(ChessFigureModel targetChessFigureModel, ChessBoardPositions currentBoard, Dimension2D highlight,
+                                  List<ChessFigureModel> chessFigureModels, float fieldWidth, Stage mainStage, Group boardSceneGroup,
                                   ChessMoveHistory chessMoveHistory) {
-        if(targetFigure.getChessFigure() == PAWN) {
+        if(targetChessFigureModel.getChessFigure() == PAWN) {
             ChessMovePosition lastMove = chessMoveHistory.getMoves().get(chessMoveHistory.getMoves().size() -1);
 
             if(Math.abs(lastMove.getPosition().width - lastMove.getPreviousPosition().width) == 1
             && Math.abs(lastMove.getPosition().height - lastMove.getPreviousPosition().height) == 1){
                 if(currentBoard.getPositions()[(int) highlight.width - 1][(int)highlight.height - 1] == null) {
                     captureFigure(currentBoard, new Dimension2D(lastMove.getPosition().width,
-                            lastMove.getPreviousPosition().height), figures, fieldWidth, boardSceneGroup);
+                            lastMove.getPreviousPosition().height), chessFigureModels, fieldWidth, boardSceneGroup);
                 }
             }
         }
@@ -280,15 +280,15 @@ public class MoveUtil {
         for(int width = 0; width <8 ; width++) {
             for (int heigth = 0; heigth <8; heigth++) {
                 if(side.oposite() == currentBoard.getSides()[width][heigth]) {
-                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    org.sample.checkers.config.chess.ChessFigure chessFigure = currentBoard.getPositions()[width][heigth];
                     Dimension2D checkPosition = new Dimension2D(width, heigth);
 
-                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
+                    if(chessFigure == org.sample.checkers.config.chess.ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
                         continue;
                     }
 
                     List<Dimension2D> potentialMoves = ChessMoveFactory
-                            .getMove(figure).potentialMoves(side.oposite(), chessMoveHistory, checkPosition, currentBoard);
+                            .getMove(chessFigure).potentialMoves(side.oposite(), chessMoveHistory, checkPosition, currentBoard);
                     if(potentialMoves.stream().anyMatch(move -> move.width == currentPosition.width &&
                             move.height == currentPosition.height)) {
                         return true;
@@ -305,15 +305,15 @@ public class MoveUtil {
         for(int width = 0; width <8 ; width++) {
             for (int heigth = 0; heigth <8; heigth++) {
                 if(side.oposite() == currentBoard.getSides()[width][heigth]) {
-                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    org.sample.checkers.config.chess.ChessFigure chessFigure = currentBoard.getPositions()[width][heigth];
                     Dimension2D checkPosition = new Dimension2D(width, heigth);
 
-                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
+                    if(chessFigure == org.sample.checkers.config.chess.ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
                         continue;
                     }
 
                     List<Dimension2D> potentialMoves = ChessMoveFactory
-                            .getMove(figure).potentialMoves(side.oposite(), chessMoveHistory, checkPosition, currentBoard);
+                            .getMove(chessFigure).potentialMoves(side.oposite(), chessMoveHistory, checkPosition, currentBoard);
                     if(potentialMoves.stream().anyMatch(move -> move.width == currentPosition.width &&
                             move.height == currentPosition.height)) {
 
@@ -333,11 +333,11 @@ public class MoveUtil {
         for(int width = 0; width <8 ; width++) {
             for (int heigth = 0; heigth <8; heigth++) {
                 if(side.oposite() == currentBoard.getSides()[width][heigth]) {
-                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    org.sample.checkers.config.chess.ChessFigure chessFigure = currentBoard.getPositions()[width][heigth];
                     Dimension2D helpPosition = new Dimension2D(width, heigth);
 
                     List<Dimension2D> potentialMoves = ChessMoveFactory
-                            .getMove(figure).potentialMoves(side.oposite(), chessMoveHistory, helpPosition, currentBoard);
+                            .getMove(chessFigure).potentialMoves(side.oposite(), chessMoveHistory, helpPosition, currentBoard);
 
                     for(Dimension2D potentialMove : potentialMoves) {
                         ChessBoardPositions potentialBoard = chessMoveHistory
@@ -359,15 +359,15 @@ public class MoveUtil {
         for(int width = 0; width <8 ; width++) {
             for (int heigth = 0; heigth <8; heigth++) {
                 if(side.oposite() == currentBoard.getSides()[width][heigth]) {
-                    ChessFigure figure = currentBoard.getPositions()[width][heigth];
+                    org.sample.checkers.config.chess.ChessFigure chessFigure = currentBoard.getPositions()[width][heigth];
                     Dimension2D checkPosition = new Dimension2D(width, heigth);
 
-                    if(figure == ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
+                    if(chessFigure == org.sample.checkers.config.chess.ChessFigure.KING && kingInStartPosition(width, heigth, side.oposite()) ){
                         continue;
                     }
 
                     List<Dimension2D> potentialMoves = ChessMoveFactory
-                            .getMove(figure).potentialMoves(side.oposite(), chessMoveHistory, checkPosition, currentBoard);
+                            .getMove(chessFigure).potentialMoves(side.oposite(), chessMoveHistory, checkPosition, currentBoard);
                     if(potentialMoves.stream().anyMatch(move -> move.width == kingPosition.width &&
                             move.height == kingPosition.height)) {
                         return true;
@@ -397,8 +397,8 @@ public class MoveUtil {
         return t;
     }
 
-    public static Dimension2D handleMarkedMove(MouseEvent event, Cube[][] board, List<Figure> figures, float fieldWidth,
-                                        Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
+    public static Dimension2D handleMarkedMove(MouseEvent event, Cube[][] board, List<ChessFigureModel> chessFigureModels, float fieldWidth,
+                                               Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
                                                ChessMoveHistory chessMoveHistory) {
         EventTarget target = event.getTarget();
 
@@ -411,40 +411,40 @@ public class MoveUtil {
 
                     if (isSamePosition(position, marked) || isSamePosition(position, highlight)) {
                         if(isSamePosition(position, marked) ) {
-                            highlightBack(figures, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
+                            highlightBack(chessFigureModels, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
                             return null;
                         }
                         return highlight;
                     }
 
                     targetCube.highlightField(true, moveColor);
-                    Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
-                    if (targetFigure != null) {
-                        targetFigure.highlightFigure(true, moveColor);
+                    ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
+                    if (targetChessFigureModel != null) {
+                        targetChessFigureModel.highlightFigure(true, moveColor);
                     }
 
-                    highlightBack(figures, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
+                    highlightBack(chessFigureModels, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
 
                     return position;
                 }
-            } else if (targetNode instanceof Figure) {
-                Figure targetFigure = (Figure) targetNode;
-                Dimension2D position = getFigurePosition(figures, targetFigure, fieldWidth);
+            } else if (targetNode instanceof ChessFigureModel) {
+                ChessFigureModel targetChessFigureModel = (ChessFigureModel) targetNode;
+                Dimension2D position = getFigurePosition(chessFigureModels, targetChessFigureModel, fieldWidth);
 
                 if (isSamePosition(position, marked) || isSamePosition(position, highlight)) {
                     if(isSamePosition(position, marked)) {
-                        highlightBack(figures, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
+                        highlightBack(chessFigureModels, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
                         return null;
                     }
                     return highlight;
                 }
 
-                targetFigure.highlightFigure(true, moveColor);
+                targetChessFigureModel.highlightFigure(true, moveColor);
                 if (position != null) {
                     board[(int) position.width - 1][(int) position.height - 1].highlightField(true, moveColor);
                 }
 
-                highlightBack(figures, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
+                highlightBack(chessFigureModels, marked, fieldWidth, chessMoveHistory, currentBoard, highlight, board, highlightColor);
 
                 return position;
             }
@@ -453,29 +453,29 @@ public class MoveUtil {
         return highlight;
     }
 
-    private static void highlightBackForPosition(Dimension2D position, List<Figure> figures, float fieldWidth,
+    private static void highlightBackForPosition(Dimension2D position, List<ChessFigureModel> chessFigureModels, float fieldWidth,
                                                  Cube[][] board, Color highlightColor) {
         if(position == null || position.width == 0 || position.height == 0) {
             return;
         }
 
-        Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
-        if (targetFigure != null) {
-            targetFigure.highlightFigure(true, highlightColor);
+        ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
+        if (targetChessFigureModel != null) {
+            targetChessFigureModel.highlightFigure(true, highlightColor);
         }
         board[(int) position.width - 1][(int) position.height - 1].highlightField(true, highlightColor);
     }
 
-    private static void changeBackForPosition(Dimension2D position, List<Figure> figures, float fieldWidth,
+    private static void changeBackForPosition(Dimension2D position, List<ChessFigureModel> chessFigureModels, float fieldWidth,
                                               Cube[][] board) {
         if(position == null || position.width == 0 || position.height == 0) {
             return;
         }
 
-        Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
-        if (targetFigure != null) {
-            targetFigure.changeMaterialToDefault();
-            targetFigure.highlightFigure(false, shineColor);
+        ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
+        if (targetChessFigureModel != null) {
+            targetChessFigureModel.changeMaterialToDefault();
+            targetChessFigureModel.highlightFigure(false, shineColor);
         }
         board[(int) position.width - 1][(int) position.height - 1].highlightField(false, shineColor);
         board[(int) position.width - 1][(int) position.height - 1].setMaterialToDefault();
@@ -510,12 +510,12 @@ public class MoveUtil {
         return null;
     }
 
-    private static Dimension2D getFigurePosition(List<Figure> figures, Figure targetFigure, float fieldWidth) {
+    private static Dimension2D getFigurePosition(List<ChessFigureModel> chessFigureModels, ChessFigureModel targetChessFigureModel, float fieldWidth) {
 
-        for (Figure figure : figures) {
-            if(figure.equals(targetFigure)) {
-                long x = getRelativePositionX(targetFigure.getTranslateX(), fieldWidth);
-                long y = getRelativePositionY(targetFigure.getTranslateZ(), fieldWidth);
+        for (ChessFigureModel chessFigureModel : chessFigureModels) {
+            if(chessFigureModel.equals(targetChessFigureModel)) {
+                long x = getRelativePositionX(targetChessFigureModel.getTranslateX(), fieldWidth);
+                long y = getRelativePositionY(targetChessFigureModel.getTranslateZ(), fieldWidth);
                 return new Dimension2D(x, y);
             }
         }
@@ -531,45 +531,45 @@ public class MoveUtil {
         return Math.round(((positionY - (fieldWidth/2)) / fieldWidth) + 5);
     }
 
-    private static Figure getFigureForPosition(List<Figure> figures, Dimension2D position, float fieldWidth) {
+    private static ChessFigureModel getFigureForPosition(List<ChessFigureModel> chessFigureModels, Dimension2D position, float fieldWidth) {
 
-        for (Figure figure : figures) {
-            if(figure.getTranslateX() == getAbsolutePositionX((int) position.width, fieldWidth)
-            && figure.getTranslateZ() == getAbsolutePositionY((int) position.height, fieldWidth)) {
-                return figure;
+        for (ChessFigureModel chessFigureModel : chessFigureModels) {
+            if(chessFigureModel.getTranslateX() == getAbsolutePositionX((int) position.width, fieldWidth)
+            && chessFigureModel.getTranslateZ() == getAbsolutePositionY((int) position.height, fieldWidth)) {
+                return chessFigureModel;
             }
         }
 
         return null;
     }
 
-    private static void highlightBack(List<Figure> figures, Dimension2D marked, float fieldWidth, ChessMoveHistory chessMoveHistory,
+    private static void highlightBack(List<ChessFigureModel> chessFigureModels, Dimension2D marked, float fieldWidth, ChessMoveHistory chessMoveHistory,
                                       ChessBoardPositions currentBoard, Dimension2D highlight, Cube[][] board,
                                       Color highlightColor){
-        Figure markedFigure = getFigureForPosition(figures, marked, fieldWidth);
-        if (markedFigure != null) {
-            List<Dimension2D> potentialMoves = ChessMoveFactory.getMove(markedFigure.getChessFigure())
-                    .potentialMoves(markedFigure.getChessSide(), chessMoveHistory,
+        ChessFigureModel markedChessFigureModel = getFigureForPosition(chessFigureModels, marked, fieldWidth);
+        if (markedChessFigureModel != null) {
+            List<Dimension2D> potentialMoves = ChessMoveFactory.getMove(markedChessFigureModel.getChessFigure())
+                    .potentialMoves(markedChessFigureModel.getChessSide(), chessMoveHistory,
                             new Dimension2D(marked.width-1, marked.height-1), currentBoard);
 
             if(potentialMoves.stream().noneMatch(move -> highlight != null && move.height +1 == highlight.height
                     && move.width + 1 == highlight.width)) {
-                changeBackForPosition(highlight, figures, fieldWidth, board);
+                changeBackForPosition(highlight, chessFigureModels, fieldWidth, board);
             } else {
-                highlightBackForPosition(highlight, figures, fieldWidth, board, highlightColor);
+                highlightBackForPosition(highlight, chessFigureModels, fieldWidth, board, highlightColor);
             }
         }
     }
 
-    public static ChessFigure getBoardFigure(List<Figure> figures, Dimension2D position, float fieldWidth) {
-        Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
+    public static org.sample.checkers.config.chess.ChessFigure getBoardFigure(List<ChessFigureModel> chessFigureModels, Dimension2D position, float fieldWidth) {
+        ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
 
-        return targetFigure == null ? null : targetFigure.getChessFigure();
+        return targetChessFigureModel == null ? null : targetChessFigureModel.getChessFigure();
     }
 
-    public static ChessSide getBoardSide(List<Figure> figures, Dimension2D position, float fieldWidth) {
-        Figure targetFigure = getFigureForPosition(figures, position, fieldWidth);
+    public static ChessSide getBoardSide(List<ChessFigureModel> chessFigureModels, Dimension2D position, float fieldWidth) {
+        ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
 
-        return targetFigure == null ? null : targetFigure.getChessSide();
+        return targetChessFigureModel == null ? null : targetChessFigureModel.getChessSide();
     }
 }

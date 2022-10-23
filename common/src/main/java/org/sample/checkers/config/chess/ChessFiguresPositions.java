@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @PropertySource("classpath:application.properties")
-public class FiguresPositions {
+public class ChessFiguresPositions {
 
     @Value("${chess.white.knight.first.x}")
     private int chessWhiteKnightFirstX;

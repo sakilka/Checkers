@@ -2,7 +2,7 @@ package org.sample.checkers.chess;
 
 import javafx.beans.property.SimpleDoubleProperty;
 
-import static org.sample.checkers.config.PropertyUtil.getConfig;
+import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 
 public class BoardPosition {
 
@@ -13,11 +13,11 @@ public class BoardPosition {
     private SimpleDoubleProperty translateZ;
 
     public BoardPosition() {
-        this.angleX = new SimpleDoubleProperty(getConfig().getAngleX());
-        this.angleY = new SimpleDoubleProperty(getConfig().getAngleY());
-        this.deltaX = new SimpleDoubleProperty(getConfig().getDeltaX());
-        this.deltaZ = new SimpleDoubleProperty(getConfig().getDeltaZ());
-        this.translateZ = new SimpleDoubleProperty(getConfig().getTranslateZ());
+        this.angleX = new SimpleDoubleProperty(getBoardConfig().getAngleX());
+        this.angleY = new SimpleDoubleProperty(getBoardConfig().getAngleY());
+        this.deltaX = new SimpleDoubleProperty(getBoardConfig().getDeltaX());
+        this.deltaZ = new SimpleDoubleProperty(getBoardConfig().getDeltaZ());
+        this.translateZ = new SimpleDoubleProperty(getBoardConfig().getTranslateZ());
     }
 
     public double getAngleX() {

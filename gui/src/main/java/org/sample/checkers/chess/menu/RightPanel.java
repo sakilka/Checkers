@@ -19,7 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import org.sample.checkers.chess.BoardPosition;
 
-import static org.sample.checkers.config.PropertyUtil.getConfig;
+import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 
 public class RightPanel extends BorderPane {
 
@@ -54,8 +54,8 @@ public class RightPanel extends BorderPane {
                 setCenter(panelPane);
                 toggleButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("right-arrow.png"),
                         10, 10, false, false)));
-                end = new KeyValue(splitPaneDividerPosition, 1 - (getConfig().getRightPanelWidth() / sceneWidth.doubleValue()));
-                boardScene.widthProperty().bind(sceneWidth.subtract(getConfig().getRightPanelWidth()));
+                end = new KeyValue(splitPaneDividerPosition, 1 - (getBoardConfig().getRightPanelWidth() / sceneWidth.doubleValue()));
+                boardScene.widthProperty().bind(sceneWidth.subtract(getBoardConfig().getRightPanelWidth()));
             } else {
                 getChildren().remove(panelPane);
                 toggleButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("left-arrow.png"),
@@ -65,7 +65,7 @@ public class RightPanel extends BorderPane {
             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), end));
             timeline.play();
             timeline.setOnFinished(eventTimeline -> boardScene.widthProperty().
-                    bind(toggleButton.isSelected() ? sceneWidth.subtract(getConfig().getRightPanelWidth()) :
+                    bind(toggleButton.isSelected() ? sceneWidth.subtract(getBoardConfig().getRightPanelWidth()) :
                             sceneWidth.subtract(toggleButton.getWidth())));
         });
 

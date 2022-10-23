@@ -19,15 +19,16 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.chess.BoardPosition;
-import org.sample.checkers.chess.ChessBoardScene;
 import org.sample.checkers.chess.components.SmartGroup;
 import org.sample.checkers.chess.menu.RightPanel;
 import org.sample.checkers.chess.menu.controller.MenuController;
+import org.sample.checkers.config.Game;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
 
-import static org.sample.checkers.config.PropertyUtil.getConfig;
+import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
+import static org.sample.checkers.config.game.GamePropertyUtil.getGameConfig;
 
 @ComponentScan
 public class Checkers extends Application {
@@ -41,24 +42,24 @@ public class Checkers extends Application {
 
     private void initializeScene(Stage stage) throws IOException {
         final BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, getConfig().getWidth(), getConfig().getHeight());
+        Scene scene = new Scene(root, getBoardConfig().getWidth(), getBoardConfig().getHeight());
         scene.getStylesheets().add(Checkers.class.getResource("styles.css").toExternalForm());
 
         SplitPane content = new SplitPane();
 
         BoardPosition boardPosition = new BoardPosition();
-        SubScene boardScene = new ChessBoardScene(stage, new SmartGroup(),
-                getConfig().getWidth() - getConfig().getRightPanelWidth(), getConfig().getHeight(), true,
+        SubScene boardScene = BoardFactory.getBoardScene(getGameConfig().getGameOption(), stage, new SmartGroup(),
+                getBoardConfig().getWidth() - getBoardConfig().getRightPanelWidth(), getBoardConfig().getHeight(), true,
                 SceneAntialiasing.BALANCED, boardPosition);
 
         StackPane boardPane = new StackPane(boardScene);
         boardPane.setBackground(new Background(new BackgroundFill(Color.rgb(0,100,0, 1), null, null)));
         DoubleProperty splitPaneDividerPosition = new SimpleDoubleProperty();
-        splitPaneDividerPosition.set((scene.getWidth() - getConfig().getRightPanelWidth()) / scene.getWidth());
+        splitPaneDividerPosition.set((scene.getWidth() - getBoardConfig().getRightPanelWidth()) / scene.getWidth());
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
         RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty(), scene.widthProperty(),
                 shownRightPanel, boardScene, boardPosition);
-        boardScene.widthProperty().bind(scene.widthProperty().subtract(getConfig().getRightPanelWidth()));
+        boardScene.widthProperty().bind(scene.widthProperty().subtract(getBoardConfig().getRightPanelWidth()));
         boardScene.heightProperty().bind(scene.heightProperty());
         boardScene.setFill(Color.rgb(0,100,0, 1));
 
@@ -71,7 +72,7 @@ public class Checkers extends Application {
         splitPaneDividerPosition.addListener((observable, oldValue, newValue) -> {
             if (rightPanel.isMouseDragOnDivider()) {
                 if (shownRightPanel.getValue()) {
-                    splitPaneDividerPosition.set(1 - (getConfig().getRightPanelWidth() / scene.widthProperty().doubleValue()));
+                    splitPaneDividerPosition.set(1 - (getBoardConfig().getRightPanelWidth() / scene.widthProperty().doubleValue()));
                 } else {
                     splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
                 }
@@ -81,8 +82,8 @@ public class Checkers extends Application {
 
         stage.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (shownRightPanel.getValue()) {
-                rightPanel.setMinWidth(getConfig().getRightPanelWidth());
-                splitPaneDividerPosition.set(1 - (getConfig().getRightPanelWidth() / newVal.doubleValue()));
+                rightPanel.setMinWidth(getBoardConfig().getRightPanelWidth());
+                splitPaneDividerPosition.set(1 - (getBoardConfig().getRightPanelWidth() / newVal.doubleValue()));
             } else {
                 rightPanel.minWidth(rightPanel.getButtonWidth());
                 splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / newVal.doubleValue()));
@@ -95,9 +96,9 @@ public class Checkers extends Application {
         stage.setScene(scene);
     }
 
-    public static ChessBoardScene newGame(Stage stage, BoardPosition boardPosition){
-        return new ChessBoardScene(stage, new SmartGroup(),
-                getConfig().getWidth() - getConfig().getRightPanelWidth(), getConfig().getHeight(), true,
+    public static SubScene newGame(Stage stage, BoardPosition boardPosition){
+        return BoardFactory.getBoardScene(getGameConfig().getGameOption(), stage, new SmartGroup(),
+                getBoardConfig().getWidth() - getBoardConfig().getRightPanelWidth(), getBoardConfig().getHeight(), true,
                 SceneAntialiasing.BALANCED, boardPosition);
     }
 

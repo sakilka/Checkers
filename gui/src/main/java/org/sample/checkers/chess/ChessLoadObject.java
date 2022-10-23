@@ -3,18 +3,18 @@ package org.sample.checkers.chess;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
-import org.sample.checkers.config.chess.LoadModel;
-import org.sample.checkers.config.PropertyUtil;
+import org.sample.checkers.config.chess.ChessLoadModel;
+import org.sample.checkers.config.chess.ChessPropertyUtil;
 import org.sample.checkers.loader.model.Model;
 
-public class LoadObject extends MeshView {
+public class ChessLoadObject extends MeshView {
 
-    public LoadObject(String modelName, int size) {
+    public ChessLoadObject(String modelName, int size) {
 
         Model model = null;
 
-        LoadModel loadModel = PropertyUtil.getModel();
-        model = loadModel.getModel().get(modelName);
+        ChessLoadModel chessLoadModel = ChessPropertyUtil.getModel();
+        model = chessLoadModel.getModel().get(modelName);
 
         TriangleMesh mesh = new TriangleMesh();
 

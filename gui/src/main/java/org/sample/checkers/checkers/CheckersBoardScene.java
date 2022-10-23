@@ -1,4 +1,4 @@
-package org.sample.checkers.chess;
+package org.sample.checkers.checkers;
 
 import com.sun.javafx.geom.Dimension2D;
 import javafx.beans.property.DoubleProperty;
@@ -15,13 +15,17 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import org.sample.checkers.chess.BoardPosition;
+import org.sample.checkers.chess.Cube;
+import org.sample.checkers.chess.FigurePosition;
 import org.sample.checkers.chess.board.ChessBoard;
 import org.sample.checkers.chess.board.model.CubeFace;
 import org.sample.checkers.chess.board.model.CubeMaterial;
 import org.sample.checkers.chess.components.SmartGroup;
-import org.sample.checkers.config.chess.ChessBoardPositions;
-import org.sample.checkers.config.chess.ChessMoveHistory;
-import org.sample.checkers.config.chess.ChessSide;
+import org.sample.checkers.config.checkers.CheckersBoardPositions;
+import org.sample.checkers.config.checkers.CheckersFigure;
+import org.sample.checkers.config.checkers.CheckersMoveHistory;
+import org.sample.checkers.config.checkers.CheckersSide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +34,16 @@ import java.util.stream.Stream;
 
 import static java.lang.StrictMath.round;
 import static javafx.scene.transform.Rotate.Y_AXIS;
-import static org.sample.checkers.chess.ChessMoveUtil.*;
-import static org.sample.checkers.config.chess.ChessFigure.*;
-import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionX;
-import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionY;
-import static org.sample.checkers.config.chess.ChessSide.BLACK;
-import static org.sample.checkers.config.chess.ChessSide.WHITE;
-import static org.sample.checkers.config.chess.ChessPropertyUtil.getPositions;
+import static org.sample.checkers.checkers.CheckersMoveUtil.*;
+import static org.sample.checkers.config.checkers.CheckersFigure.PAWN;
+import static org.sample.checkers.config.checkers.CheckersFiguresPositions.getAbsolutePositionX;
+import static org.sample.checkers.config.checkers.CheckersFiguresPositions.getAbsolutePositionY;
+import static org.sample.checkers.config.checkers.CheckersSide.BLACK;
+import static org.sample.checkers.config.checkers.CheckersSide.WHITE;
+import static org.sample.checkers.config.checkers.CheckersPropertyUtil.getPositions;
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 
-public class ChessBoardScene extends SubScene implements ChessBoard {
+public class CheckersBoardScene extends SubScene implements ChessBoard {
 
     private double anchorX;
     private double anchorY;
@@ -76,10 +80,10 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private Dimension2D highlight;
 
     private final Cube[][] board;
-    private final List<ChessFigureModel> chessFigureModels;
-    private ChessMoveHistory chessMoveHistory;
+    private final List<CheckersFigureModel> checkersFigureModels;
+    private CheckersMoveHistory checkersMoveHistory;
 
-    public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
+    public CheckersBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
 
@@ -102,8 +106,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         this.depthShift = 4 * fieldWidth;
 
         this.board = new Cube[8][8];
-        this.chessFigureModels = new ArrayList<>();
-        this.chessMoveHistory = new ChessMoveHistory(new ArrayList<>());
+        this.checkersFigureModels = new ArrayList<>();
+        this.checkersMoveHistory = new CheckersMoveHistory(new ArrayList<>());
 
         mainStage = stage;
         boardSceneGroup = root;
@@ -382,154 +386,85 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private void initializeFigures() {
         //white
         Color whiteColor = Color.WHITE;
-
-        ChessFigureModel whiteBishopFirst = new ChessFigureModel("bishop", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteBishopFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteBishopFirstX(), fieldWidth)),
-                new PhongMaterial(whiteColor), BISHOP, WHITE);
-        ChessFigureModel whiteBishopSecond = new ChessFigureModel("bishop", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteBishopSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteBishopSecondX(), fieldWidth)),
-                new PhongMaterial(whiteColor), BISHOP, WHITE);
-        ChessFigureModel whiteKnightFirst = new ChessFigureModel("knight", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteKnightFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteKnightFirstX(), fieldWidth)),
-                new PhongMaterial(whiteColor), KNIGHT, WHITE);
-        ChessFigureModel whiteKnightSecond = new ChessFigureModel("knight", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteKnightSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteKnightSecondX(), fieldWidth)),
-                new PhongMaterial(whiteColor), KNIGHT, WHITE);
-        ChessFigureModel whiteRookFirst = new ChessFigureModel("rook", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteRookFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteRookFirstX(), fieldWidth)),
-                new PhongMaterial(whiteColor), ROOK, WHITE);
-        ChessFigureModel whiteRookSecond = new ChessFigureModel("rook", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteRookSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteRookSecondX(), fieldWidth)),
-                new PhongMaterial(whiteColor), ROOK, WHITE);
-        ChessFigureModel whiteKing = new ChessFigureModel("king", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteKingY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteKingX(), fieldWidth)),
-                new PhongMaterial(whiteColor), KING, WHITE);
-        ChessFigureModel whiteQueen = new ChessFigureModel("queen", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhiteQueenY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhiteQueenX(), fieldWidth)),
-                new PhongMaterial(whiteColor), QUEEN, WHITE);
-        ChessFigureModel whitePawnOne = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnFirstX(), fieldWidth)),
+        CheckersFigureModel whitePawnOne = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnFirstX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
-        ChessFigureModel whitePawnTwo = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnSecondX(), fieldWidth)),
+        CheckersFigureModel whitePawnTwo = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnSecondX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
-        ChessFigureModel whitePawnThree = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnThirdY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnThirdX(), fieldWidth)),
+        CheckersFigureModel whitePawnThree = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnThirdY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnThirdX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
-        ChessFigureModel whitePawnFour = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnFourthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnFourthX(), fieldWidth)),
+        CheckersFigureModel whitePawnFour = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnFourthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnFourthX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
-        ChessFigureModel whitePawnFive = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnFifthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnFifthX(), fieldWidth)),
+        CheckersFigureModel whitePawnFive = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnFifthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnFifthX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
-        ChessFigureModel whitePawnSix = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnSixthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnSixthX(), fieldWidth)),
+        CheckersFigureModel whitePawnSix = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnSixthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnSixthX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
-        ChessFigureModel whitePawnSeven = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnSeventhY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnSeventhX(), fieldWidth)),
+        CheckersFigureModel whitePawnSeven = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnSeventhY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnSeventhX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
-        ChessFigureModel whitePawnEight = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessWhitePawnEighthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessWhitePawnEighthX(), fieldWidth)),
+        CheckersFigureModel whitePawnEight = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersWhitePawnEightY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersWhitePawnEightX(), fieldWidth)),
                 new PhongMaterial(whiteColor), PAWN, WHITE);
 
-        boardSceneGroup.getChildren().addAll(whiteBishopFirst, whiteBishopSecond, whiteKnightFirst, whiteKnightSecond,
-                whiteRookFirst, whiteRookSecond, whiteKing, whiteQueen, whitePawnOne, whitePawnTwo, whitePawnThree,
+        boardSceneGroup.getChildren().addAll(whitePawnOne, whitePawnTwo, whitePawnThree,
                 whitePawnFour, whitePawnFive, whitePawnSix, whitePawnSeven, whitePawnEight);
 
-        chessFigureModels.addAll(Stream.of(whiteBishopFirst, whiteBishopSecond, whiteKnightFirst, whiteKnightSecond,
-                whiteRookFirst, whiteRookSecond, whiteKing, whiteQueen, whitePawnOne, whitePawnTwo, whitePawnThree,
+        checkersFigureModels.addAll(Stream.of(whitePawnOne, whitePawnTwo, whitePawnThree,
                 whitePawnFour, whitePawnFive, whitePawnSix, whitePawnSeven, whitePawnEight).collect(Collectors.toList()));
 
         //black
         Color blackColor = Color.DIMGRAY;
 
-        ChessFigureModel blackBishopFirst = new ChessFigureModel("bishop", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackBishopFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackBishopFirstX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, BISHOP, BLACK);
-        ChessFigureModel blackBishopSecond = new ChessFigureModel("bishop", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackBishopSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackBishopSecondX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, BISHOP, BLACK);
-        ChessFigureModel blackKnightFirst = new ChessFigureModel("knight", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackKnightFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackKnightFirstX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, KNIGHT, BLACK);
-        ChessFigureModel blackKnightSecond = new ChessFigureModel("knight", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackKnightSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackKnightSecondX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, KNIGHT, BLACK);
-        ChessFigureModel blackRookFirst = new ChessFigureModel("rook", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackRookFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackRookFirstX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ROOK, BLACK);
-        ChessFigureModel blackRookSecond = new ChessFigureModel("rook", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackRookSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackRookSecondX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, ROOK, BLACK);
-        ChessFigureModel blackKing = new ChessFigureModel("king", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackKingY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackKingX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, KING, BLACK);
-        ChessFigureModel blackQueen = new ChessFigureModel("queen", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackQueenY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackQueenX(), fieldWidth)),
-                new PhongMaterial(blackColor), Y_AXIS, 180, QUEEN, BLACK);
-        ChessFigureModel blackPawnOne = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnFirstY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnFirstX(), fieldWidth)),
+        CheckersFigureModel blackPawnOne = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnFirstY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnFirstX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
-        ChessFigureModel blackPawnTwo = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnSecondY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnSecondX(), fieldWidth)),
+        CheckersFigureModel blackPawnTwo = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnSecondY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnSecondX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
-        ChessFigureModel blackPawnThree = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnThirdY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnThirdX(), fieldWidth)),
+        CheckersFigureModel blackPawnThree = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnThirdY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnThirdX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
-        ChessFigureModel blackPawnFour = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnFourthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnFourthX(), fieldWidth)),
+        CheckersFigureModel blackPawnFour = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnFourthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnFourthX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
-        ChessFigureModel blackPawnFive = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnFifthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnFifthX(), fieldWidth)),
+        CheckersFigureModel blackPawnFive = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnFifthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnFifthX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
-        ChessFigureModel blackPawnSix = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnSixthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnSixthX(), fieldWidth)),
+        CheckersFigureModel blackPawnSix = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnSixthY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnSixthX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
-        ChessFigureModel blackPawnSeven = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnSeventhY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnSeventhX(), fieldWidth)),
+        CheckersFigureModel blackPawnSeven = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnSeventhY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnSeventhX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
-        ChessFigureModel blackPawnEight = new ChessFigureModel("pawn", new FigurePosition(
-                getAbsolutePositionX(getPositions().getChessBlackPawnEighthY(), fieldWidth), 0,
-                getAbsolutePositionY(getPositions().getChessBlackPawnEighthX(), fieldWidth)),
+        CheckersFigureModel blackPawnEight = new CheckersFigureModel("pawn", new FigurePosition(
+                getAbsolutePositionX(getPositions().getCheckersBlackPawnEightY(), fieldWidth), 0,
+                getAbsolutePositionY(getPositions().getCheckersBlackPawnEightX(), fieldWidth)),
                 new PhongMaterial(blackColor), Y_AXIS, 180, PAWN, BLACK);
 
-        boardSceneGroup.getChildren().addAll(blackBishopFirst, blackBishopSecond, blackKnightFirst, blackKnightSecond,
-                blackRookFirst, blackRookSecond, blackKing, blackQueen, blackPawnOne, blackPawnTwo, blackPawnThree,
+        boardSceneGroup.getChildren().addAll(blackPawnOne, blackPawnTwo, blackPawnThree,
                 blackPawnFour, blackPawnFive, blackPawnSix, blackPawnSeven, blackPawnEight);
 
-        chessFigureModels.addAll(Stream.of(blackBishopFirst, blackBishopSecond, blackKnightFirst, blackKnightSecond,
-                blackRookFirst, blackRookSecond, blackKing, blackQueen, blackPawnOne, blackPawnTwo, blackPawnThree,
+        checkersFigureModels.addAll(Stream.of(blackPawnOne, blackPawnTwo, blackPawnThree,
                 blackPawnFour, blackPawnFive, blackPawnSix, blackPawnSeven, blackPawnEight).collect(Collectors.toList()));
     }
 
@@ -570,8 +505,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 anchorDistX = deltaX.get();
                 anchorDistZ = deltaZ.get();
             } else if(event.getButton() == MouseButton.PRIMARY) {
-                marked = handlePrimaryClick(event, board, chessFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
-                        chessMoveHistory, boardSceneGroup, mainStage);
+                marked = handlePrimaryClick(event, board, checkersFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
+                        checkersMoveHistory, boardSceneGroup, mainStage);
             }
         });
 
@@ -587,8 +522,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
 
         boardScene.setOnMouseMoved(event -> {
             if (marked != null){
-                highlight = handleMarkedMove(event, board, chessFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
-                        chessMoveHistory);
+                highlight = handleMarkedMove(event, board, checkersFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
+                        checkersMoveHistory);
             }
         });
 
@@ -598,14 +533,14 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         });
     }
 
-    private ChessBoardPositions getCurrentBoard() {
-        ChessBoardPositions chessBoardPositions = new ChessBoardPositions(new org.sample.checkers.config.chess.ChessFigure[8][8], new ChessSide[8][8]);
+    private CheckersBoardPositions getCurrentBoard() {
+        CheckersBoardPositions chessBoardPositions = new CheckersBoardPositions(new CheckersFigure[8][8], new CheckersSide[8][8]);
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                chessBoardPositions.getPositions()[i][j] = getBoardFigure(chessFigureModels, new Dimension2D(i+1,j+1),
+                chessBoardPositions.getPositions()[i][j] = getBoardFigure(checkersFigureModels, new Dimension2D(i+1,j+1),
                         fieldWidth);
-                chessBoardPositions.getSides()[i][j] = getBoardSide(chessFigureModels, new Dimension2D(i+1,j+1), fieldWidth);
+                chessBoardPositions.getSides()[i][j] = getBoardSide(checkersFigureModels, new Dimension2D(i+1,j+1), fieldWidth);
             }
         }
 

@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static org.sample.checkers.Checkers.newGame;
-import static org.sample.checkers.config.PropertyUtil.getConfig;
+import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 
 public class MenuController implements Initializable {
 
@@ -80,7 +80,7 @@ public class MenuController implements Initializable {
         StackPane boardPane = (StackPane) splitPane.getItems().get(0);
         boardPane.getChildren().remove(0);
         boardPane.getChildren().add(boardScene);
-        boardScene.widthProperty().bind(mainScene.widthProperty().subtract(getConfig().getRightPanelWidth()));
+        boardScene.widthProperty().bind(mainScene.widthProperty().subtract(getBoardConfig().getRightPanelWidth()));
         boardScene.heightProperty().bind(mainScene.heightProperty());
         boardScene.setFill(Color.rgb(0,100,0, 1));
         stage.setScene(mainScene);
