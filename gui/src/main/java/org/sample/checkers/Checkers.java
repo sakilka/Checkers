@@ -96,8 +96,8 @@ public class Checkers extends Application {
         stage.setScene(scene);
     }
 
-    public static SubScene newGame(Stage stage, BoardPosition boardPosition){
-        return BoardFactory.getBoardScene(getGameConfig().getGameOption(), stage, new SmartGroup(),
+    public static SubScene newGame(Stage stage, BoardPosition boardPosition, Game game){
+        return BoardFactory.getBoardScene(game, stage, new SmartGroup(),
                 getBoardConfig().getWidth() - getBoardConfig().getRightPanelWidth(), getBoardConfig().getHeight(), true,
                 SceneAntialiasing.BALANCED, boardPosition);
     }

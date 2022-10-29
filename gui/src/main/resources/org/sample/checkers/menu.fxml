@@ -16,8 +16,8 @@
         </Menu>
         <Menu text="Game">
             <items>
-                <RadioMenuItem text="Chess" selected="true" toggleGroup="$toggleGroupGame" onAction="#chessInit"/>
-                <RadioMenuItem text="Checkers" toggleGroup="$toggleGroupGame" onAction="#checkersInit"/>
+                <RadioMenuItem fx:id="CHESS" text="Chess" toggleGroup="$toggleGroupGame" onAction="#chessInit"/>
+                <RadioMenuItem fx:id="CHECKERS" text="Checkers" toggleGroup="$toggleGroupGame" onAction="#checkersInit"/>
             </items>
         </Menu>
         <Menu text="Help">
