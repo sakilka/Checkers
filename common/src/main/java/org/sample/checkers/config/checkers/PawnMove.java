@@ -89,7 +89,7 @@ public class PawnMove implements CheckersMove {
             for (int height = 0; height < 8; height++) {
                 if(currentBoard.getSides()[width][height] == side
                         && currentBoard.getPositions()[width][height] == CheckersFigure.QUEEN
-                        && (currentPosition.width != width && currentPosition.height != height)){
+                        && !(currentPosition.width == width && currentPosition.height == height)){
                     if(queenPositionMustJump(side, new Dimension2D(width, height), currentBoard)){
                         return true;
                     }
@@ -160,7 +160,7 @@ public class PawnMove implements CheckersMove {
             for (int height = 0; height < 8; height++) {
                 if(currentBoard.getSides()[width][height] == side
                         && currentBoard.getPositions()[width][height] == CheckersFigure.PAWN
-                        && (currentPosition.width != width && currentPosition.height != height)){
+                        && !(currentPosition.width == width && currentPosition.height == height)){
                     if(currentPositionMustJump(side, new Dimension2D(width, height), currentBoard)){
                         return true;
                     }

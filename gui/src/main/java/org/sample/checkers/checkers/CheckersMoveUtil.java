@@ -15,12 +15,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.sample.checkers.chess.*;
 import org.sample.checkers.config.checkers.*;
-import org.sample.checkers.config.chess.ChessBoardPositions;
-import org.sample.checkers.config.chess.ChessMovePosition;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.sample.checkers.config.checkers.CheckersFigure.PAWN;
@@ -90,7 +87,7 @@ public class CheckersMoveUtil {
 
                 if(potentialMoves.stream().anyMatch(position -> (position.width +1) == highlight.width
                         && (position.height + 1) == highlight.height)) {
-                    jumpFigure(targetCheckersFigure, checkersMoveHistory, highlight, checkersFigures, fieldWidth, boardSceneGroup);
+                    jumpFigure(targetCheckersFigure, checkersMoveHistory, highlight, checkersFigures, fieldWidth, boardSceneGroup, currentBoard);
                     promoteFigure(targetCheckersFigure, highlight, checkersFigures, fieldWidth, boardSceneGroup);
                     moveFigure(targetCheckersFigure, highlight, fieldWidth);
                     checkersMoveHistory.addMove(new CheckersMovePosition(highlight, marked));
@@ -156,7 +153,7 @@ public class CheckersMoveUtil {
 
     private static void jumpFigure(CheckersFigureModel targetCheckersFigure, CheckersMoveHistory checkersMoveHistory,
                                    Dimension2D highlight, List<CheckersFigureModel> checkersFigures, float fieldWidth,
-                                   Group boardSceneGroup){
+                                   Group boardSceneGroup, CheckersBoardPositions currentBoard){
         if(targetCheckersFigure.getCheckersFigure() == PAWN) {
             Dimension2D position = getFigurePosition(checkersFigures, targetCheckersFigure, fieldWidth);
             if (Math.abs(position.width - highlight.width) == 2 && Math.abs(position.height - highlight.height) == 2) {
@@ -182,8 +179,86 @@ public class CheckersMoveUtil {
                 }
             }
         } else {
-            //TODO queen jump
+            Dimension2D position = getFigurePosition(checkersFigures, targetCheckersFigure, fieldWidth);
+            if (currentQueenJump(position, highlight, currentBoard, targetCheckersFigure.getCheckersSide())) {
+                Dimension2D jumpPosition = getCurrentQueenJumpPosition(position, highlight, currentBoard,
+                        targetCheckersFigure.getCheckersSide());
+                CheckersFigureModel jumped = getFigureForPosition(checkersFigures, jumpPosition, fieldWidth);
+                boardSceneGroup.getChildren().remove(jumped);
+                checkersFigures.remove(jumped);
+
+                CheckersBoardPositions potentialBoard = checkersMoveHistory
+                        .getCurrentBoardFromHistoryAndWithMove(new CheckersMovePosition(highlight,position));
+
+                List<Dimension2D> nextMoves = CheckersMoveFactory.getMove(QUEEN)
+                        .potentialMoves(targetCheckersFigure.getCheckersSide(), new Dimension2D(highlight.width-1,
+                                highlight.height-1), potentialBoard);
+                if(nextMoves.size() > 0) {
+                    for (Dimension2D potentialJump : nextMoves) {
+                        if (currentQueenJump(highlight, potentialJump, potentialBoard, targetCheckersFigure.getCheckersSide())) {
+                            checkersMoveHistory.setOnMove(targetCheckersFigure.getCheckersSide().oposite());
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    //TODo remove
+    private static void printChessSides(CheckersBoardPositions potentialBoard) {
+        for(int height = 7; height>=0; height--) {
+            for(int width=0; width<8; width++) {
+                System.out.printf("%1$7s",potentialBoard.getSides()[width][height]);
+            }
+            System.out.println();
+        }
+    }
+
+    //TODo remove
+    private static void printChessFigures(CheckersBoardPositions potentialBoard) {
+        for(int height = 7; height>=0; height--) {
+            for(int width=0; width<8; width++) {
+                System.out.printf("%1$7s",potentialBoard.getPositions()[width][height]);
+            }
+            System.out.println();
+        }
+    }
+
+    private static boolean currentQueenJump(Dimension2D current, Dimension2D target, CheckersBoardPositions currentBoard,
+                                            CheckersSide side) {
+        int widthDirection = current.width > target.width ? -1 : 1;
+        int heightDirection = current.height > target.height ? -1 : 1;
+
+        for(int shift = 1; (current.width + (widthDirection * shift) <= 8
+                && current.width + (widthDirection * shift) > 0
+                && current.height + (heightDirection * shift) <= 8
+                && current.height + (heightDirection * shift) > 0); shift++) {
+            if(currentBoard.getSides()[(int) (current.width + (widthDirection * shift)) -1]
+                    [(int) (current.height + (heightDirection * shift)) - 1] == side.oposite()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static Dimension2D getCurrentQueenJumpPosition(Dimension2D current, Dimension2D target, CheckersBoardPositions currentBoard,
+                                            CheckersSide side) {
+        int widthDirection = current.width > target.width ? -1 : 1;
+        int heightDirection = current.height > target.height ? -1 : 1;
+
+        for(int shift = 1; (current.width + (widthDirection * shift) <= 8
+                && current.width + (widthDirection * shift) > 0
+                && current.height + (heightDirection * shift) <= 8
+                && current.height + (heightDirection * shift) > 0); shift++) {
+            if(currentBoard.getSides()[(int) (current.width + (widthDirection * shift)) - 1]
+                    [(int) (current.height + (heightDirection * shift)) - 1] == side.oposite()){
+                return new Dimension2D((int) (current.width + (widthDirection * shift)),
+                        (int) (current.height + (heightDirection * shift)));
+            }
+        }
+
+        return null;
     }
 
     private static void moveFigure(CheckersFigureModel targetChessFigure, Dimension2D highlight, float fieldWidth) {

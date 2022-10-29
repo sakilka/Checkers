@@ -2,6 +2,7 @@ package org.sample.checkers.config.checkers;
 
 import com.sun.javafx.geom.Dimension2D;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QueenMove implements CheckersMove {
@@ -16,6 +17,261 @@ public class QueenMove implements CheckersMove {
     //Jestliže některý z hráčů zahraje tah v rozporu s pravidly (např. opomenutí skákání), je na jeho protihráči, jestli bude vyžadovat opravu tahu, nebo ne.
     @Override
     public List<Dimension2D> potentialMoves(CheckersSide side, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
-        return null;
+        List<Dimension2D> potentialMoves = new ArrayList<>();
+
+        if(queenPositionMustJump(side, currentPosition, currentBoard)) {
+
+            for(int shift = 1; (((currentPosition.width + shift) < 8) && ((currentPosition.height + shift) < 8)); shift ++) {
+                if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height + shift)]
+                        == side.oposite()
+                        && (currentPosition.width + shift + 1) < 8
+                        && (currentPosition.height + shift + 1) < 8
+                        && currentBoard.getSides()[(int) (currentPosition.width + shift + 1)]
+                        [(int) (currentPosition.height + shift + 1)] == null) {
+                    for(shift = shift +1; (((currentPosition.width + shift) < 8)
+                            && ((currentPosition.height + shift) < 8)); shift++) {
+                        if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height + shift)]
+                                != null) {
+                            break;
+                        }
+                        potentialMoves.add(new Dimension2D(currentPosition.width + shift, currentPosition.height + shift));
+                    }
+                }
+            }
+
+            for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height- shift) >= 0)); shift ++) {
+                if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height - shift)]
+                        == side.oposite()
+                        && (currentPosition.width - shift - 1) >= 0
+                        && (currentPosition.height - shift - 1) >= 0
+                        && currentBoard.getSides()[(int) (currentPosition.width - shift - 1)]
+                        [(int) (currentPosition.height - shift - 1)] == null) {
+                    for(shift = shift + 1; (((currentPosition.width - shift) >= 0)
+                            && ((currentPosition.height - shift) >= 0)); shift++) {
+                        if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height - shift)]
+                                != null) {
+                            break;
+                        }
+                        potentialMoves.add(new Dimension2D(currentPosition.width - shift, currentPosition.height - shift));
+                    }
+
+                    break;
+                }
+            }
+
+            for(int shift = 1; (((currentPosition.width + shift) < 8) && ((currentPosition.height - shift) >= 0)); shift ++) {
+                if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height - shift)]
+                        == side.oposite()
+                        && (currentPosition.width + shift + 1) < 8
+                        && (currentPosition.height - shift - 1) >= 0
+                        && currentBoard.getSides()[(int) (currentPosition.width + shift + 1)]
+                        [(int) (currentPosition.height - shift - 1)] == null) {
+                    for(shift = shift +1; (((currentPosition.width + shift) < 8)
+                            && ((currentPosition.height - shift) >= 0)); shift++) {
+                        if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height - shift)]
+                                != null) {
+                            break;
+                        }
+                        potentialMoves.add(new Dimension2D(currentPosition.width + shift, currentPosition.height - shift));
+                    }
+
+                    break;
+                }
+            }
+
+            for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height + shift) < 8)); shift ++) {
+                if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height + shift)]
+                        == side.oposite()
+                        && (currentPosition.width - shift - 1) >= 0
+                        && (currentPosition.height + shift + 1) < 8
+                        && currentBoard.getSides()[(int) (currentPosition.width - shift - 1)]
+                        [(int) (currentPosition.height + shift + 1)] == null) {
+                    for(shift = shift + 1; (((currentPosition.width - shift) >= 0)
+                            && ((currentPosition.height + shift) < 8)); shift++) {
+                        if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height + shift)]
+                                != null) {
+                            break;
+                        }
+                        potentialMoves.add(new Dimension2D(currentPosition.width - shift, currentPosition.height + shift));
+                    }
+
+                    break;
+                }
+            }
+
+            return potentialMoves;
+        }
+
+        if(queenMustJump(side, currentPosition, currentBoard)
+                && !queenPositionMustJump(side, currentPosition, currentBoard)) {
+            return new ArrayList<>();
+        }
+
+        if(mustJumpAnotherFigure(side, currentPosition, currentBoard)){
+            return new ArrayList<>();
+        }
+
+        for(int shift = 1; (((currentPosition.width + shift) < 8) && ((currentPosition.height + shift) < 8)); shift ++) {
+            if (currentBoard.getPositions()[(int) currentPosition.width + shift]
+                    [(int) currentPosition.height + shift] != null) {
+
+                break;
+            }
+
+            potentialMoves.add(new Dimension2D(currentPosition.width + shift, currentPosition.height + shift));
+        }
+
+        for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height - shift) >= 0)); shift ++) {
+            if (currentBoard.getPositions()[(int) currentPosition.width - shift]
+                    [(int) currentPosition.height - shift] != null) {
+
+                break;
+            }
+
+            potentialMoves.add(new Dimension2D(currentPosition.width - shift, currentPosition.height - shift));
+        }
+
+        for(int shift = 1; (((currentPosition.width + shift) < 8) && ((currentPosition.height - shift) >= 0)); shift ++) {
+            if (currentBoard.getPositions()[(int) currentPosition.width + shift]
+                    [(int) currentPosition.height - shift] != null) {
+
+                break;
+            }
+
+            potentialMoves.add(new Dimension2D(currentPosition.width + shift, currentPosition.height - shift));
+        }
+
+        for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height + shift) < 8)); shift ++) {
+            if (currentBoard.getPositions()[(int) currentPosition.width - shift]
+                    [(int) currentPosition.height + shift] != null) {
+
+                break;
+            }
+
+            potentialMoves.add(new Dimension2D(currentPosition.width - shift, currentPosition.height + shift));
+        }
+
+        return potentialMoves;
+    }
+
+    private boolean queenMustJump(CheckersSide side, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
+        for (int width = 0; width < 8; width++) {
+            for (int height = 0; height < 8; height++) {
+                if(currentBoard.getSides()[width][height] == side
+                        && currentBoard.getPositions()[width][height] == CheckersFigure.QUEEN
+                        && !(currentPosition.width == width && currentPosition.height == height)){
+                    if(queenPositionMustJump(side, new Dimension2D(width, height), currentBoard)){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean queenPositionMustJump(CheckersSide side, Dimension2D currentPosition,
+                                          CheckersBoardPositions currentBoard) {
+
+        for(int shift = 1; (((currentPosition.width + shift) < 8) && ((currentPosition.height + shift) < 8)); shift ++) {
+            if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height + shift)]
+                    == side.oposite()
+                    && (currentPosition.width + shift + 1) < 8
+                    && (currentPosition.height + shift + 1) < 8
+                    && currentBoard.getSides()[(int) (currentPosition.width + shift + 1)]
+                    [(int) (currentPosition.height + shift + 1)] == null) {
+                return true;
+            }
+        }
+
+        for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height- shift) >= 0)); shift ++) {
+            if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height - shift)]
+                    == side.oposite()
+                    && (currentPosition.width - shift - 1) >= 0
+                    && (currentPosition.height - shift - 1) >= 0
+                    && currentBoard.getSides()[(int) (currentPosition.width - shift - 1)]
+                    [(int) (currentPosition.height - shift - 1)] == null) {
+                return true;
+            }
+        }
+
+        for(int shift = 1; (((currentPosition.width + shift) < 8) && ((currentPosition.height - shift) >= 0)); shift ++) {
+            if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height - shift)]
+                    == side.oposite()
+                    && (currentPosition.width + shift + 1) < 8
+                    && (currentPosition.height - shift - 1) >= 0
+                    && currentBoard.getSides()[(int) (currentPosition.width + shift + 1)]
+                    [(int) (currentPosition.height - shift - 1)] == null) {
+                return true;
+            }
+        }
+
+        for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height + shift) < 8)); shift ++) {
+            if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height + shift)]
+                    == side.oposite()
+                    && (currentPosition.width - shift - 1) >= 0
+                    && (currentPosition.height + shift + 1) < 8
+                    && currentBoard.getSides()[(int) (currentPosition.width - shift - 1)]
+                    [(int) (currentPosition.height + shift + 1)] == null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean mustJumpAnotherFigure(CheckersSide side, Dimension2D currentPosition, CheckersBoardPositions currentBoard) {
+
+        if(queenPositionMustJump(side, currentPosition, currentBoard)) {
+            return false;
+        }
+
+        for (int width = 0; width < 8; width++) {
+            for (int height = 0; height < 8; height++) {
+                if(currentBoard.getSides()[width][height] == side
+                        && currentBoard.getPositions()[width][height] == CheckersFigure.PAWN
+                        && !(currentPosition.width == width && currentPosition.height == height)){
+                    if(currentPositionMustJump(side, new Dimension2D(width, height), currentBoard)){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean currentPositionMustJump(CheckersSide side, Dimension2D currentPosition,
+                                            CheckersBoardPositions currentBoard) {
+        if(side == CheckersSide.WHITE) {
+            if ((currentPosition.width -2) >=0 && (currentPosition.height +2) <8 &&
+                    (currentBoard.getSides()[(int) currentPosition.width -1][(int) currentPosition.height +1]
+                            == side.oposite()) && (currentBoard.getSides()[(int) currentPosition.width -2]
+                    [(int) currentPosition.height +2] == null)){
+                return true;
+            }
+            if ((currentPosition.width +2) <8 && (currentPosition.height +2) <8 &&
+                    (currentBoard.getSides()[(int) currentPosition.width +1][(int) currentPosition.height +1]
+                            == side.oposite()) &&
+                    (currentBoard.getSides()[(int) currentPosition.width +2][(int) currentPosition.height +2] == null)){
+                return true;
+            }
+
+        } else {
+            if ((currentPosition.width -2) >=0 && (currentPosition.height -2) >=0 &&
+                    (currentBoard.getSides()[(int) currentPosition.width -1][(int) currentPosition.height -1]
+                            == side.oposite()) && (currentBoard.getSides()[(int) currentPosition.width -2]
+                    [(int) currentPosition.height -2] == null)){
+                return true;
+            }
+            if ((currentPosition.width +2) <8 && (currentPosition.height -2) >=0 &&
+                    (currentBoard.getSides()[(int) currentPosition.width +1][(int) currentPosition.height -1]
+                            == side.oposite()) && (currentBoard.getSides()[(int) currentPosition.width +2]
+                    [(int) currentPosition.height -2] == null)){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
