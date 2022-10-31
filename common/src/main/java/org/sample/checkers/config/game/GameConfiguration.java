@@ -23,7 +23,7 @@ public class GameConfiguration {
     public GameSetup gameSetup() {
         GameSetup setup = new GameSetup();
         setup.setGame(gameOption);
-        setup.setAnimationDuration(Duration.seconds(duration));
+        setup.setAnimationDuration(Duration.millis(duration));
         return setup;
     }
 }
