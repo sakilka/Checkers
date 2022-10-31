@@ -20,7 +20,6 @@ public class QueenMove implements CheckersMove {
         List<Dimension2D> potentialMoves = new ArrayList<>();
 
         if(queenPositionMustJump(side, currentPosition, currentBoard)) {
-
             for(int shift = 1; (((currentPosition.width + shift) < 8) && ((currentPosition.height + shift) < 8)); shift ++) {
                 if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height + shift)]
                         == side.oposite()
@@ -36,6 +35,10 @@ public class QueenMove implements CheckersMove {
                         }
                         potentialMoves.add(new Dimension2D(currentPosition.width + shift, currentPosition.height + shift));
                     }
+                }
+                if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height + shift)]
+                        != null) {
+                    break;
                 }
             }
 
@@ -55,6 +58,10 @@ public class QueenMove implements CheckersMove {
                         potentialMoves.add(new Dimension2D(currentPosition.width - shift, currentPosition.height - shift));
                     }
 
+                    break;
+                }
+                if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height - shift)]
+                        != null) {
                     break;
                 }
             }
@@ -77,6 +84,10 @@ public class QueenMove implements CheckersMove {
 
                     break;
                 }
+                if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height - shift)]
+                        != null) {
+                    break;
+                }
             }
 
             for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height + shift) < 8)); shift ++) {
@@ -95,6 +106,10 @@ public class QueenMove implements CheckersMove {
                         potentialMoves.add(new Dimension2D(currentPosition.width - shift, currentPosition.height + shift));
                     }
 
+                    break;
+                }
+                if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height + shift)]
+                        != null) {
                     break;
                 }
             }
@@ -182,6 +197,10 @@ public class QueenMove implements CheckersMove {
                     [(int) (currentPosition.height + shift + 1)] == null) {
                 return true;
             }
+            if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height + shift)]
+                    != null) {
+                break;
+            }
         }
 
         for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height- shift) >= 0)); shift ++) {
@@ -192,6 +211,10 @@ public class QueenMove implements CheckersMove {
                     && currentBoard.getSides()[(int) (currentPosition.width - shift - 1)]
                     [(int) (currentPosition.height - shift - 1)] == null) {
                 return true;
+            }
+            if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height - shift)]
+                    != null) {
+                break;
             }
         }
 
@@ -204,6 +227,10 @@ public class QueenMove implements CheckersMove {
                     [(int) (currentPosition.height - shift - 1)] == null) {
                 return true;
             }
+            if(currentBoard.getSides()[(int) (currentPosition.width + shift)][(int) (currentPosition.height - shift)]
+                    != null) {
+                break;
+            }
         }
 
         for(int shift = 1; (((currentPosition.width - shift) >= 0) && ((currentPosition.height + shift) < 8)); shift ++) {
@@ -214,6 +241,10 @@ public class QueenMove implements CheckersMove {
                     && currentBoard.getSides()[(int) (currentPosition.width - shift - 1)]
                     [(int) (currentPosition.height + shift + 1)] == null) {
                 return true;
+            }
+            if(currentBoard.getSides()[(int) (currentPosition.width - shift)][(int) (currentPosition.height + shift)]
+                    != null) {
+                break;
             }
         }
 
