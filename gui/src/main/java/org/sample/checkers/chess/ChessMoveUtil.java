@@ -14,6 +14,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.sample.checkers.config.chess.*;
+import org.sample.checkers.config.game.GameSetup;
 
 import java.util.List;
 import java.util.Locale;
@@ -26,12 +27,14 @@ import static org.sample.checkers.config.chess.ChessSide.BLACK;
 import static org.sample.checkers.config.chess.ChessSide.WHITE;
 import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionY;
+import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 
 public class ChessMoveUtil {
 
     private static Color shineColor = Color.rgb(229,206,0, 0.3);
     private static Color highlightColor = Color.rgb(62,177,90, 0.6);
     private static Color moveColor = Color.rgb(229,1,0, 0.8);
+    private static final GameSetup gameSetup = getGameSetup();
 
     public static Dimension2D handlePrimaryClick(MouseEvent event, Cube[][] board, List<ChessFigureModel> chessFigureModels, float fieldWidth,
                                                  Dimension2D marked, Dimension2D highlight, ChessBoardPositions currentBoard,
@@ -392,7 +395,7 @@ public class ChessMoveUtil {
         KeyValue keyX = new KeyValue(figure.translateXProperty(), p2.getX());
         KeyValue keyY = new KeyValue(figure.translateYProperty(), p2.getY());
         KeyValue keyZ = new KeyValue(figure.translateZProperty(), p2.getZ());
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(1), keyX, keyY, keyZ);
+        KeyFrame keyFrame = new KeyFrame(gameSetup.getAnimationDuration(), keyX, keyY, keyZ);
         t.getKeyFrames().add(keyFrame);
         return t;
     }
