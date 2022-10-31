@@ -4,10 +4,13 @@ import com.sun.javafx.geom.Dimension2D;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -270,6 +273,8 @@ public class CheckersMoveUtil {
                 new Point3D(getAbsolutePositionX((int) highlight.width, fieldWidth), 0,
                         getAbsolutePositionY((int) highlight.height, fieldWidth)),
                 targetChessFigure);
+        animation.setOnFinished(event -> gameSetup.setMoveFigure(false));
+        gameSetup.setMoveFigure(true);
         animation.play();
     }
 

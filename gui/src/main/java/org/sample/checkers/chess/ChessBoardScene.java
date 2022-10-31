@@ -22,6 +22,7 @@ import org.sample.checkers.chess.components.SmartGroup;
 import org.sample.checkers.config.chess.ChessBoardPositions;
 import org.sample.checkers.config.chess.ChessMoveHistory;
 import org.sample.checkers.config.chess.ChessSide;
+import org.sample.checkers.config.game.GameSetup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ import static org.sample.checkers.config.chess.ChessSide.BLACK;
 import static org.sample.checkers.config.chess.ChessSide.WHITE;
 import static org.sample.checkers.config.chess.ChessPropertyUtil.getPositions;
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
+import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 
 public class ChessBoardScene extends SubScene implements ChessBoard {
 
@@ -78,6 +80,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private final Cube[][] board;
     private final List<ChessFigureModel> chessFigureModels;
     private ChessMoveHistory chessMoveHistory;
+
+    private GameSetup gameSetup = getGameSetup();
 
     public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
@@ -569,7 +573,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
                 distZ = event.getSceneY();
                 anchorDistX = deltaX.get();
                 anchorDistZ = deltaZ.get();
-            } else if(event.getButton() == MouseButton.PRIMARY) {
+            } else if(event.getButton() == MouseButton.PRIMARY && !gameSetup.isMoveFigure()) {
                 marked = handlePrimaryClick(event, board, chessFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
                         chessMoveHistory, boardSceneGroup, mainStage);
             }

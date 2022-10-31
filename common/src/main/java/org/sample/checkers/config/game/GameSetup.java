@@ -9,6 +9,7 @@ public class GameSetup {
 
     private Game game;
     private Duration animationDuration;
+    private boolean moveFigure;
 
     public Game getGame() {
         return game;
@@ -29,5 +30,13 @@ public class GameSetup {
 
     public void setAnimationDuration(Duration animationDuration) {
         this.animationDuration = animationDuration;
+    }
+
+    public boolean isMoveFigure() {
+        return moveFigure;
+    }
+
+    public void setMoveFigure(boolean moveFigure) {
+        this.moveFigure = moveFigure;
     }
 }
