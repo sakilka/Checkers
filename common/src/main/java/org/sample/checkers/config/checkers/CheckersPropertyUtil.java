@@ -1,7 +1,6 @@
 package org.sample.checkers.config.checkers;
 
 import org.sample.checkers.config.chess.BoardConfiguration;
-import org.sample.checkers.config.chess.ChessFiguresPositions;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

@@ -7,7 +7,7 @@ import org.sample.checkers.checkers.CheckersBoardScene;
 import org.sample.checkers.chess.BoardPosition;
 import org.sample.checkers.chess.ChessBoardScene;
 import org.sample.checkers.board.components.SmartGroup;
-import org.sample.checkers.config.Game;
+import org.sample.checkers.config.game.Game;
 
 public class BoardFactory {
 

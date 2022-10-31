@@ -178,6 +178,7 @@ public class ChessMoveUtil {
                 targetChessFigureModel);
         animation.setOnFinished(event -> gameSetup.setMoveFigure(false));
         gameSetup.setMoveFigure(true);
+        gameSetup.setPlayTimeline(animation);
         animation.play();
     }
 

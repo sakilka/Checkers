@@ -17,8 +17,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.chess.BoardPosition;
-import org.sample.checkers.config.Game;
+import org.sample.checkers.config.game.Game;
 import org.sample.checkers.config.game.GameSetup;
+import org.sample.checkers.config.game.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URL;
@@ -41,6 +42,9 @@ public class MenuController implements Initializable {
 
     @FXML
     private ToggleGroup toggleGroupGame;
+
+    @FXML
+    private ToggleGroup toggleGroupPlayer;
 
     @FXML
     private RadioMenuItem CHESS;
@@ -73,14 +77,23 @@ public class MenuController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Game selected = gameSetup.getGame();
-        Toggle option = toggleGroupGame.getToggles().stream()
-                .filter(toggle -> ((RadioMenuItem) toggle).getId().equals(selected.name())).findFirst()
+        Game selectedGame = gameSetup.getGame();
+        Toggle game = toggleGroupGame.getToggles().stream()
+                .filter(toggle -> ((RadioMenuItem) toggle).getId().equals(selectedGame.name())).findFirst()
                 .orElseGet(() -> CHESS);
-        toggleGroupGame.selectToggle(option);
-        toggleGroupGame.selectedToggleProperty().addListener((observable, oldValue, newValue)
-                -> {
+        toggleGroupGame.selectToggle(game);
+        toggleGroupGame.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             gameSetup.setGame(((RadioMenuItem) newValue).getId());
+            gameInit();
+        });
+
+        Player selectedPlayer = gameSetup.getPlayer();
+        Toggle player = toggleGroupPlayer.getToggles().stream()
+                .filter(toggle -> ((RadioMenuItem) toggle).getId().equals(selectedPlayer.name())).findFirst()
+                .orElseGet(() -> CHESS);
+        toggleGroupPlayer.selectToggle(player);
+        toggleGroupPlayer.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            gameSetup.setPlayer(((RadioMenuItem) newValue).getId());
             gameInit();
         });
     }

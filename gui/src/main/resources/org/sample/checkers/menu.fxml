@@ -6,6 +6,7 @@
          fx:controller="org.sample.checkers.menu.controller.MenuController">
     <fx:define>
         <ToggleGroup fx:id="toggleGroupGame"/>
+        <ToggleGroup fx:id="toggleGroupPlayer"/>
     </fx:define>
     <menus>
         <Menu text="File">
@@ -18,6 +19,12 @@
             <items>
                 <RadioMenuItem fx:id="CHESS" text="Chess" toggleGroup="$toggleGroupGame"/>
                 <RadioMenuItem fx:id="CHECKERS" text="Checkers" toggleGroup="$toggleGroupGame"/>
+            </items>
+        </Menu>
+        <Menu text="Player">
+            <items>
+                <RadioMenuItem fx:id="SINGLE_PLAYER" text="Single player" toggleGroup="$toggleGroupPlayer"/>
+                <RadioMenuItem fx:id="MULTI_PLAYER" text="Multi player" toggleGroup="$toggleGroupPlayer"/>
             </items>
         </Menu>
         <Menu text="Help">

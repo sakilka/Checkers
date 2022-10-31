@@ -211,26 +211,6 @@ public class CheckersMoveUtil {
         }
     }
 
-//    //TODo remove
-//    private static void printChessSides(CheckersBoardPositions potentialBoard) {
-//        for(int height = 7; height>=0; height--) {
-//            for(int width=0; width<8; width++) {
-//                System.out.printf("%1$7s",potentialBoard.getSides()[width][height]);
-//            }
-//            System.out.println();
-//        }
-//    }
-//
-//    //TODo remove
-//    private static void printChessFigures(CheckersBoardPositions potentialBoard) {
-//        for(int height = 7; height>=0; height--) {
-//            for(int width=0; width<8; width++) {
-//                System.out.printf("%1$7s",potentialBoard.getPositions()[width][height]);
-//            }
-//            System.out.println();
-//        }
-//    }
-
     private static boolean currentQueenJump(Dimension2D current, Dimension2D target, CheckersBoardPositions currentBoard,
                                             CheckersSide side) {
         int widthDirection = current.width > target.width ? -1 : 1;
@@ -273,9 +253,19 @@ public class CheckersMoveUtil {
                 new Point3D(getAbsolutePositionX((int) highlight.width, fieldWidth), 0,
                         getAbsolutePositionY((int) highlight.height, fieldWidth)),
                 targetChessFigure);
+
+        if(gameSetup.getPlayTimeline() != null) {
+            Timeline runningTimeline = gameSetup.getPlayTimeline();
+            runningTimeline.setOnFinished(event -> {
+                animation.play();
+            });
+        } else {
+            animation.play();
+        }
+
         animation.setOnFinished(event -> gameSetup.setMoveFigure(false));
         gameSetup.setMoveFigure(true);
-        animation.play();
+        gameSetup.setPlayTimeline(animation);
     }
 
     private static Timeline createTimeline(Point3D p2, Node figure) {
@@ -461,5 +451,21 @@ public class CheckersMoveUtil {
         CheckersFigureModel targetChessFigure = getFigureForPosition(chessFigures, position, fieldWidth);
 
         return targetChessFigure == null ? null : targetChessFigure.getCheckersSide();
+    }
+
+    public static CheckersFigureModel getFigureForCheckersMove(CheckersMovePosition movePosition, float fieldWidth,
+                                                               List<CheckersFigureModel> checkersFigureModels) {
+        Dimension2D position = movePosition.getPreviousPosition();
+
+        for (CheckersFigureModel figure : checkersFigureModels) {
+            long x = getRelativePositionX(figure.getTranslateX(), fieldWidth);//7
+            long y = getRelativePositionY(figure.getTranslateZ(), fieldWidth);//7
+
+            if(position.width == x && position.height == y) {
+                return figure;
+            }
+        }
+
+        throw new RuntimeException("Cannot find figure for move!");
     }
 }

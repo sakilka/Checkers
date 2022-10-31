@@ -1,10 +1,12 @@
 package org.sample.checkers.checkers;
 
 import com.sun.javafx.geom.Dimension2D;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -15,18 +17,16 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import org.sample.checkers.chess.BoardPosition;
-import org.sample.checkers.chess.Cube;
-import org.sample.checkers.chess.FigurePosition;
+import org.sample.checkers.board.components.SmartGroup;
 import org.sample.checkers.board.model.ChessBoard;
 import org.sample.checkers.board.model.CubeFace;
 import org.sample.checkers.board.model.CubeMaterial;
-import org.sample.checkers.board.components.SmartGroup;
-import org.sample.checkers.config.checkers.CheckersBoardPositions;
-import org.sample.checkers.config.checkers.CheckersFigure;
-import org.sample.checkers.config.checkers.CheckersMoveHistory;
-import org.sample.checkers.config.checkers.CheckersSide;
+import org.sample.checkers.chess.BoardPosition;
+import org.sample.checkers.chess.Cube;
+import org.sample.checkers.chess.FigurePosition;
+import org.sample.checkers.config.checkers.*;
 import org.sample.checkers.config.game.GameSetup;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +36,18 @@ import java.util.stream.Stream;
 import static java.lang.StrictMath.round;
 import static javafx.scene.transform.Rotate.Y_AXIS;
 import static org.sample.checkers.checkers.CheckersMoveUtil.*;
+import static org.sample.checkers.checkers.ui.impl.CheckersContext.getUi;
 import static org.sample.checkers.config.checkers.CheckersFigure.PAWN;
 import static org.sample.checkers.config.checkers.CheckersFiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.checkers.CheckersFiguresPositions.getAbsolutePositionY;
+import static org.sample.checkers.config.checkers.CheckersPropertyUtil.getPositions;
 import static org.sample.checkers.config.checkers.CheckersSide.BLACK;
 import static org.sample.checkers.config.checkers.CheckersSide.WHITE;
-import static org.sample.checkers.config.checkers.CheckersPropertyUtil.getPositions;
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
+import static org.sample.checkers.config.game.Player.SINGLE_PLAYER;
 
+@Controller
 public class CheckersBoardScene extends SubScene implements ChessBoard {
 
     private double anchorX;
@@ -86,6 +89,7 @@ public class CheckersBoardScene extends SubScene implements ChessBoard {
     private CheckersMoveHistory checkersMoveHistory;
 
     private GameSetup gameSetup = getGameSetup();
+    private CheckersUi ui = getUi();
 
     public CheckersBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
@@ -511,6 +515,10 @@ public class CheckersBoardScene extends SubScene implements ChessBoard {
             } else if(event.getButton() == MouseButton.PRIMARY && !gameSetup.isMoveFigure()) {
                 marked = handlePrimaryClick(event, board, checkersFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
                         checkersMoveHistory, boardSceneGroup, mainStage);
+
+                if(marked == null && gameSetup.isMoveFigure() && gameSetup.getPlayer() == SINGLE_PLAYER){
+                    executeUIMovement(event);
+                }
             }
         });
 
@@ -551,5 +559,18 @@ public class CheckersBoardScene extends SubScene implements ChessBoard {
         }
 
         return chessBoardPositions;
+    }
+
+    public void executeUIMovement(MouseEvent event) {
+        CheckersMovePosition nextMove = ui.computeNextMove(checkersMoveHistory);
+        CheckersFigureModel figureToMove = getFigureForCheckersMove(nextMove, fieldWidth, checkersFigureModels);
+        MouseEvent markEvent = event.copyFor(event.getSource(), figureToMove);
+        marked = handlePrimaryClick(markEvent, board, checkersFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
+                checkersMoveHistory, boardSceneGroup, mainStage);
+        MouseEvent moveEvent = event.copyFor(event.getSource(),
+                board[(int) (nextMove.getPosition().width - 1)][(int) (nextMove.getPosition().height - 1)]);
+        highlight = nextMove.getPosition();
+        marked = handlePrimaryClick(moveEvent, board, checkersFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
+                checkersMoveHistory, boardSceneGroup, mainStage);
     }
 }

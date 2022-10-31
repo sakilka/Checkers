@@ -13,6 +13,8 @@
         <module>gui</module>
         <module>common</module>
         <module>loader</module>
+        <module>chess-ui</module>
+        <module>checkers-ui</module>
     </modules>
 
     <properties>

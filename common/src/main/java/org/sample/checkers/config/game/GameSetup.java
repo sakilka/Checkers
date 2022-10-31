@@ -1,7 +1,7 @@
 package org.sample.checkers.config.game;
 
+import javafx.animation.Timeline;
 import javafx.util.Duration;
-import org.sample.checkers.config.Game;
 
 import java.util.Arrays;
 
@@ -10,6 +10,8 @@ public class GameSetup {
     private Game game;
     private Duration animationDuration;
     private boolean moveFigure;
+    private Timeline playTimeline;
+    private Player player;
 
     public Game getGame() {
         return game;
@@ -38,5 +40,27 @@ public class GameSetup {
 
     public void setMoveFigure(boolean moveFigure) {
         this.moveFigure = moveFigure;
+        this.playTimeline = null;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void setPlayer(String player) {
+        this.player = Arrays.stream(Player.values()).anyMatch(value-> value.name().equals(player))
+                ? Player.valueOf(player) : Player.SINGLE_PLAYER;
+    }
+
+    public Timeline getPlayTimeline() {
+        return playTimeline;
+    }
+
+    public void setPlayTimeline(Timeline playTimeline) {
+        this.playTimeline = playTimeline;
     }
 }

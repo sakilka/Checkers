@@ -1,4 +1,4 @@
-package org.sample.checkers.config;
+package org.sample.checkers.config.game;
 
 public enum Game {
     CHESS, CHECKERS;

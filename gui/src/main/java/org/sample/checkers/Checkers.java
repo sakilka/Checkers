@@ -22,7 +22,7 @@ import org.sample.checkers.chess.BoardPosition;
 import org.sample.checkers.board.components.SmartGroup;
 import org.sample.checkers.menu.RightPanel;
 import org.sample.checkers.menu.controller.MenuController;
-import org.sample.checkers.config.Game;
+import org.sample.checkers.config.game.Game;
 import org.sample.checkers.config.game.GameSetup;
 import org.springframework.context.annotation.ComponentScan;
 
