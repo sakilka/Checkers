@@ -525,9 +525,11 @@ public class CheckersBoardScene extends SubScene implements ChessBoard {
         });
 
         boardScene.setOnMouseMoved(event -> {
-            if (marked != null){
-                highlight = handleMarkedMove(event, board, checkersFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
-                        checkersMoveHistory);
+            if(!gameSetup.isMoveFigure()) {
+                if (marked != null) {
+                    highlight = handleMarkedMove(event, board, checkersFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
+                            checkersMoveHistory);
+                }
             }
         });
 

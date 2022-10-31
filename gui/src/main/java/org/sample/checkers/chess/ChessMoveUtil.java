@@ -176,6 +176,8 @@ public class ChessMoveUtil {
                 new Point3D(targetChessFigureModel.getTranslateX(), targetChessFigureModel.getTranslateY(), targetChessFigureModel.getTranslateZ()),
                 new Point3D(getAbsolutePositionX((int) highlight.width, fieldWidth), 0, getAbsolutePositionY((int) highlight.height, fieldWidth)),
                 targetChessFigureModel);
+        animation.setOnFinished(event -> gameSetup.setMoveFigure(false));
+        gameSetup.setMoveFigure(true);
         animation.play();
     }
 
