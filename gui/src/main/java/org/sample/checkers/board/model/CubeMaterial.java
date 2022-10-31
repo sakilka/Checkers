@@ -1,4 +1,4 @@
-package org.sample.checkers.chess.board.model;
+package org.sample.checkers.board.model;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;

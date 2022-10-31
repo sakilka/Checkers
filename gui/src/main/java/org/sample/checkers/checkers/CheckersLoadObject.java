@@ -1,11 +1,11 @@
 package org.sample.checkers.checkers;
 
+import javafx.scene.CacheHint;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import org.sample.checkers.config.checkers.CheckersLoadModel;
 import org.sample.checkers.config.checkers.CheckersPropertyUtil;
-import org.sample.checkers.config.chess.ChessLoadModel;
 import org.sample.checkers.loader.model.Model;
 
 public class CheckersLoadObject extends MeshView {
@@ -27,6 +27,8 @@ public class CheckersLoadObject extends MeshView {
 
         super.setMesh(mesh);
         super.setDrawMode(DrawMode.FILL);
+        super.setCache(true);
+        super.setCacheHint(CacheHint.SPEED);
     }
 
     private void setTextureCoordinates(TriangleMesh pyramidMesh) {

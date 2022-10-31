@@ -15,8 +15,8 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
-import org.sample.checkers.chess.board.model.CubeFace;
-import org.sample.checkers.chess.board.model.CubeMaterial;
+import org.sample.checkers.board.model.CubeFace;
+import org.sample.checkers.board.model.CubeMaterial;
 
 public class Cube extends MeshView {
 

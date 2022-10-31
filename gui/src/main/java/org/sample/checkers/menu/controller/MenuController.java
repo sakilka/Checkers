@@ -1,4 +1,4 @@
-package org.sample.checkers.chess.menu.controller;
+package org.sample.checkers.menu.controller;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

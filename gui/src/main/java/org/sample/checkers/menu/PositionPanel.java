@@ -1,4 +1,4 @@
-package org.sample.checkers.chess.menu;
+package org.sample.checkers.menu;
 
 import de.jensd.fx.glyphs.GlyphIcon;
 import de.jensd.fx.glyphs.GlyphsBuilder;

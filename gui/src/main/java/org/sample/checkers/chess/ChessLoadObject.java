@@ -1,5 +1,6 @@
 package org.sample.checkers.chess;
 
+import javafx.scene.CacheHint;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
@@ -26,6 +27,8 @@ public class ChessLoadObject extends MeshView {
 
         super.setMesh(mesh);
         super.setDrawMode(DrawMode.FILL);
+        super.setCache(true);
+        super.setCacheHint(CacheHint.SPEED);
     }
 
     private void setTextureCoordinates(TriangleMesh pyramidMesh) {

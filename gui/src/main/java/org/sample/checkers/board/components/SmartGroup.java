@@ -1,4 +1,4 @@
-package org.sample.checkers.chess.components;
+package org.sample.checkers.board.components;
 
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;

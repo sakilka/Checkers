@@ -1,4 +1,4 @@
-package org.sample.checkers.chess.menu;
+package org.sample.checkers.menu;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
