@@ -2,8 +2,10 @@ package org.sample.checkers.config.game;
 
 import org.sample.checkers.config.Game;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 @PropertySource("classpath:application.properties")
@@ -12,11 +14,11 @@ public class GameConfiguration {
     @Value("${game.option}")
     private Game gameOption;
 
-    public Game getGameOption() {
-        return gameOption;
-    }
-
-    public void setGameOption(Game gameOption) {
-        this.gameOption = gameOption;
+    @Bean("gameSetup")
+    @Scope("singleton")
+    public GameSetup gameSetup() {
+        GameSetup setup = new GameSetup();
+        setup.setGame(gameOption);
+        return setup;
     }
 }

@@ -23,15 +23,21 @@ import org.sample.checkers.chess.components.SmartGroup;
 import org.sample.checkers.chess.menu.RightPanel;
 import org.sample.checkers.chess.menu.controller.MenuController;
 import org.sample.checkers.config.Game;
+import org.sample.checkers.config.game.GameSetup;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
 
-import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
-import static org.sample.checkers.config.game.GamePropertyUtil.getGameConfig;
+import static org.sample.checkers.config.game.GamePropertyUtil.*;
 
 @ComponentScan
 public class Checkers extends Application {
+
+    private final GameSetup gameSetup;
+
+    public Checkers() {
+        this.gameSetup = getGameSetup();
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -48,7 +54,7 @@ public class Checkers extends Application {
         SplitPane content = new SplitPane();
 
         BoardPosition boardPosition = new BoardPosition();
-        SubScene boardScene = BoardFactory.getBoardScene(getGameConfig().getGameOption(), stage, new SmartGroup(),
+        SubScene boardScene = BoardFactory.getBoardScene(gameSetup.getGame(), stage, new SmartGroup(),
                 getBoardConfig().getWidth() - getBoardConfig().getRightPanelWidth(), getBoardConfig().getHeight(), true,
                 SceneAntialiasing.BALANCED, boardPosition);
 
@@ -110,7 +116,7 @@ public class Checkers extends Application {
                 MenuController controller = new MenuController();
                 controller.setStage(stage);
                 controller.setBoardPosition(boardPosition);
-                return controller ;
+                return controller;
             } else {
                 try {
                     return controllerClass.newInstance();
