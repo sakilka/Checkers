@@ -26,6 +26,7 @@ import org.sample.checkers.menu.controller.MenuController;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
@@ -111,6 +112,21 @@ public class Checkers extends Application {
                 splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / newVal.doubleValue()));
             }
             content.getDividers().get(0).positionProperty().set(splitPaneDividerPosition.doubleValue());
+        });
+
+        AtomicReference<Number> initialWidth = new AtomicReference<>();
+
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if(Double.isNaN(oldVal.doubleValue())) {
+                initialWidth.set(newVal);
+            } else {
+                if(newVal.doubleValue() > 200) {
+                    double ratio = (initialWidth.get().doubleValue() / newVal.doubleValue());
+                    double zoom = 7.30395 * (Math.pow(ratio, 2)) - 110.62 * ratio + 125.623;
+
+                    boardPosition.translateZProperty().setValue(-zoom);
+                }
+            }
         });
 
         root.setCenter(content);
