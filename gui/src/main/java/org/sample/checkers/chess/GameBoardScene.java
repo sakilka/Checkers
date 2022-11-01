@@ -16,13 +16,11 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import org.sample.checkers.board.model.ChessBoard;
+import org.sample.checkers.board.model.GameBoard;
 import org.sample.checkers.board.model.CubeFace;
 import org.sample.checkers.board.model.CubeMaterial;
 import org.sample.checkers.board.components.SmartGroup;
-import org.sample.checkers.checkers.CheckersFigureModel;
 import org.sample.checkers.chess.ui.ChessUi;
-import org.sample.checkers.config.checkers.CheckersMovePosition;
 import org.sample.checkers.config.chess.ChessBoardPositions;
 import org.sample.checkers.config.chess.ChessMoveHistory;
 import org.sample.checkers.config.chess.ChessMovePosition;
@@ -48,7 +46,7 @@ import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 import static org.sample.checkers.config.game.Player.SINGLE_PLAYER;
 
-public class ChessBoardScene extends SubScene implements ChessBoard {
+public class GameBoardScene extends SubScene implements GameBoard {
 
     private double anchorX;
     private double anchorY;
@@ -91,8 +89,8 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private GameSetup gameSetup = getGameSetup();
     private ChessUi ui = getUi();
 
-    public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
-                           SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
+    public GameBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
+                          SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
 
         this.angleX = new SimpleDoubleProperty(getBoardConfig().getAngleX());
@@ -120,12 +118,12 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         mainStage = stage;
         boardSceneGroup = root;
 
-        initCheckersBoard(boardPosition);
+        initBoard(boardPosition);
         initMouseControl(this);
     }
 
     @Override
-    public void initCheckersBoard(BoardPosition boardPosition) {
+    public void initBoard(BoardPosition boardPosition) {
 
         initializeBoard();
         initializeFigures();

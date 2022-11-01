@@ -2,7 +2,7 @@ package org.sample.checkers.board.model;
 
 import org.sample.checkers.chess.BoardPosition;
 
-public interface ChessBoard {
+public interface GameBoard {
 
-    void initCheckersBoard(BoardPosition boardPosition);
+    void initBoard(BoardPosition boardPosition);
 }

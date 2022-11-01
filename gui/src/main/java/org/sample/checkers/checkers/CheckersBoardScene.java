@@ -17,7 +17,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import org.sample.checkers.board.components.SmartGroup;
-import org.sample.checkers.board.model.ChessBoard;
+import org.sample.checkers.board.model.GameBoard;
 import org.sample.checkers.board.model.CubeFace;
 import org.sample.checkers.board.model.CubeMaterial;
 import org.sample.checkers.checkers.ui.CheckersUi;
@@ -48,7 +48,7 @@ import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 import static org.sample.checkers.config.game.Player.SINGLE_PLAYER;
 
 @Controller
-public class CheckersBoardScene extends SubScene implements ChessBoard {
+public class CheckersBoardScene extends SubScene implements GameBoard {
 
     private double anchorX;
     private double anchorY;
@@ -120,12 +120,12 @@ public class CheckersBoardScene extends SubScene implements ChessBoard {
         mainStage = stage;
         boardSceneGroup = root;
 
-        initCheckersBoard(boardPosition);
+        initBoard(boardPosition);
         initMouseControl(this);
     }
 
     @Override
-    public void initCheckersBoard(BoardPosition boardPosition) {
+    public void initBoard(BoardPosition boardPosition) {
 
         initializeBoard();
         initializeFigures();
