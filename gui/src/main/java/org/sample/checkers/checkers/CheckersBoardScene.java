@@ -1,7 +1,6 @@
 package org.sample.checkers.checkers;
 
 import com.sun.javafx.geom.Dimension2D;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.*;
@@ -21,6 +20,7 @@ import org.sample.checkers.board.components.SmartGroup;
 import org.sample.checkers.board.model.ChessBoard;
 import org.sample.checkers.board.model.CubeFace;
 import org.sample.checkers.board.model.CubeMaterial;
+import org.sample.checkers.checkers.ui.CheckersUi;
 import org.sample.checkers.chess.BoardPosition;
 import org.sample.checkers.chess.Cube;
 import org.sample.checkers.chess.FigurePosition;
@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 import static java.lang.StrictMath.round;
 import static javafx.scene.transform.Rotate.Y_AXIS;
 import static org.sample.checkers.checkers.CheckersMoveUtil.*;
-import static org.sample.checkers.checkers.ui.impl.CheckersContext.getUi;
+import static org.sample.checkers.checkers.ui.CheckersContext.getUi;
 import static org.sample.checkers.config.checkers.CheckersFigure.PAWN;
 import static org.sample.checkers.config.checkers.CheckersFiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.checkers.CheckersFiguresPositions.getAbsolutePositionY;

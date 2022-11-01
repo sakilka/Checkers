@@ -1,6 +1,5 @@
-package org.sample.checkers.checkers.ui.impl;
+package org.sample.checkers.checkers.ui;
 
-import org.sample.checkers.config.checkers.CheckersUi;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;

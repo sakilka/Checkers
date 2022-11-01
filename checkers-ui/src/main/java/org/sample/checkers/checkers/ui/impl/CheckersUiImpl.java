@@ -1,7 +1,7 @@
 package org.sample.checkers.checkers.ui.impl;
 
 import com.sun.javafx.geom.Dimension2D;
-import org.sample.checkers.config.checkers.CheckersUi;
+import org.sample.checkers.checkers.ui.CheckersUi;
 import org.sample.checkers.config.checkers.CheckersMoveHistory;
 import org.sample.checkers.config.checkers.CheckersMovePosition;
 import org.springframework.stereotype.Service;

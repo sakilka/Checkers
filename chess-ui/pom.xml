@@ -15,7 +15,12 @@
     <packaging>jar</packaging>
 
     <dependencies>
+
         <!--internal-->
+        <dependency>
+            <groupId>org.sample</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
     </dependencies>
 
     
