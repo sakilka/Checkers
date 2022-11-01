@@ -5,6 +5,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -19,8 +20,12 @@ import org.sample.checkers.board.model.ChessBoard;
 import org.sample.checkers.board.model.CubeFace;
 import org.sample.checkers.board.model.CubeMaterial;
 import org.sample.checkers.board.components.SmartGroup;
+import org.sample.checkers.checkers.CheckersFigureModel;
+import org.sample.checkers.chess.ui.ChessUi;
+import org.sample.checkers.config.checkers.CheckersMovePosition;
 import org.sample.checkers.config.chess.ChessBoardPositions;
 import org.sample.checkers.config.chess.ChessMoveHistory;
+import org.sample.checkers.config.chess.ChessMovePosition;
 import org.sample.checkers.config.chess.ChessSide;
 import org.sample.checkers.config.game.GameSetup;
 
@@ -32,6 +37,7 @@ import java.util.stream.Stream;
 import static java.lang.StrictMath.round;
 import static javafx.scene.transform.Rotate.Y_AXIS;
 import static org.sample.checkers.chess.ChessMoveUtil.*;
+import static org.sample.checkers.chess.ui.ChessContext.getUi;
 import static org.sample.checkers.config.chess.ChessFigure.*;
 import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionY;
@@ -40,6 +46,7 @@ import static org.sample.checkers.config.chess.ChessSide.WHITE;
 import static org.sample.checkers.config.chess.ChessPropertyUtil.getPositions;
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
+import static org.sample.checkers.config.game.Player.SINGLE_PLAYER;
 
 public class ChessBoardScene extends SubScene implements ChessBoard {
 
@@ -82,6 +89,7 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
     private ChessMoveHistory chessMoveHistory;
 
     private GameSetup gameSetup = getGameSetup();
+    private ChessUi ui = getUi();
 
     public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
                            SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
@@ -576,6 +584,10 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
             } else if(event.getButton() == MouseButton.PRIMARY && !gameSetup.isMoveFigure()) {
                 marked = handlePrimaryClick(event, board, chessFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
                         chessMoveHistory, boardSceneGroup, mainStage);
+
+                if(marked == null && gameSetup.isMoveFigure() && gameSetup.getPlayer() == SINGLE_PLAYER){
+                    executeUIMovement(event);
+                }
             }
         });
 
@@ -616,5 +628,18 @@ public class ChessBoardScene extends SubScene implements ChessBoard {
         }
 
         return chessBoardPositions;
+    }
+
+    public void executeUIMovement(MouseEvent event) {
+        ChessMovePosition nextMove = ui.computeNextMove(chessMoveHistory);
+        ChessFigureModel figureToMove = getFigureForChessMove(nextMove, fieldWidth, chessFigureModels);
+        MouseEvent markEvent = event.copyFor(event.getSource(), figureToMove);
+        marked = handlePrimaryClick(markEvent, board, chessFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
+                chessMoveHistory, boardSceneGroup, mainStage);
+        MouseEvent moveEvent = event.copyFor(event.getSource(),
+                board[(int) (nextMove.getPosition().width - 1)][(int) (nextMove.getPosition().height - 1)]);
+        highlight = nextMove.getPosition();
+        marked = handlePrimaryClick(moveEvent, board, chessFigureModels, fieldWidth, marked, highlight, getCurrentBoard(),
+                chessMoveHistory, boardSceneGroup, mainStage);
     }
 }

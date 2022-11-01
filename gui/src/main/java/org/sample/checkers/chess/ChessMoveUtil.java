@@ -12,7 +12,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.sample.checkers.config.chess.*;
 import org.sample.checkers.config.game.GameSetup;
 
@@ -23,10 +22,10 @@ import java.util.stream.Stream;
 
 import static org.sample.checkers.config.chess.ChessFigure.KING;
 import static org.sample.checkers.config.chess.ChessFigure.PAWN;
-import static org.sample.checkers.config.chess.ChessSide.BLACK;
-import static org.sample.checkers.config.chess.ChessSide.WHITE;
 import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionX;
 import static org.sample.checkers.config.chess.ChessFiguresPositions.getAbsolutePositionY;
+import static org.sample.checkers.config.chess.ChessSide.BLACK;
+import static org.sample.checkers.config.chess.ChessSide.WHITE;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 
 public class ChessMoveUtil {
@@ -176,10 +175,23 @@ public class ChessMoveUtil {
                 new Point3D(targetChessFigureModel.getTranslateX(), targetChessFigureModel.getTranslateY(), targetChessFigureModel.getTranslateZ()),
                 new Point3D(getAbsolutePositionX((int) highlight.width, fieldWidth), 0, getAbsolutePositionY((int) highlight.height, fieldWidth)),
                 targetChessFigureModel);
+
+        if(gameSetup.getPlayTimeline() != null) {
+            Timeline runningTimeline = gameSetup.getPlayTimeline();
+            runningTimeline.setOnFinished(event -> {
+                animation.play();
+            });
+        } else {
+            animation.play();
+        }
+
         animation.setOnFinished(event -> gameSetup.setMoveFigure(false));
         gameSetup.setMoveFigure(true);
         gameSetup.setPlayTimeline(animation);
-        animation.play();
+
+        animation.setOnFinished(event -> gameSetup.setMoveFigure(false));
+        gameSetup.setMoveFigure(true);
+        gameSetup.setPlayTimeline(animation);
     }
 
     private static void castling(ChessFigureModel targetChessFigureModel, ChessBoardPositions currentBoard, Dimension2D highlight,
@@ -577,5 +589,21 @@ public class ChessMoveUtil {
         ChessFigureModel targetChessFigureModel = getFigureForPosition(chessFigureModels, position, fieldWidth);
 
         return targetChessFigureModel == null ? null : targetChessFigureModel.getChessSide();
+    }
+
+    public static ChessFigureModel getFigureForChessMove(ChessMovePosition movePosition, float fieldWidth,
+                                                               List<ChessFigureModel> chessFigureModels) {
+        Dimension2D position = movePosition.getPreviousPosition();
+
+        for (ChessFigureModel figure : chessFigureModels) {
+            long x = getRelativePositionX(figure.getTranslateX(), fieldWidth);
+            long y = getRelativePositionY(figure.getTranslateZ(), fieldWidth);
+
+            if(position.width == x && position.height == y) {
+                return figure;
+            }
+        }
+
+        throw new RuntimeException("Cannot find figure for move!");
     }
 }

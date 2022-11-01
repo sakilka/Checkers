@@ -458,8 +458,8 @@ public class CheckersMoveUtil {
         Dimension2D position = movePosition.getPreviousPosition();
 
         for (CheckersFigureModel figure : checkersFigureModels) {
-            long x = getRelativePositionX(figure.getTranslateX(), fieldWidth);//7
-            long y = getRelativePositionY(figure.getTranslateZ(), fieldWidth);//7
+            long x = getRelativePositionX(figure.getTranslateX(), fieldWidth);
+            long y = getRelativePositionY(figure.getTranslateZ(), fieldWidth);
 
             if(position.width == x && position.height == y) {
                 return figure;
