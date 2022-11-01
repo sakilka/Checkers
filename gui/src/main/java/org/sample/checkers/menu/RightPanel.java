@@ -14,8 +14,11 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.sample.checkers.chess.BoardPosition;
 
@@ -30,6 +33,7 @@ public class RightPanel extends BorderPane {
                       ReadOnlyDoubleProperty sceneWidth, BooleanProperty shown, SubScene boardScene,
                       BoardPosition boardPosition) {
         setMinWidth(0);
+        buttonWidth = 26;
 
         ToggleButton toggleButton = new ToggleButton();
         toggleButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("left-arrow.png"),
@@ -44,11 +48,10 @@ public class RightPanel extends BorderPane {
         panelPane.getTabs().add(new Tab("Border position", (new PositionTab(boardPosition))));
         panelPane.setMinWidth(0);
         panelPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        panelPane.setStyle("-fx-background-color: white;");
+        panelPane.setBackground(new Background(new BackgroundFill(Color.rgb(255,255,255, 1), null, null)));
 
         toggleButton.setOnAction(event -> {
             KeyValue end;
-            buttonWidth = toggleButton.getWidth();
             setMinWidth(0);
             if (toggleButton.isSelected()) {
                 setCenter(panelPane);
@@ -60,7 +63,7 @@ public class RightPanel extends BorderPane {
                 getChildren().remove(panelPane);
                 toggleButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("left-arrow.png"),
                         10, 10, false, false)));
-                end = new KeyValue(splitPaneDividerPosition, 1 - (toggleButton.getWidth() / sceneWidth.doubleValue()));
+                end = new KeyValue(splitPaneDividerPosition, 1);
             }
             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), end));
             timeline.play();
@@ -69,10 +72,10 @@ public class RightPanel extends BorderPane {
                             sceneWidth.subtract(toggleButton.getWidth())));
         });
 
-        toggleButton.setSelected(true);
+        toggleButton.setSelected(false);
         setLeft(buttonBox);
         setCenter(panelPane);
-        setStyle("-fx-background-color: DAE6F3;");
+        setBackground(new Background(new BackgroundFill(Color.rgb(255,255,255, 1), null, null)));
     }
 
     public double getButtonWidth() {

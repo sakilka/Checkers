@@ -1,10 +1,15 @@
 package org.sample.checkers;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,12 +17,14 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.sample.checkers.chess.BoardPosition;
 import org.sample.checkers.board.components.SmartGroup;
 import org.sample.checkers.menu.RightPanel;
@@ -71,6 +78,21 @@ public class Checkers extends Application {
 
         content.getItems().addAll(boardPane, rightPanel);
         content.getDividers().get(0).positionProperty().bindBidirectional(splitPaneDividerPosition);
+
+        content.setOnMouseMoved(event -> {
+            double x = event.getSceneX();
+            SplitPane pane = (SplitPane) event.getSource();
+            double width = pane.getWidth();
+            double widthPercentage = x / (width/100);
+
+            if(!shownRightPanel.getValue()) {
+                if (99 > widthPercentage && widthPercentage > 97) {
+                    splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
+                } else {
+                    splitPaneDividerPosition.set(1);
+                }
+            }
+        });
 
         MenuBar menu = (MenuBar) loadFXML("menu", stage, boardScene, boardPane, boardPosition);
         root.setTop(menu);
