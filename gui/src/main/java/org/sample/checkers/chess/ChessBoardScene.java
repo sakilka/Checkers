@@ -552,7 +552,8 @@ public class ChessBoardScene extends SubScene implements GameBoard {
         return camera;
     }
 
-    private void initMouseControl(SubScene boardScene) {
+    @Override
+    public void initMouseControl(SubScene boardScene) {
         Rotate xRotate;
         Rotate yRotate;
         Translate translate;

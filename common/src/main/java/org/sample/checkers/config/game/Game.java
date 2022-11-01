@@ -1,5 +1,5 @@
 package org.sample.checkers.config.game;
 
 public enum Game {
-    CHESS, CHECKERS;
+    CHESS, CHECKERS, TICKTACKTOE;
 }
