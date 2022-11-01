@@ -46,7 +46,7 @@ import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 import static org.sample.checkers.config.game.Player.SINGLE_PLAYER;
 
-public class GameBoardScene extends SubScene implements GameBoard {
+public class ChessBoardScene extends SubScene implements GameBoard {
 
     private double anchorX;
     private double anchorY;
@@ -89,8 +89,8 @@ public class GameBoardScene extends SubScene implements GameBoard {
     private GameSetup gameSetup = getGameSetup();
     private ChessUi ui = getUi();
 
-    public GameBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
-                          SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
+    public ChessBoardScene(Stage stage, SmartGroup root, double width, double height, boolean depthBuffer,
+                           SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
 
         this.angleX = new SimpleDoubleProperty(getBoardConfig().getAngleX());

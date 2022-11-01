@@ -5,7 +5,7 @@ import javafx.scene.SubScene;
 import javafx.stage.Stage;
 import org.sample.checkers.checkers.CheckersBoardScene;
 import org.sample.checkers.chess.BoardPosition;
-import org.sample.checkers.chess.GameBoardScene;
+import org.sample.checkers.chess.ChessBoardScene;
 import org.sample.checkers.board.components.SmartGroup;
 import org.sample.checkers.config.game.Game;
 
@@ -16,7 +16,7 @@ public class BoardFactory {
 
         switch (game){
             case CHESS:
-                return new GameBoardScene(stage, root, width, height, depthBuffer, antiAliasing, boardPosition);
+                return new ChessBoardScene(stage, root, width, height, depthBuffer, antiAliasing, boardPosition);
             case CHECKERS:
             default:
                 return new CheckersBoardScene(stage, root, width, height, depthBuffer, antiAliasing, boardPosition);
