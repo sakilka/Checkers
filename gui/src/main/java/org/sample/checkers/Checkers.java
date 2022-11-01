@@ -55,7 +55,7 @@ public class Checkers extends Application {
 
         BoardPosition boardPosition = new BoardPosition();
         SubScene boardScene = BoardFactory.getBoardScene(gameSetup.getGame(), stage,
-                getBoardConfig().getWidth() - getBoardConfig().getRightPanelWidth(), getBoardConfig().getHeight(), true,
+                getBoardConfig().getWidth(), getBoardConfig().getHeight(), true,
                 SceneAntialiasing.BALANCED, boardPosition);
 
         StackPane boardPane = new StackPane(boardScene);
@@ -65,7 +65,7 @@ public class Checkers extends Application {
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
         RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty(), scene.widthProperty(),
                 shownRightPanel, boardScene, boardPosition);
-        boardScene.widthProperty().bind(scene.widthProperty().subtract(getBoardConfig().getRightPanelWidth()));
+        boardScene.widthProperty().bind(scene.widthProperty());
         boardScene.heightProperty().bind(scene.heightProperty());
         boardScene.setFill(Color.rgb(0,100,0, 1));
 
@@ -81,6 +81,7 @@ public class Checkers extends Application {
             if(!shownRightPanel.getValue()) {
                 if (99 > widthPercentage && widthPercentage > 97) {
                     splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
+                    boardScene.widthProperty().bind(scene.widthProperty().subtract(rightPanel.getButtonWidth()));
                 } else {
                     splitPaneDividerPosition.set(1);
                 }

@@ -26,7 +26,7 @@ import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 
 public class RightPanel extends BorderPane {
 
-    private double buttonWidth = 0;
+    private double buttonWidth;
     private boolean mouseDragOnDivider = false;
 
     public RightPanel(DoubleProperty splitPaneDividerPosition, ReadOnlyDoubleProperty heightProperty,
@@ -64,6 +64,7 @@ public class RightPanel extends BorderPane {
                 toggleButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("left-arrow.png"),
                         10, 10, false, false)));
                 end = new KeyValue(splitPaneDividerPosition, 1);
+                boardScene.widthProperty().bind(sceneWidth);
             }
             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), end));
             timeline.play();
