@@ -89,7 +89,7 @@ public class Checkers extends Application {
             }
         });
 
-        MenuBar menu = (MenuBar) loadFXML("menu", stage, boardScene, boardPane, boardPosition);
+        MenuBar menu = (MenuBar) loadFXML("menu", stage, boardPosition);
         root.setTop(menu);
 
         splitPaneDividerPosition.addListener((observable, oldValue, newValue) -> {
@@ -140,8 +140,7 @@ public class Checkers extends Application {
                 SceneAntialiasing.BALANCED, boardPosition);
     }
 
-    private static Parent loadFXML(String fxml, Stage stage, SubScene boardScene, StackPane boardPane,
-                                   BoardPosition boardPosition) throws IOException {
+    private static Parent loadFXML(String fxml, Stage stage, BoardPosition boardPosition) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Checkers.class.getResource(fxml + ".fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == MenuController.class) {

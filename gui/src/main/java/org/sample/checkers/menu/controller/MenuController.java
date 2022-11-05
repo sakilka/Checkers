@@ -122,6 +122,7 @@ public class MenuController implements Initializable {
         boardScene.widthProperty().bind(mainScene.widthProperty());
         boardScene.heightProperty().bind(mainScene.heightProperty());
         boardScene.setFill(Color.rgb(0,100,0, 1));
+        boardScene.widthProperty().bind(mainScene.widthProperty().subtract(getBoardConfig().getRightPanelWidth()));
         stage.setScene(mainScene);
     }
 }
