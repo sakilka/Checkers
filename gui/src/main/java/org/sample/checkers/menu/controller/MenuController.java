@@ -52,6 +52,10 @@ public class MenuController implements Initializable {
     @FXML
     private RadioMenuItem CHECKERS;
 
+
+    @FXML
+    private RadioMenuItem TICKTACKTOE;
+
     @FXML
     private void handleKeyInput(final InputEvent event) {
         if (event instanceof KeyEvent) {
@@ -115,7 +119,7 @@ public class MenuController implements Initializable {
         StackPane boardPane = (StackPane) splitPane.getItems().get(0);
         boardPane.getChildren().remove(0);
         boardPane.getChildren().add(boardScene);
-        boardScene.widthProperty().bind(mainScene.widthProperty().subtract(getBoardConfig().getRightPanelWidth()));
+        boardScene.widthProperty().bind(mainScene.widthProperty());
         boardScene.heightProperty().bind(mainScene.heightProperty());
         boardScene.setFill(Color.rgb(0,100,0, 1));
         stage.setScene(mainScene);
