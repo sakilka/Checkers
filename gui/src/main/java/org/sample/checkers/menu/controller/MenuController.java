@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static org.sample.checkers.Checkers.newGame;
-import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 
 public class MenuController implements Initializable {
@@ -122,7 +121,7 @@ public class MenuController implements Initializable {
         boardScene.widthProperty().bind(mainScene.widthProperty());
         boardScene.heightProperty().bind(mainScene.heightProperty());
         boardScene.setFill(Color.rgb(0,100,0, 1));
-        boardScene.widthProperty().bind(mainScene.widthProperty().subtract(getBoardConfig().getRightPanelWidth()));
+        boardScene.widthProperty().bind(mainScene.widthProperty().subtract(26));
         stage.setScene(mainScene);
     }
 }
