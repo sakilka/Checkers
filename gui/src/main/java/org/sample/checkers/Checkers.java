@@ -90,6 +90,7 @@ public class Checkers extends Application {
         });
 
         MenuBar menu = (MenuBar) loadFXML("menu", stage, boardPosition);
+        menu.setPrefHeight(getBoardConfig().getMenuHeight());
         root.setTop(menu);
 
         splitPaneDividerPosition.addListener((observable, oldValue, newValue) -> {

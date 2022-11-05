@@ -1,48 +1,39 @@
 package org.sample.checkers.tictactoe;
 
+import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.MenuBar;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.board.model.GameBoard;
 import org.sample.checkers.chess.BoardPosition;
+import org.sample.checkers.config.ticktacktoe.TickTackToeConfiguration;
+
+import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
+import static org.sample.checkers.config.ticktacktoe.TickTackToePropertyUtil.getConfig;
 
 public class TickTackToeScene extends SubScene implements GameBoard {
 
     private final Stage mainStage;
-    private final GridPane boardSceneGroup;
+    private final StackPane boardSceneGroup;
 
-    public TickTackToeScene(Stage stage, GridPane root, double width, double height, boolean depthBuffer,
+    private static TickTackToeConfiguration tickTackToeConfiguration;
+
+    public TickTackToeScene(Stage stage, StackPane root, double width, double height, boolean depthBuffer,
                             SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
         super(root, width, height, depthBuffer, antiAliasing);
 
-//        this.angleX = new SimpleDoubleProperty(getBoardConfig().getAngleX());
-//        this.angleY = new SimpleDoubleProperty(getBoardConfig().getAngleY());
-//        this.anchorAngleX = 0;
-//        this.anchorAngleY = 0;
-//        this.anchorDistX = 0;
-//        this.anchorDistZ = 0;
-//        this.marked = null;
-//        this.deltaX = new SimpleDoubleProperty(getBoardConfig().getDeltaX());
-//        this.deltaZ = new SimpleDoubleProperty(getBoardConfig().getDeltaZ());
-//        this.translateZ = new SimpleDoubleProperty(getBoardConfig().getTranslateZ());
-//        this.fieldWidth = getBoardConfig().getFieldWidth();
-//        this.fieldHeight = getBoardConfig().getFieldHeight();
-//        this.fieldDepth = getBoardConfig().getFieldDepth();
-//        this.fieldGap = getBoardConfig().getFieldGap();
-//        this.fieldGapShift = getBoardConfig().getFieldGapShift();
-//        this.widthShift =  4 * fieldWidth;
-//        this.depthShift = 4 * fieldWidth;
-
-//        this.board = new Cube[8][8];
-//        this.chessFigureModels = new ArrayList<>();
-//        this.chessMoveHistory = new ChessMoveHistory(new ArrayList<>());
-
         mainStage = stage;
         boardSceneGroup = root;
+        boardSceneGroup.setBackground(new Background(new BackgroundFill(Color.rgb(0,100,0, 1), null, null)));
+
+        tickTackToeConfiguration = getConfig();
 
         initBoard(boardPosition);
         initMouseControl(this);
@@ -51,41 +42,30 @@ public class TickTackToeScene extends SubScene implements GameBoard {
     @Override
     public void initBoard(BoardPosition boardPosition) {
         initializeBoard();
-
-//        boardPosition.deltaXProperty().bindBidirectional(deltaX);
-//        boardPosition.deltaZProperty().bindBidirectional(deltaZ);
-//        boardPosition.angleXProperty().bindBidirectional(angleX);
-//        boardPosition.angleYProperty().bindBidirectional(angleY);
-//        boardPosition.translateZProperty().bindBidirectional(boardSceneGroup.translateZProperty());
-//        boardPosition.translateZProperty().bindBidirectional(translateZ);
-
-        //this.setCamera(initializeCamera());
-        this.setFill(Color.SILVER);
-    }
-
-    public Camera initializeCamera() {
-        Camera camera = new PerspectiveCamera(true);
-        camera.setNearClip(1);
-        camera.setFarClip(10000);
-        camera.translateZProperty().set(-150);
-
-        return camera;
     }
 
     private void initializeBoard() {
-        int width = 15;
-        int height = 10;
+        int width = tickTackToeConfiguration.getTickTackToeWidth();
+        int height = tickTackToeConfiguration.getTickTackToeHeight();
 
-        GridPane pane = new GridPane();
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
         Cell[][] cell =  new Cell[height][width];
+        gridPane.setPadding(new Insets(0, 0, getBoardConfig().getMenuHeight(), 0));
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                pane.add(cell[i][j] = new Cell(), j, i);
+                gridPane.add(cell[i][j] = new Cell(), j, i);
+                cell[i][j].setStyle("-fx-background-color:white;-fx-border-color: black");
+                cell[i][j].prefWidthProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
+                        boardSceneGroup.heightProperty().divide(height)));
+                cell[i][j].prefHeightProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
+                        boardSceneGroup.heightProperty().divide(height)));
             }
         }
 
-        boardSceneGroup.getChildren().add(pane);
+        boardSceneGroup.setAlignment(Pos.CENTER);
+        boardSceneGroup.getChildren().add(gridPane);
     }
 
     @Override

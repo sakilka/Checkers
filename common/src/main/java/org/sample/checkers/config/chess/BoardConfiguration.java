@@ -14,6 +14,9 @@ public class BoardConfiguration {
     @Value("${height}")
     private float height;
 
+    @Value("${menu.height}")
+    private float menuHeight;
+
     @Value("${right.panel.width}")
     private float rightPanelWidth;
 
@@ -61,6 +64,14 @@ public class BoardConfiguration {
 
     public void setHeight(float height) {
         this.height = height;
+    }
+
+    public float getMenuHeight() {
+        return menuHeight;
+    }
+
+    public void setMenuHeight(float menuHeight) {
+        this.menuHeight = menuHeight;
     }
 
     public float getRightPanelWidth() {
