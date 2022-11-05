@@ -3,17 +3,18 @@ package org.sample.checkers.tictactoe;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Camera;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.control.MenuBar;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.board.model.GameBoard;
 import org.sample.checkers.chess.BoardPosition;
 import org.sample.checkers.config.ticktacktoe.TickTackToeConfiguration;
+import org.sample.checkers.config.ticktacktoe.ToeTurn;
 
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.ticktacktoe.TickTackToePropertyUtil.getConfig;
@@ -24,6 +25,8 @@ public class TickTackToeScene extends SubScene implements GameBoard {
     private final StackPane boardSceneGroup;
 
     private static TickTackToeConfiguration tickTackToeConfiguration;
+    private final Cell[][] cells;
+    private ToeTurn onTurn;
 
     public TickTackToeScene(Stage stage, StackPane root, double width, double height, boolean depthBuffer,
                             SceneAntialiasing antiAliasing, BoardPosition boardPosition) {
@@ -34,9 +37,10 @@ public class TickTackToeScene extends SubScene implements GameBoard {
         boardSceneGroup.setBackground(new Background(new BackgroundFill(Color.rgb(0,100,0, 1), null, null)));
 
         tickTackToeConfiguration = getConfig();
+        cells = new Cell[tickTackToeConfiguration.getTickTackToeHeight()][tickTackToeConfiguration.getTickTackToeWidth()];
+        onTurn = ToeTurn.CIRCLE;
 
         initBoard(boardPosition);
-        initMouseControl(this);
     }
 
     @Override
@@ -50,16 +54,15 @@ public class TickTackToeScene extends SubScene implements GameBoard {
 
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
-        Cell[][] cell =  new Cell[height][width];
         gridPane.setPadding(new Insets(0, 0, getBoardConfig().getMenuHeight(), 0));
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                gridPane.add(cell[i][j] = new Cell(), j, i);
-                cell[i][j].setStyle("-fx-background-color:white;-fx-border-color: black");
-                cell[i][j].prefWidthProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
+                gridPane.add(cells[i][j] = new Cell(this), j, i);
+                cells[i][j].setStyle("-fx-background-color:white;-fx-border-color: black");
+                cells[i][j].prefWidthProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
                         boardSceneGroup.heightProperty().divide(height)));
-                cell[i][j].prefHeightProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
+                cells[i][j].prefHeightProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
                         boardSceneGroup.heightProperty().divide(height)));
             }
         }
@@ -70,6 +73,13 @@ public class TickTackToeScene extends SubScene implements GameBoard {
 
     @Override
     public void initMouseControl(SubScene boardScene) {
+    }
 
+    public ToeTurn getOnTurn() {
+        return this.onTurn;
+    }
+
+    public void setOnTurn(ToeTurn turn) {
+        this.onTurn = turn;
     }
 }
