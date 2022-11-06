@@ -27,6 +27,7 @@ import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 public class RightPanel extends BorderPane {
 
     private double buttonWidth;
+    private ToggleButton toggleButton;
     private boolean mouseDragOnDivider = false;
 
     public RightPanel(DoubleProperty splitPaneDividerPosition, ReadOnlyDoubleProperty heightProperty,
@@ -35,7 +36,7 @@ public class RightPanel extends BorderPane {
         setMinWidth(0);
         buttonWidth = 26;
 
-        ToggleButton toggleButton = new ToggleButton();
+        toggleButton = new ToggleButton();
         toggleButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("left-arrow.png"),
                 10, 10, false, false)));
         HBox buttonBox = new HBox(0, toggleButton);
@@ -64,7 +65,7 @@ public class RightPanel extends BorderPane {
                 toggleButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("left-arrow.png"),
                         10, 10, false, false)));
                 end = new KeyValue(splitPaneDividerPosition, 1);
-                boardScene.widthProperty().bind(sceneWidth);
+                boardScene.widthProperty().bind(sceneWidth.subtract(buttonWidth));
             }
             Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), end));
             timeline.play();
@@ -74,6 +75,8 @@ public class RightPanel extends BorderPane {
         });
 
         toggleButton.setSelected(false);
+        toggleButton.setBackground(new Background(new BackgroundFill(Color.rgb(0,100,0, 1), null, null)));
+        toggleButton.getGraphic().setOpacity(0);
         setLeft(buttonBox);
         setCenter(panelPane);
         setBackground(new Background(new BackgroundFill(Color.rgb(255,255,255, 1), null, null)));
@@ -81,6 +84,10 @@ public class RightPanel extends BorderPane {
 
     public double getButtonWidth() {
         return buttonWidth;
+    }
+
+    public ToggleButton getToggleButton() {
+        return toggleButton;
     }
 
     public void disableDrag(SplitPane content) {

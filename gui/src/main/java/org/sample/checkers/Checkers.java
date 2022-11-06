@@ -43,11 +43,11 @@ public class Checkers extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");
-        initializeScene(stage);
+        initializeScene(stage, gameSetup.getGame());
         stage.show();
     }
 
-    private void initializeScene(Stage stage) throws IOException {
+    private static void initializeScene(Stage stage, Game game) throws IOException {
         final BorderPane root = new BorderPane();
         Scene scene = new Scene(root, getBoardConfig().getWidth(), getBoardConfig().getHeight());
         scene.getStylesheets().add(Checkers.class.getResource("styles.css").toExternalForm());
@@ -55,7 +55,7 @@ public class Checkers extends Application {
         SplitPane content = new SplitPane();
 
         BoardPosition boardPosition = new BoardPosition();
-        SubScene boardScene = BoardFactory.getBoardScene(gameSetup.getGame(), stage,
+        SubScene boardScene = BoardFactory.getBoardScene(game, stage,
                 getBoardConfig().getWidth(), getBoardConfig().getHeight(), true,
                 SceneAntialiasing.BALANCED, boardPosition);
 
@@ -66,7 +66,7 @@ public class Checkers extends Application {
         BooleanProperty shownRightPanel = new SimpleBooleanProperty();
         RightPanel rightPanel = new RightPanel(splitPaneDividerPosition, scene.heightProperty(), scene.widthProperty(),
                 shownRightPanel, boardScene, boardPosition);
-        boardScene.widthProperty().bind(scene.widthProperty());
+        boardScene.widthProperty().bind(scene.widthProperty().subtract(rightPanel.getButtonWidth()));
         boardScene.heightProperty().bind(scene.heightProperty());
         boardScene.setFill(Color.rgb(0,100,0, 1));
 
@@ -80,16 +80,20 @@ public class Checkers extends Application {
             double widthPercentage = x / (width/100);
 
             if(!shownRightPanel.getValue()) {
-                if (99 > widthPercentage && widthPercentage > 97) {
+                if (widthPercentage > 95) {
+                    double opacity = ((100 - widthPercentage) * 20) / 100;
                     splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
-                    boardScene.widthProperty().bind(scene.widthProperty().subtract(rightPanel.getButtonWidth()));
+                    rightPanel.getToggleButton().setOpacity(Math.max(opacity, 0.5));
+                    rightPanel.getToggleButton().getGraphic().setOpacity(1 - opacity);
                 } else {
-                    splitPaneDividerPosition.set(1);
+                    splitPaneDividerPosition.set(1 - (rightPanel.getButtonWidth() / scene.widthProperty().doubleValue()));
+                    rightPanel.getToggleButton().setOpacity(1);
+                    rightPanel.getToggleButton().getGraphic().setOpacity(0);
                 }
             }
         });
 
-        MenuBar menu = (MenuBar) loadFXML("menu", stage, boardPosition);
+        MenuBar menu = (MenuBar) loadFXML("menu", stage);
         menu.setPrefHeight(getBoardConfig().getMenuHeight());
         root.setTop(menu);
 
@@ -135,19 +139,20 @@ public class Checkers extends Application {
         stage.setScene(scene);
     }
 
-    public static SubScene newGame(Stage stage, BoardPosition boardPosition, Game game){
-        return BoardFactory.getBoardScene(game, stage,
-                getBoardConfig().getWidth() - getBoardConfig().getRightPanelWidth(), getBoardConfig().getHeight(), true,
-                SceneAntialiasing.BALANCED, boardPosition);
+    public static void newGame(Stage stage, Game game)  {
+        try {
+            initializeScene(stage, game);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static Parent loadFXML(String fxml, Stage stage, BoardPosition boardPosition) throws IOException {
+    private static Parent loadFXML(String fxml, Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Checkers.class.getResource(fxml + ".fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == MenuController.class) {
                 MenuController controller = new MenuController();
                 controller.setStage(stage);
-                controller.setBoardPosition(boardPosition);
                 return controller;
             } else {
                 try {

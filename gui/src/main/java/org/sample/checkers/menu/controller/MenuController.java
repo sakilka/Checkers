@@ -4,19 +4,12 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
-import javafx.scene.SubScene;
 import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.sample.checkers.chess.BoardPosition;
 import org.sample.checkers.config.game.Game;
 import org.sample.checkers.config.game.GameSetup;
 import org.sample.checkers.config.game.Player;
@@ -31,7 +24,6 @@ import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 public class MenuController implements Initializable {
 
     private Stage stage;
-    private BoardPosition boardPosition;
     private final GameSetup gameSetup;
 
     @Autowired
@@ -105,23 +97,7 @@ public class MenuController implements Initializable {
         this.stage = stage;
     }
 
-    public void setBoardPosition(BoardPosition boardPosition) {
-        this.boardPosition = boardPosition;
-    }
-
     private void gameInit() {
-        SubScene boardScene = newGame(stage, boardPosition, gameSetup.getGame());
-        Scene mainScene = stage.getScene();
-        BorderPane root = (BorderPane) mainScene.getRoot();
-        SplitPane splitPane = (SplitPane) root.getChildren().stream()
-                .filter(node -> node instanceof SplitPane).findFirst().orElseGet(null);
-        StackPane boardPane = (StackPane) splitPane.getItems().get(0);
-        boardPane.getChildren().remove(0);
-        boardPane.getChildren().add(boardScene);
-        boardScene.widthProperty().bind(mainScene.widthProperty());
-        boardScene.heightProperty().bind(mainScene.heightProperty());
-        boardScene.setFill(Color.rgb(0,100,0, 1));
-        boardScene.widthProperty().bind(mainScene.widthProperty().subtract(26));
-        stage.setScene(mainScene);
+        newGame(stage, gameSetup.getGame());
     }
 }
