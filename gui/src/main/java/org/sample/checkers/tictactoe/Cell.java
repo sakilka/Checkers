@@ -34,7 +34,7 @@ public class Cell extends Pane {
 
     private void setCircle() {
         Shape circle = createHandDrawnCircle(this.getWidth() / 2, this.getHeight() / 2,
-                this.getWidth() / 2 - 10, 2, 5, Color.BLUE);
+                this.getWidth() / 2 - 10, 2, 7, Color.BLUE);
 
         Scale scale = new Scale();
         scale.setX(1);
@@ -48,8 +48,8 @@ public class Cell extends Pane {
 
     private void setCross() {
 
-        Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10, 10, Color.RED);
-        Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10, 10, Color.RED);
+        Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10, 7, Color.RED);
+        Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10, 7, Color.RED);
 
         Scale scale = new Scale();
         scale.setX(1);
@@ -95,31 +95,30 @@ public class Cell extends Pane {
 
     public Shape createHandDrawnCircle(double cx, double cy, double radius, int rounds,
                                        double strokeWidth, Color color) {
-//        int cx, cy,                                                         /// the calced point
-        double tol = Math.random() * (radius * 0.03) + (radius * 0.025);    ///tolerance / fluctation
-        double dx = Math.random() * tol * 0.75;                             /// "bouncer" values
-        double dy = Math.random() * tol * 0.75;
-        double ix = (Math.random() - 1) * (radius * 0.0044);                /// speed /incremental
+
+        double tol = Math.random() * (radius * 0.03) + (radius * 0.025);
+        double bounceX = Math.random() * tol * 0.75;
+        double bounceY = Math.random() * tol * 0.75;
+        double ix = (Math.random() - 1) * (radius * 0.0033);
         double iy = (Math.random() - 1) * (radius * 0.0033);
-        double rx = radius + Math.random() * tol;                           /// radius X
-        double ry = (radius + Math.random() * tol) * 0.8;                   /// radius Y
-        double a = 0;                                                       /// angle
-        double ad = 3;                                                      /// angle delta (resolution)
-        double i = 0;                                                       /// counter
-        double start = Math.random() + 50;                                  /// random delta start
-        double tot = 360 * rounds + Math.random() * 50 - 100;               /// end angle
-        List<PathElement> points = new ArrayList<>();                            /// the points array
-        double deg2rad = Math.PI / 180;                                     /// degrees to radians
+        double radiusX = radius + Math.random() * tol;
+        double radiusY = (radius + Math.random() * tol) * 1;
+        double step = 3;
+        double start = Math.random() + 50;
+        double tot = 360 * rounds + Math.random() * 50 - 100;
+        double deg2rad = Math.PI / 180;
 
-        for (; i < tot; i += ad) {
-            dx += ix;
-            dy += iy;
+        List<PathElement> points = new ArrayList<>();
 
-            if (dx < -tol || dx > tol) ix = -ix;
-            if (dy < -tol || dy > tol) iy = -iy;
+        for (int i=0; i < tot; i += step) {
+            bounceX += ix;
+            bounceY += iy;
 
-            double x = cx + (rx + dx * 2) * Math.cos(i * deg2rad + start);
-            double y = cy + (ry + dy * 2) * Math.sin(i * deg2rad + start);
+            if (bounceX < -tol || bounceX > tol) ix = -ix;
+            if (bounceY < -tol || bounceY > tol) iy = -iy;
+
+            double x = cx + (radiusX + bounceX * 2) * Math.cos(i * deg2rad + start);
+            double y = cy + (radiusY + bounceY * 2) * Math.sin(i * deg2rad + start);
 
             if(points.isEmpty()) {
                 points.add(new MoveTo(x, y));
