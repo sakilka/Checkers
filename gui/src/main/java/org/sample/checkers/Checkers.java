@@ -147,7 +147,7 @@ public class Checkers extends Application {
         try {
             initializeScene(stage, game, (float) stage.getScene().getWidth(), (float) stage.getScene().getHeight());
         } catch (IOException e) {
-            throw new RuntimeException("V=Cannot init board for game: " + game);
+            throw new RuntimeException("Cannot init board for game: " + game);
         }
     }
 
