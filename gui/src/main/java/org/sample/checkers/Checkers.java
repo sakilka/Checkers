@@ -43,13 +43,13 @@ public class Checkers extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Checkers");
-        initializeScene(stage, gameSetup.getGame());
+        initializeScene(stage, gameSetup.getGame(), getBoardConfig().getWidth(), getBoardConfig().getHeight());
         stage.show();
     }
 
-    private static void initializeScene(Stage stage, Game game) throws IOException {
+    private static void initializeScene(Stage stage, Game game, float boardWidth, float boardHeight) throws IOException {
         final BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, getBoardConfig().getWidth(), getBoardConfig().getHeight());
+        Scene scene = new Scene(root, boardWidth, boardHeight);
         scene.getStylesheets().add(Checkers.class.getResource("styles.css").toExternalForm());
 
         SplitPane content = new SplitPane();
@@ -141,7 +141,7 @@ public class Checkers extends Application {
 
     public static void newGame(Stage stage, Game game)  {
         try {
-            initializeScene(stage, game);
+            initializeScene(stage, game, (float) stage.getScene().getWidth(), (float) stage.getScene().getHeight());
         } catch (IOException e) {
             e.printStackTrace();
         }
