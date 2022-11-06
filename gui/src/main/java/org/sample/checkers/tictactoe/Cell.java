@@ -34,7 +34,7 @@ public class Cell extends Pane {
 
     private void setCircle() {
         Shape circle = createHandDrawnCircle(this.getWidth() / 2, this.getHeight() / 2,
-                this.getWidth() / 2 - 10, 2, 7, Color.BLUE);
+                this.getWidth() / 2 - 10, 2, 7, Color.rgb(0,0,255, 1));
 
         Scale scale = new Scale();
         scale.setX(1);
@@ -48,8 +48,8 @@ public class Cell extends Pane {
 
     private void setCross() {
 
-        Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10, 7, Color.RED);
-        Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10, 7, Color.RED);
+        Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10, 7, Color.rgb(255,0,0, 1));
+        Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10, 7, Color.rgb(255,0,0, 1));
 
         Scale scale = new Scale();
         scale.setX(1);
