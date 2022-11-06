@@ -1,6 +1,6 @@
 package org.sample.checkers.tictactoe;
 
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
@@ -11,7 +11,9 @@ public class Cell extends Pane {
     private TickTackToeScene tickTackToeScene;
 
     public Cell(TickTackToeScene tickTackToeScene) {
-        setStyle("-fx-border-color: black");
+        setBorder(new Border(new BorderStroke(Color.rgb(0,0,0, 1), BorderStrokeStyle.SOLID,
+                CornerRadii.EMPTY, new BorderWidths(0.02, 0.02, 0.02, 0.02, true, true, true, true))));
+        setBackground(new Background(new BackgroundFill(Color.rgb(255,255,255, 1), null, null)));
         this.setPrefSize(20000, 20000);
         this.setOnMouseClicked(e -> handleMouseClick());
         this.tickTackToeScene = tickTackToeScene;
@@ -38,7 +40,7 @@ public class Cell extends Pane {
                 this.widthProperty().divide(2).subtract(10));
         ellipse.radiusYProperty().bind(
                 this.heightProperty().divide(2).subtract(10));
-        ellipse.setStroke(Color.BLACK);
+        ellipse.setStroke(Color.BLUE);
         ellipse.setFill(Color.WHITE);
 
         getChildren().add(ellipse);
@@ -54,6 +56,9 @@ public class Cell extends Pane {
         line2.startYProperty().bind(
                 this.heightProperty().subtract(10));
         line2.endXProperty().bind(this.widthProperty().subtract(10));
+
+        line1.setStroke(Color.RED);
+        line2.setStroke(Color.RED);
 
         this.getChildren().addAll(line1, line2);
     }

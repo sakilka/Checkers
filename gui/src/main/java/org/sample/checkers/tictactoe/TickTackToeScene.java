@@ -5,10 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.board.model.GameBoard;
@@ -59,7 +56,7 @@ public class TickTackToeScene extends SubScene implements GameBoard {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 gridPane.add(cells[i][j] = new Cell(this), j, i);
-                cells[i][j].setStyle("-fx-background-color:white;-fx-border-color: black");
+                //cells[i][j].setStyle("-fx-background-color:white;-fx-border-color: black");
                 cells[i][j].prefWidthProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
                         boardSceneGroup.heightProperty().divide(height)));
                 cells[i][j].prefHeightProperty().bind(Bindings.min(boardSceneGroup.widthProperty().divide(width),
