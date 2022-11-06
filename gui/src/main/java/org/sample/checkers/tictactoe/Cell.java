@@ -13,6 +13,7 @@ import java.util.List;
 public class Cell extends Pane {
 
     private TickTackToeScene tickTackToeScene;
+    private static final int strokeWidth = 7;
 
     public Cell(TickTackToeScene tickTackToeScene) {
         setBorder(new Border(new BorderStroke(Color.rgb(0,0,0, 1), BorderStrokeStyle.SOLID,
@@ -34,7 +35,7 @@ public class Cell extends Pane {
 
     private void setCircle() {
         Shape circle = createHandDrawnCircle(this.getWidth() / 2, this.getHeight() / 2,
-                this.getWidth() / 2 - 10, 2, 7, Color.rgb(0,0,255, 1));
+                this.getWidth() / 2 - 10, 2, strokeWidth, Color.rgb(0,0,255, 1));
 
         Scale scale = new Scale();
         scale.setX(1);
@@ -42,14 +43,18 @@ public class Cell extends Pane {
         circle.getTransforms().add(scale);
         scale.xProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue()));
         scale.yProperty().bind(this.heightProperty().divide(this.heightProperty().doubleValue()));
+        circle.strokeWidthProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue())
+                .multiply(strokeWidth));
 
         this.getChildren().add(circle);
     }
 
     private void setCross() {
 
-        Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10, 7, Color.rgb(255,0,0, 1));
-        Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10, 7, Color.rgb(255,0,0, 1));
+        Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10,
+                strokeWidth, Color.rgb(255,0,0, 1));
+        Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10,
+                strokeWidth, Color.rgb(255,0,0, 1));
 
         Scale scale = new Scale();
         scale.setX(1);
@@ -58,6 +63,10 @@ public class Cell extends Pane {
         line2.getTransforms().add(scale);
         scale.xProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue()));
         scale.yProperty().bind(this.heightProperty().divide(this.heightProperty().doubleValue()));
+        line1.strokeWidthProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue())
+                .multiply(strokeWidth));
+        line2.strokeWidthProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue())
+                .multiply(strokeWidth));
 
         this.getChildren().addAll(line1, line2);
     }

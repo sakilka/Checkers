@@ -123,11 +123,11 @@ public class Checkers extends Application {
 
         AtomicReference<Number> initialWidth = new AtomicReference<>();
 
-        if(Stream.of(Game.CHECKERS, Game.CHESS).collect(Collectors.toList()).contains(game)) {
-            stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-                if (Double.isNaN(oldVal.doubleValue())) {
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if(Stream.of(Game.CHECKERS, Game.CHESS).collect(Collectors.toList()).contains(getGameSetup().getGame())) {
+                if (Double.isNaN(oldVal.doubleValue()) || initialWidth.get() == null) {
                     initialWidth.set(newVal);
-                } else {
+                } else if (newVal != null){
                     if (newVal.doubleValue() > 200) {
                         double ratio = (initialWidth.get().doubleValue() / newVal.doubleValue());
                         double zoom = 7.30395 * (Math.pow(ratio, 2)) - 110.62 * ratio + 125.623;
@@ -135,8 +135,8 @@ public class Checkers extends Application {
                         boardPosition.translateZProperty().setValue(-zoom);
                     }
                 }
-            });
-        }
+            }
+        });
 
         root.setCenter(content);
         rightPanel.disableDrag(content);
