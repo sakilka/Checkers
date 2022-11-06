@@ -4,7 +4,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Scale;
 import org.sample.checkers.config.ticktacktoe.ToeTurn;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cell extends Pane {
 
@@ -29,21 +33,17 @@ public class Cell extends Pane {
     }
 
     private void setCircle() {
-        Ellipse ellipse = new Ellipse(this.getWidth() / 2,
-                this.getHeight() / 2, this.getWidth() / 2 - 10,
-                this.getHeight() / 2 - 10);
-        ellipse.centerXProperty().bind(
-                this.widthProperty().divide(2));
-        ellipse.centerYProperty().bind(
-                this.heightProperty().divide(2));
-        ellipse.radiusXProperty().bind(
-                this.widthProperty().divide(2).subtract(10));
-        ellipse.radiusYProperty().bind(
-                this.heightProperty().divide(2).subtract(10));
-        ellipse.setStroke(Color.BLUE);
-        ellipse.setFill(Color.WHITE);
+        Shape circle = createHandDrawnCircle(this.getWidth() / 2, this.getHeight() / 2,
+                this.getWidth() / 2 - 10, 2, 5, Color.BLUE);
 
-        getChildren().add(ellipse);
+        Scale scale = new Scale();
+        scale.setX(1);
+        scale.setY(1);
+        circle.getTransforms().add(scale);
+        scale.xProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue()));
+        scale.yProperty().bind(this.heightProperty().divide(this.heightProperty().doubleValue()));
+
+        this.getChildren().add(circle);
     }
 
     private void setCross() {
@@ -51,38 +51,23 @@ public class Cell extends Pane {
         Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10, 10, Color.RED);
         Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10, 10, Color.RED);
 
+        Scale scale = new Scale();
+        scale.setX(1);
+        scale.setY(1);
+        line1.getTransforms().add(scale);
+        line2.getTransforms().add(scale);
+        scale.xProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue()));
+        scale.yProperty().bind(this.heightProperty().divide(this.heightProperty().doubleValue()));
+
         this.getChildren().addAll(line1, line2);
-    }
-
-    public Shape createHandDrawnRect(double x1, double y1, double w, double h, double strokeWidth, Color color) {
-        Shape top = createHandDrawnLine(x1, y1, x1 + w, y1, strokeWidth, color);
-        Shape bottom = createHandDrawnLine(x1, y1 + h, x1 + w, y1 + h, strokeWidth, color);
-        Shape left = createHandDrawnLine(x1, y1, x1, y1 + h, strokeWidth, color);
-        Shape right = createHandDrawnLine(x1 + w, y1, x1 + w, y1 + h, strokeWidth, color);
-        return Shape.union(top, Shape.union(bottom, Shape.union(left, right)));
-    }
-
-    public Shape createHandDrawnArrow(double x1, double y1, double x2, double y2, double strokeWidth, Color color) {
-        Shape line = createHandDrawnLine(x1, y1, x2, y2, strokeWidth, color);
-
-        double arrowlenght = strokeWidth * 5;
-        double distance = Math.sqrt(Math.pow(x2 -x1, 2) + Math.pow(y2 -y1, 2));
-        double unrotatedX = x2 + ((x1 - x2) / distance) * arrowlenght;
-        double unrotatedY = y2 + ((y1 - y2) / distance) * arrowlenght;
-
-        Point2D rotated1 = new Point2D(x2 + (unrotatedX - x2)*Math.cos(0.5) - (unrotatedY - y2)*Math.sin(0.5), y2 + (unrotatedX - x2)*Math.sin(0.5) + (unrotatedY - y2)*Math.cos(0.5));
-        Shape arrowLeft = createHandDrawnLine(x2, y2, rotated1.getX(), rotated1.getY(), strokeWidth, color);
-
-        Point2D rotated2 = new Point2D(x2 + (unrotatedX - x2)*Math.cos(-0.5) - (unrotatedY - y2)*Math.sin(-0.5), y2 + (unrotatedX - x2)*Math.sin(-0.5) + (unrotatedY - y2)*Math.cos(-0.5));
-        Shape arrowRight = createHandDrawnLine(x2, y2, rotated2.getX(), rotated2.getY(), strokeWidth, color);
-        return Shape.union(line, Shape.union(arrowLeft, arrowRight));
     }
 
     public Shape createHandDrawnLine(double x1, double y1, double x2, double y2, double strokeWidth, Color color) {
         Point2D startPoint = new Point2D(x1, y1);
         Point2D endPoint = new Point2D(x2, y2);
 
-        double wobble = Math.sqrt((endPoint.getX() - startPoint.getX()) * (endPoint.getX() - startPoint.getX()) + (endPoint.getY() - startPoint.getY()) * (endPoint.getY() - startPoint.getY())) / 25;
+        double wobble = Math.sqrt((endPoint.getX() - startPoint.getX()) * (endPoint.getX() - startPoint.getX())
+                + (endPoint.getY() - startPoint.getY()) * (endPoint.getY() - startPoint.getY())) / 25;
 
         double r1 = Math.random();
         double r2 = Math.random();
@@ -90,8 +75,10 @@ public class Cell extends Pane {
         double xfactor = Math.random() > 0.5 ? wobble : -wobble;
         double yfactor = Math.random() > 0.5 ? wobble : -wobble;
 
-        Point2D control1 = new Point2D((endPoint.getX() - startPoint.getX()) * r1 + startPoint.getX() + xfactor, (endPoint.getY() - startPoint.getY()) * r1 + startPoint.getY() + yfactor);
-        Point2D control2 = new Point2D((endPoint.getX() - startPoint.getX()) * r2 + startPoint.getX() - xfactor, (endPoint.getY() - startPoint.getY()) * r2 + startPoint.getY() - yfactor);
+        Point2D control1 = new Point2D((endPoint.getX() - startPoint.getX()) * r1 + startPoint.getX() + xfactor,
+                (endPoint.getY() - startPoint.getY()) * r1 + startPoint.getY() + yfactor);
+        Point2D control2 = new Point2D((endPoint.getX() - startPoint.getX()) * r2 + startPoint.getX() - xfactor,
+                (endPoint.getY() - startPoint.getY()) * r2 + startPoint.getY() - yfactor);
 
         MoveTo startMove = new MoveTo(startPoint.getX(), startPoint.getY());
         CubicCurveTo curve = new CubicCurveTo(control1.getX(), control1.getY(),
@@ -99,6 +86,52 @@ public class Cell extends Pane {
                 endPoint.getX(), endPoint.getY());
 
         Path path = new Path(startMove, curve);
+        path.setStrokeLineCap(StrokeLineCap.ROUND);
+        path.setStroke(color);
+        path.setStrokeWidth(strokeWidth + (strokeWidth * (Math.random() - 0.5) / 8.0));
+        path.setStrokeType(StrokeType.CENTERED);
+        return path;
+    }
+
+    public Shape createHandDrawnCircle(double cx, double cy, double radius, int rounds,
+                                       double strokeWidth, Color color) {
+//        int cx, cy,                                                         /// the calced point
+        double tol = Math.random() * (radius * 0.03) + (radius * 0.025);    ///tolerance / fluctation
+        double dx = Math.random() * tol * 0.75;                             /// "bouncer" values
+        double dy = Math.random() * tol * 0.75;
+        double ix = (Math.random() - 1) * (radius * 0.0044);                /// speed /incremental
+        double iy = (Math.random() - 1) * (radius * 0.0033);
+        double rx = radius + Math.random() * tol;                           /// radius X
+        double ry = (radius + Math.random() * tol) * 0.8;                   /// radius Y
+        double a = 0;                                                       /// angle
+        double ad = 3;                                                      /// angle delta (resolution)
+        double i = 0;                                                       /// counter
+        double start = Math.random() + 50;                                  /// random delta start
+        double tot = 360 * rounds + Math.random() * 50 - 100;               /// end angle
+        List<PathElement> points = new ArrayList<>();                            /// the points array
+        double deg2rad = Math.PI / 180;                                     /// degrees to radians
+
+        for (; i < tot; i += ad) {
+            dx += ix;
+            dy += iy;
+
+            if (dx < -tol || dx > tol) ix = -ix;
+            if (dy < -tol || dy > tol) iy = -iy;
+
+            double x = cx + (rx + dx * 2) * Math.cos(i * deg2rad + start);
+            double y = cy + (ry + dy * 2) * Math.sin(i * deg2rad + start);
+
+            if(points.isEmpty()) {
+                points.add(new MoveTo(x, y));
+                continue;
+            }
+
+            points.add(new LineTo(x, y));
+        }
+
+
+        Path path = new Path(points);
+
         path.setStrokeLineCap(StrokeLineCap.ROUND);
         path.setStroke(color);
         path.setStrokeWidth(strokeWidth + (strokeWidth * (Math.random() - 0.5) / 8.0));
