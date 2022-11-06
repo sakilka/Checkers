@@ -27,6 +27,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
@@ -121,18 +123,20 @@ public class Checkers extends Application {
 
         AtomicReference<Number> initialWidth = new AtomicReference<>();
 
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            if(Double.isNaN(oldVal.doubleValue())) {
-                initialWidth.set(newVal);
-            } else {
-                if(newVal.doubleValue() > 200) {
-                    double ratio = (initialWidth.get().doubleValue() / newVal.doubleValue());
-                    double zoom = 7.30395 * (Math.pow(ratio, 2)) - 110.62 * ratio + 125.623;
+        if(Stream.of(Game.CHECKERS, Game.CHESS).collect(Collectors.toList()).contains(game)) {
+            stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+                if (Double.isNaN(oldVal.doubleValue())) {
+                    initialWidth.set(newVal);
+                } else {
+                    if (newVal.doubleValue() > 200) {
+                        double ratio = (initialWidth.get().doubleValue() / newVal.doubleValue());
+                        double zoom = 7.30395 * (Math.pow(ratio, 2)) - 110.62 * ratio + 125.623;
 
-                    boardPosition.translateZProperty().setValue(-zoom);
+                        boardPosition.translateZProperty().setValue(-zoom);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         root.setCenter(content);
         rightPanel.disableDrag(content);
@@ -143,7 +147,7 @@ public class Checkers extends Application {
         try {
             initializeScene(stage, game, (float) stage.getScene().getWidth(), (float) stage.getScene().getHeight());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("V=Cannot init board for game: " + game);
         }
     }
 
