@@ -5,35 +5,35 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Scale;
-import org.sample.checkers.config.ticktacktoe.ToeTurn;
+import org.sample.checkers.config.ticktacktoe.ToeSide;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.sample.checkers.config.ticktacktoe.ToeSide.CIRCLE;
+import static org.sample.checkers.config.ticktacktoe.ToeSide.CROSS;
+
 public class Cell extends Pane {
 
-    private TickTackToeScene tickTackToeScene;
+    private final TickTackToeScene tickTackToeScene;
     private static final int strokeWidth = 7;
+    private final int widthPosition;
+    private final int heightPosition;
+    private ToeSide side;
+    private ToeSide onTurn;
 
-    public Cell(TickTackToeScene tickTackToeScene) {
+    public Cell(TickTackToeScene tickTackToeScene, int widthPosition, int heightPosition) {
         setBorder(new Border(new BorderStroke(Color.rgb(0,0,0, 1), BorderStrokeStyle.SOLID,
                 CornerRadii.EMPTY, new BorderWidths(0.02, 0.02, 0.02, 0.02, true, true, true, true))));
         setBackground(new Background(new BackgroundFill(Color.rgb(255,255,255, 1), null, null)));
         this.setPrefSize(20000, 20000);
-        this.setOnMouseClicked(e -> handleMouseClick());
         this.tickTackToeScene = tickTackToeScene;
+        this.widthPosition = widthPosition;
+        this.heightPosition = heightPosition;
+        this.setOnMouseClicked(e -> tickTackToeScene.handleMouseClick(this));
     }
 
-    private void handleMouseClick() {
-        if(tickTackToeScene.getOnTurn() == ToeTurn.CIRCLE) {
-            setCircle();
-        } else {
-            setCross();
-        }
-        tickTackToeScene.setOnTurn(tickTackToeScene.getOnTurn() == ToeTurn.CIRCLE ? ToeTurn.CROSS : ToeTurn.CIRCLE);
-    }
-
-    private void setCircle() {
+    public void setCircle() {
         Shape circle = createHandDrawnCircle(this.getWidth() / 2, this.getHeight() / 2,
                 this.getWidth() / 2 - 10, 2, strokeWidth, Color.rgb(0,0,255, 1));
 
@@ -47,10 +47,10 @@ public class Cell extends Pane {
                 .multiply(strokeWidth));
 
         this.getChildren().add(circle);
+        this.side = CIRCLE;
     }
 
-    private void setCross() {
-
+    public void setCross() {
         Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10,
                 strokeWidth, Color.rgb(255,0,0, 1));
         Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10,
@@ -69,6 +69,7 @@ public class Cell extends Pane {
                 .multiply(strokeWidth));
 
         this.getChildren().addAll(line1, line2);
+        this.side = CROSS;
     }
 
     public Shape createHandDrawnLine(double x1, double y1, double x2, double y2, double strokeWidth, Color color) {
@@ -145,5 +146,17 @@ public class Cell extends Pane {
         path.setStrokeWidth(strokeWidth + (strokeWidth * (Math.random() - 0.5) / 8.0));
         path.setStrokeType(StrokeType.CENTERED);
         return path;
+    }
+
+    public ToeSide getSide() {
+        return side;
+    }
+
+    public int getWidthPosition() {
+        return widthPosition;
+    }
+
+    public int getHeightPosition() {
+        return heightPosition;
     }
 }
