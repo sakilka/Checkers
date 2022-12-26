@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Scale;
 import org.sample.checkers.config.ticktacktoe.ToeSide;
+import org.sample.checkers.ticktacktoe.ui.Position;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,6 @@ public class Cell extends Pane {
     private final int widthPosition;
     private final int heightPosition;
     private ToeSide side;
-    private ToeSide onTurn;
 
     public Cell(TickTackToeScene tickTackToeScene, int widthPosition, int heightPosition) {
         setBorder(new Border(new BorderStroke(Color.rgb(0,0,0, 1), BorderStrokeStyle.SOLID,
@@ -48,6 +48,13 @@ public class Cell extends Pane {
 
         this.getChildren().add(circle);
         this.side = CIRCLE;
+
+        Position winPosition = isWin(CIRCLE, widthPosition, heightPosition);
+        if(winPosition != null) {
+            ToeSide [][] currentBoard = tickTackToeScene.getTickTackToeMoveHistory().getCurrentBoardFromHistory();
+            currentBoard[heightPosition][widthPosition] = side;
+            markWin(winPosition, CIRCLE, currentBoard, tickTackToeScene.getCells());
+        }
     }
 
     public void setCross() {
@@ -70,6 +77,13 @@ public class Cell extends Pane {
 
         this.getChildren().addAll(line1, line2);
         this.side = CROSS;
+
+        Position winPosition = isWin(CROSS, widthPosition, heightPosition);
+        if(winPosition != null) {
+            ToeSide [][] currentBoard = tickTackToeScene.getTickTackToeMoveHistory().getCurrentBoardFromHistory();
+            currentBoard[heightPosition][widthPosition] = side;
+            markWin(winPosition, CROSS, currentBoard, tickTackToeScene.getCells());
+        }
     }
 
     public Shape createHandDrawnLine(double x1, double y1, double x2, double y2, double strokeWidth, Color color) {
@@ -158,5 +172,194 @@ public class Cell extends Pane {
 
     public int getHeightPosition() {
         return heightPosition;
+    }
+
+    private Position isWin(ToeSide side, int widthPosition, int heightPosition) {
+        ToeSide [][] currentBoard = tickTackToeScene.getTickTackToeMoveHistory().getCurrentBoardFromHistory();
+        currentBoard[heightPosition][widthPosition] = side;
+
+        for (int height = 0; height<currentBoard[0].length; height++){
+            for (int width = 0; width<currentBoard.length; width++){
+                if(currentBoard[width][height] == side) {
+
+                    if(countVertical(width, height, side, currentBoard) >= 5) {
+                        return new Position(width, height, side);
+                    }
+
+                    if(countHorizontal(width, height, side, currentBoard) >= 5) {
+                        return new Position(width, height, side);
+                    }
+
+                    if(countLeftDiagonal(width, height, side, currentBoard) >= 5) {
+                        return new Position(width, height, side);
+                    }
+
+                    if(countRightDiagonal(width, height, side, currentBoard) >= 5) {
+                        return new Position(width, height, side);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static int countVertical(int width, int height, ToeSide side, ToeSide [][] currentBoard) {
+        int horizontal = 1;
+        int shift = 0;
+        while ((width - (++shift)) >= 0) {
+            if(currentBoard[width - shift][height] == side){
+                horizontal++;
+                continue;
+            }
+
+            break;
+        }
+
+        shift = 0;
+        while ((width + (++shift)) < currentBoard.length) {
+            if(currentBoard[width + shift][height] == side){
+                horizontal++;
+                continue;
+            }
+
+            break;
+        }
+
+        return horizontal;
+    }
+
+    private static int countHorizontal(int width, int height, ToeSide side, ToeSide [][] currentBoard) {
+        int vertical = 1;
+        int shift = 0;
+        while ((height - (++shift)) >= 0) {
+            if(currentBoard[width][height - shift] == side){
+                vertical++;
+                continue;
+            }
+
+            break;
+        }
+
+        shift = 0;
+        while ((height + (++shift)) < currentBoard[0].length) {
+            if(currentBoard[width][height + shift] == side){
+                vertical++;
+                continue;
+            }
+
+            break;
+        }
+
+        return vertical;
+    }
+
+    private static int countLeftDiagonal(int width, int height, ToeSide side, ToeSide [][] currentBoard) {
+        int diagonal = 1;
+        int shift = 0;
+        while ((height - (++shift)) >= 0 && width - (shift) >=0) {
+            if(currentBoard[width - shift][height - shift] == side){
+                diagonal++;
+                continue;
+            }
+
+            break;
+        }
+
+        shift = 0;
+        while ((height + (++shift)) < currentBoard[0].length && (width + (shift)) < currentBoard.length) {
+            if(currentBoard[width + shift][height + shift] == side){
+                diagonal++;
+                continue;
+            }
+
+            break;
+        }
+
+        return diagonal;
+    }
+
+    private static int countRightDiagonal(int width, int height, ToeSide side, ToeSide [][] currentBoard) {
+        int diagonal = 1;
+        int shift = 0;
+        while ((height - (++shift)) >= 0 && width + (shift) < currentBoard.length) {
+            if(currentBoard[width + shift][height - shift] == side){
+                diagonal++;
+                continue;
+            }
+
+            break;
+        }
+
+        shift = 0;
+        while ((height + (++shift)) < currentBoard[0].length && (width - (shift)) >= 0) {
+            if(currentBoard[width - shift][height + shift] == side){
+                diagonal++;
+                continue;
+            }
+
+            break;
+        }
+
+        return diagonal;
+    }
+
+    private static void markWin(Position winPosition, ToeSide side, ToeSide[][] currentBoard, Cell[][] cells) {
+
+        if(countVertical(winPosition.getWidth(), winPosition.getHeight(), side, currentBoard) >=5) {
+            for (int i = 0; i<5; i++) {
+                cells[winPosition.getWidth() + i][winPosition.getHeight()].mark(side, Mark.VERTICAL);
+            }
+        }
+
+        if(countHorizontal(winPosition.getWidth(), winPosition.getHeight(), side, currentBoard) >=5) {
+            for (int i = 0; i<5; i++) {
+                cells[winPosition.getWidth()][winPosition.getHeight() + i].mark(side, Mark.HORIZONTAL);
+            }
+        }
+
+        if(countLeftDiagonal(winPosition.getWidth(), winPosition.getHeight(), side, currentBoard) >=5) {
+            for (int i = 0; i<5; i++) {
+                cells[winPosition.getWidth() + i][winPosition.getHeight() + i].mark(side, Mark.LEFT_DIAGONAL);
+            }
+        }
+
+        if(countRightDiagonal(winPosition.getWidth(), winPosition.getHeight(), side, currentBoard) >=5) {
+            for (int i = 0; i<5; i++) {
+                cells[winPosition.getWidth() - i][winPosition.getHeight() - i].mark(side, Mark.RIGHT_DIAGONAL);
+            }
+        }
+    }
+
+    private void mark(ToeSide toeSide, Mark mark) {
+        Shape line;
+        Color markColor = toeSide == CROSS ? Color.rgb(255,0,0, 1) : Color.rgb(0,0,255, 1);
+
+        switch (mark){
+            case HORIZONTAL:
+                line = createHandDrawnLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2, strokeWidth, markColor);
+                break;
+            case VERTICAL:
+                line = createHandDrawnLine(this.getHeight()/2, 0, this.getHeight()/2, this.getWidth(), strokeWidth, markColor);
+                break;
+            case LEFT_DIAGONAL:
+                line = createHandDrawnLine(0, 0, this.getWidth(), this.getHeight(), strokeWidth, markColor);
+                break;
+            default:
+            case RIGHT_DIAGONAL:
+                line = createHandDrawnLine(0, this.getHeight(), this.getWidth(), 0, strokeWidth, markColor);
+                break;
+        }
+
+        Scale scale = new Scale();
+        scale.setX(1);
+        scale.setY(1);
+        line.getTransforms().add(scale);
+        scale.xProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue()));
+        scale.yProperty().bind(this.heightProperty().divide(this.heightProperty().doubleValue()));
+        line.strokeWidthProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue())
+                .multiply(strokeWidth));
+
+        this.getChildren().addAll(line);
     }
 }

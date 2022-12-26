@@ -139,4 +139,12 @@ public class TickTackToeScene extends SubScene implements GameBoard {
         onTurn = onTurn.oposite();
         tickTackToeMoveHistory.addMove(new TickTackToeMove(nextMove.getPosition(), nextMove.getSide()));
     }
+
+    public TickTackToeMoveHistory getTickTackToeMoveHistory() {
+        return tickTackToeMoveHistory;
+    }
+
+    public Cell[][] getCells() {
+        return cells;
+    }
 }
