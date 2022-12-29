@@ -1,5 +1,7 @@
 package org.sample.checkers.tictactoe;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -17,7 +19,8 @@ import static org.sample.checkers.config.ticktacktoe.ToeSide.CROSS;
 public class Cell extends Pane {
 
     private final TickTackToeScene tickTackToeScene;
-    private static final int strokeWidth = 7;
+    private final DoubleProperty strokeWidth;
+    private final DoubleProperty spaceWidth;
     private final int widthPosition;
     private final int heightPosition;
     private ToeSide side;
@@ -31,11 +34,15 @@ public class Cell extends Pane {
         this.widthPosition = widthPosition;
         this.heightPosition = heightPosition;
         this.setOnMouseClicked(e -> tickTackToeScene.handleMouseClick(this));
+        this.strokeWidth = new SimpleDoubleProperty();
+        this.spaceWidth = new SimpleDoubleProperty();
+        strokeWidth.bind(this.widthProperty().multiply(0.125));
+        spaceWidth.bind(this.widthProperty().divide(4));
     }
 
     public void setCircle() {
         Shape circle = createHandDrawnCircle(this.getWidth() / 2, this.getHeight() / 2,
-                this.getWidth() / 2 - 10, 2, strokeWidth, Color.rgb(0,0,255, 1));
+                this.getWidth() / 2 - spaceWidth.get(), 2, strokeWidth.get(), Color.rgb(0,0,255, 1));
 
         Scale scale = new Scale();
         scale.setX(1);
@@ -43,8 +50,6 @@ public class Cell extends Pane {
         circle.getTransforms().add(scale);
         scale.xProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue()));
         scale.yProperty().bind(this.heightProperty().divide(this.heightProperty().doubleValue()));
-        circle.strokeWidthProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue())
-                .multiply(strokeWidth));
 
         this.getChildren().add(circle);
         this.side = CIRCLE;
@@ -58,10 +63,10 @@ public class Cell extends Pane {
     }
 
     public void setCross() {
-        Shape line1 = createHandDrawnLine(10, 10, this.getWidth() - 10, this.getHeight() - 10,
-                strokeWidth, Color.rgb(255,0,0, 1));
-        Shape line2 = createHandDrawnLine(10, this.getHeight() - 10, this.getWidth() - 10, 10,
-                strokeWidth, Color.rgb(255,0,0, 1));
+        Shape line1 = createHandDrawnLine(spaceWidth.get(), spaceWidth.get(), this.getWidth() - spaceWidth.get(),
+                this.getHeight() - spaceWidth.get(), strokeWidth.get(), Color.rgb(255,0,0, 1));
+        Shape line2 = createHandDrawnLine(spaceWidth.get(), this.getHeight() - spaceWidth.get(),
+                this.getWidth() - spaceWidth.get(), spaceWidth.get(), strokeWidth.get(), Color.rgb(255,0,0, 1));
 
         Scale scale = new Scale();
         scale.setX(1);
@@ -70,10 +75,6 @@ public class Cell extends Pane {
         line2.getTransforms().add(scale);
         scale.xProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue()));
         scale.yProperty().bind(this.heightProperty().divide(this.heightProperty().doubleValue()));
-        line1.strokeWidthProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue())
-                .multiply(strokeWidth));
-        line2.strokeWidthProperty().bind(this.widthProperty().divide(this.widthProperty().doubleValue())
-                .multiply(strokeWidth));
 
         this.getChildren().addAll(line1, line2);
         this.side = CROSS;
@@ -158,6 +159,8 @@ public class Cell extends Pane {
         path.setStrokeLineCap(StrokeLineCap.ROUND);
         path.setStroke(color);
         path.setStrokeWidth(strokeWidth + (strokeWidth * (Math.random() - 0.5) / 8.0));
+//        path.setStrokeWidth(strokeWidth + (strokeWidth * (Math.random() - 0.5) / 8.0));
+        //path.strokeWidthProperty().bind(strokeWidth);
         path.setStrokeType(StrokeType.CENTERED);
         return path;
     }
@@ -326,7 +329,7 @@ public class Cell extends Pane {
 
         if(countRightDiagonal(winPosition.getWidth(), winPosition.getHeight(), side, currentBoard) >=5) {
             for (int i = 0; i<5; i++) {
-                cells[winPosition.getWidth() - i][winPosition.getHeight() - i].mark(side, Mark.RIGHT_DIAGONAL);
+                cells[winPosition.getWidth() - i][winPosition.getHeight() + i].mark(side, Mark.RIGHT_DIAGONAL);
             }
         }
     }
@@ -337,17 +340,19 @@ public class Cell extends Pane {
 
         switch (mark){
             case HORIZONTAL:
-                line = createHandDrawnLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2, strokeWidth, markColor);
+                line = createHandDrawnLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2,
+                        strokeWidth.get(), markColor);
                 break;
             case VERTICAL:
-                line = createHandDrawnLine(this.getHeight()/2, 0, this.getHeight()/2, this.getWidth(), strokeWidth, markColor);
+                line = createHandDrawnLine(this.getHeight()/2, 0, this.getHeight()/2, this.getWidth(),
+                        strokeWidth.get(), markColor);
                 break;
             case LEFT_DIAGONAL:
-                line = createHandDrawnLine(0, 0, this.getWidth(), this.getHeight(), strokeWidth, markColor);
+                line = createHandDrawnLine(0, 0, this.getWidth(), this.getHeight(), strokeWidth.get(), markColor);
                 break;
             default:
             case RIGHT_DIAGONAL:
-                line = createHandDrawnLine(0, this.getHeight(), this.getWidth(), 0, strokeWidth, markColor);
+                line = createHandDrawnLine(0, this.getHeight(), this.getWidth(), 0, strokeWidth.get(), markColor);
                 break;
         }
 
