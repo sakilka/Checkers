@@ -6,7 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
@@ -14,9 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.sample.checkers.board.model.GameBoard;
-import org.sample.checkers.checkers.CheckersFigureModel;
 import org.sample.checkers.chess.BoardPosition;
-import org.sample.checkers.config.checkers.CheckersMovePosition;
 import org.sample.checkers.config.game.GameSetup;
 import org.sample.checkers.config.ticktacktoe.TickTackToeConfiguration;
 import org.sample.checkers.config.ticktacktoe.TickTackToeMove;
@@ -26,14 +23,13 @@ import org.sample.checkers.ticktacktoe.ui.TickTackToeUi;
 
 import java.util.ArrayList;
 
-import static org.sample.checkers.checkers.CheckersMoveUtil.getFigureForCheckersMove;
-import static org.sample.checkers.checkers.CheckersMoveUtil.handlePrimaryClick;
 import static org.sample.checkers.config.game.GamePropertyUtil.getBoardConfig;
 import static org.sample.checkers.config.game.GamePropertyUtil.getGameSetup;
 import static org.sample.checkers.config.game.Player.MULTI_PLAYER;
 import static org.sample.checkers.config.game.Player.SINGLE_PLAYER;
 import static org.sample.checkers.config.ticktacktoe.TickTackToePropertyUtil.getConfig;
 import static org.sample.checkers.config.ticktacktoe.ToeSide.CIRCLE;
+import static org.sample.checkers.config.ticktacktoe.ToeSide.CROSS;
 import static org.sample.checkers.ticktacktoe.ui.TickTackToeContext.getUi;
 
 public class TickTackToeScene extends SubScene implements GameBoard {
@@ -61,10 +57,10 @@ public class TickTackToeScene extends SubScene implements GameBoard {
 
         tickTackToeConfiguration = getConfig();
         cells = new Cell[tickTackToeConfiguration.getTickTackToeHeight()][tickTackToeConfiguration.getTickTackToeWidth()];
-        onTurn = CIRCLE;
+        onTurn = CROSS;
         uiTurn = gameSetup.getPlayer() == MULTI_PLAYER ? null : onTurn.oposite();
         this.tickTackToeMoveHistory = new TickTackToeMoveHistory(new ArrayList<>(),
-                tickTackToeConfiguration.getTickTackToeWidth(),tickTackToeConfiguration.getTickTackToeHeight());
+                tickTackToeConfiguration.getTickTackToeWidth(),tickTackToeConfiguration.getTickTackToeHeight(), onTurn);
 
         initBoard(boardPosition);
     }
@@ -146,5 +142,9 @@ public class TickTackToeScene extends SubScene implements GameBoard {
 
     public Cell[][] getCells() {
         return cells;
+    }
+
+    public void winDialog(ToeSide toeSide) {
+        new ToeWinDialog(mainStage, toeSide).showDialog();
     }
 }

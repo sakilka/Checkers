@@ -1,11 +1,7 @@
 package org.sample.checkers.config.ticktacktoe;
 
-import org.sample.checkers.config.checkers.CheckersMovePosition;
-
 import java.util.List;
 
-import static org.sample.checkers.config.checkers.CheckersSide.BLACK;
-import static org.sample.checkers.config.checkers.CheckersSide.WHITE;
 import static org.sample.checkers.config.ticktacktoe.ToeSide.CIRCLE;
 import static org.sample.checkers.config.ticktacktoe.ToeSide.CROSS;
 
@@ -16,11 +12,11 @@ public class TickTackToeMoveHistory {
     private int width;
     private int height;
 
-    public TickTackToeMoveHistory(List<TickTackToeMove> moves, int width, int height) {
+    public TickTackToeMoveHistory(List<TickTackToeMove> moves, int width, int height, ToeSide onMove) {
         this.moves = moves;
         this.width = width;
         this.height = height;
-        this.onMove = CIRCLE;
+        this.onMove = onMove;
     }
 
     public void addMove(TickTackToeMove move) {

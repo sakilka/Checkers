@@ -59,6 +59,7 @@ public class Cell extends Pane {
             ToeSide [][] currentBoard = tickTackToeScene.getTickTackToeMoveHistory().getCurrentBoardFromHistory();
             currentBoard[heightPosition][widthPosition] = side;
             markWin(winPosition, CIRCLE, currentBoard, tickTackToeScene.getCells());
+            this.tickTackToeScene.winDialog(CIRCLE);
         }
     }
 
@@ -84,6 +85,7 @@ public class Cell extends Pane {
             ToeSide [][] currentBoard = tickTackToeScene.getTickTackToeMoveHistory().getCurrentBoardFromHistory();
             currentBoard[heightPosition][widthPosition] = side;
             markWin(winPosition, CROSS, currentBoard, tickTackToeScene.getCells());
+            this.tickTackToeScene.winDialog(CROSS);
         }
     }
 
@@ -159,8 +161,6 @@ public class Cell extends Pane {
         path.setStrokeLineCap(StrokeLineCap.ROUND);
         path.setStroke(color);
         path.setStrokeWidth(strokeWidth + (strokeWidth * (Math.random() - 0.5) / 8.0));
-//        path.setStrokeWidth(strokeWidth + (strokeWidth * (Math.random() - 0.5) / 8.0));
-        //path.strokeWidthProperty().bind(strokeWidth);
         path.setStrokeType(StrokeType.CENTERED);
         return path;
     }
