@@ -21,7 +21,6 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
     @Override
     public TickTackToeMove computeNextMove(TickTackToeMoveHistory history) {
-        long start = System.currentTimeMillis();
         ToeSide [][] baseState = history.getCurrentBoardFromHistory();
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
@@ -56,7 +55,6 @@ public class AlphaBetaPruning implements TickTackToeUi {
             }
         }
 
-        System.out.println("Duration: " + (System.currentTimeMillis()-start)/1000.0);
         return new TickTackToeMove(move, history.getOnMove());
     }
 
@@ -70,10 +68,6 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
         if(canWin(state, side)) {
             return Integer.MIN_VALUE;
-        }
-
-        if(canWin(state, side.oposite())) {
-            return Integer.MAX_VALUE;
         }
 
         if(anyNextMove(state)) {
