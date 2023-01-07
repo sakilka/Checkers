@@ -1,4 +1,4 @@
-package org.sample.checkers.ticktacktoe.ui.minimax;
+package org.sample.checkers.ticktacktoe.ui.alphabetapruning;
 
 import com.sun.javafx.geom.Dimension2D;
 import org.sample.checkers.config.ticktacktoe.TickTackToeMove;
@@ -10,12 +10,12 @@ import org.sample.checkers.ticktacktoe.ui.heuristic.WinCombinationsCounter;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MiniMaxUi implements TickTackToeUi {
+public class AlphaBetaPruning implements TickTackToeUi {
 
     private static final int SEARCH_DEPTH = 3;
     private final ToeHeuristic toeHeuristic;
 
-    public MiniMaxUi() {
+    public AlphaBetaPruning() {
         this.toeHeuristic = new ToeHeuristic();
     }
 
@@ -36,7 +36,9 @@ public class MiniMaxUi implements TickTackToeUi {
                     if(canWin(child, history.getOnMove())) {
                         return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
                     }
-                    int evaluation = minimax(child, SEARCH_DEPTH, false, history.getOnMove().oposite());
+
+                    int evaluation = alphaBeta(child, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false,
+                            history.getOnMove().oposite());
                     if (evaluation >= bestMove) {
                         move = new Dimension2D(height, width);
                         bestMove = evaluation;
@@ -48,7 +50,7 @@ public class MiniMaxUi implements TickTackToeUi {
         return new TickTackToeMove(move, history.getOnMove());
     }
 
-    private int minimax(ToeSide [][] state, int depth, boolean max, ToeSide side) {
+    private int alphaBeta(ToeSide [][] state, int depth, int alpha, int beta, boolean max, ToeSide side) {
         int boardWidth = state.length;
         int boardHeight = state[0].length;
 
@@ -76,7 +78,13 @@ public class MiniMaxUi implements TickTackToeUi {
                     ToeSide [][] child = turn(state, width, height, side);
 
                     if(child != null) {
-                        score = Math.max(score, minimax(child, depth-1, false, side.oposite()));
+                        score = Math.max(score, alphaBeta(child, depth-1, alpha, beta, false, side.oposite()));
+                    }
+
+                    alpha = Math.max(alpha, score);
+
+                    if(beta <= alpha) {
+                        break;
                     }
                 }
             }
@@ -90,7 +98,13 @@ public class MiniMaxUi implements TickTackToeUi {
                     ToeSide [][] child = turn(state, width, height, side);
 
                     if(child != null) {
-                        score = Math.min(score, minimax(child, depth-1, true, side.oposite()));
+                        score = Math.min(score, alphaBeta(child, depth-1, alpha, beta, true, side.oposite()));
+                    }
+
+                    beta = Math.min(beta, score);
+
+                    if(beta <= alpha) {
+                        break;
                     }
                 }
             }
