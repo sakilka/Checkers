@@ -38,7 +38,7 @@ public class NegaMax implements TickTackToeUi {
                     if(canWin(child, history.getOnMove())) {
                         return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
                     }
-                    int evaluation = - negamax(child, SEARCH_DEPTH, false, history.getOnMove().oposite());
+                    int evaluation = - negamax(child, SEARCH_DEPTH, history.getOnMove().oposite());
                     if (evaluation >= bestMove) {
                         move = new Dimension2D(height, width);
                         bestMove = evaluation;
@@ -50,7 +50,7 @@ public class NegaMax implements TickTackToeUi {
         return new TickTackToeMove(move, history.getOnMove());
     }
 
-    private int negamax(ToeSide [][] state, int depth, boolean max, ToeSide side) {
+    private int negamax(ToeSide [][] state, int depth, ToeSide side) {
         int boardWidth = state.length;
         int boardHeight = state[0].length;
 
@@ -69,7 +69,7 @@ public class NegaMax implements TickTackToeUi {
                 ToeSide [][] child = turn(state, width, height, side);
 
                 if(child != null) {
-                    score = Math.max(score, - negamax(child, depth-1, true, side.oposite()));
+                    score = Math.max(score, - negamax(child, depth-1, side.oposite()));
                 }
             }
         }
