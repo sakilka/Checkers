@@ -69,11 +69,11 @@ public class AlphaBetaPruning implements TickTackToeUi {
         }
 
         if(canWin(state, side)) {
-            return toeHeuristic.evaluateBoardState(state, side);
+            return Integer.MIN_VALUE;
         }
 
         if(canWin(state, side.oposite())) {
-            return toeHeuristic.evaluateBoardState(state, side.oposite());
+            return Integer.MAX_VALUE;
         }
 
         if(anyNextMove(state)) {
@@ -137,27 +137,6 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
         return true;
     }
-
-//    private ToeSide [][] turn(ToeSide [][] state, int w, int h, ToeSide side){
-//        if(state[w][h] != null) {
-//            return null;
-//        }
-//
-//        int boardWidth = state.length;
-//        int boardHeight = state[0].length;
-//        ToeSide [][] child = new ToeSide[state.length][state[0].length];
-//
-//        for (int width = 0; width < boardWidth; width++) {
-//            for (int height = 0; height < boardHeight; height ++) {
-//                child[width][height] = state[width][height];
-//                if(width == w && height == h) {
-//                    child[width][height] = side;
-//                }
-//            }
-//        }
-//
-//        return child;
-//    }
 
     private boolean canWin(ToeSide[][] currentBoard, ToeSide side) {
         return  WinCombinationsCounter.countWiningCombinations(currentBoard, 0, side) != 0;
