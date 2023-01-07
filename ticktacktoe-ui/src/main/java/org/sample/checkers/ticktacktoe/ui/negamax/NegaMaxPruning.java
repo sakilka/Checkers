@@ -33,19 +33,22 @@ public class NegaMaxPruning implements TickTackToeUi {
 
         for (int width = 0; width < boardWidth; width++) {
             for (int height = 0; height < boardHeight; height ++) {
-                ToeSide [][] child = turn(baseState, width, height, history.getOnMove());
-
-                if(child != null) {
-                    if(canWin(child, history.getOnMove())) {
-                        return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
-                    }
-                    int evaluation = - negamaxPruning(child, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE,
-                            history.getOnMove().oposite());
-                    if (evaluation >= bestMove) {
-                        move = new Dimension2D(height, width);
-                        bestMove = evaluation;
-                    }
+                if(baseState[width][height] != null) {
+                    continue;
                 }
+
+                baseState[width][height] = history.getOnMove();
+                if(canWin(baseState, history.getOnMove())) {
+                    return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
+                }
+                int evaluation = - negamaxPruning(baseState, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                        history.getOnMove().oposite());
+                if (evaluation >= bestMove) {
+                    move = new Dimension2D(height, width);
+                    bestMove = evaluation;
+                }
+
+                baseState[width][height] = null;
             }
         }
         System.out.println("NMP Duration: " + (System.currentTimeMillis()-start)/1000.0);
@@ -69,11 +72,13 @@ public class NegaMaxPruning implements TickTackToeUi {
 
         for (int width = 0; width < boardWidth; width++) {
             for (int height = 0; height < boardHeight; height ++) {
-                ToeSide [][] child = turn(state, width, height, side);
-
-                if(child != null) {
-                    score = Math.max(score, - negamaxPruning(child, depth-1, -localAlpha, -beta, side.oposite()));
+                if(state[width][height] != null) {
+                    continue;
                 }
+
+                state[width][height] = side;
+                score = Math.max(score, - negamaxPruning(state, depth-1, -localAlpha, -beta, side.oposite()));
+                state[width][height] = null;
 
                 if(score >= beta) {
                     return score;
@@ -81,7 +86,6 @@ public class NegaMaxPruning implements TickTackToeUi {
 
                 if(score > localAlpha)
                     localAlpha = score;
-
             }
         }
 
@@ -96,27 +100,6 @@ public class NegaMaxPruning implements TickTackToeUi {
         }
 
         return true;
-    }
-
-    private ToeSide [][] turn(ToeSide [][] state, int w, int h, ToeSide side){
-        if(state[w][h] != null) {
-            return null;
-        }
-
-        int boardWidth = state.length;
-        int boardHeight = state[0].length;
-        ToeSide [][] child = new ToeSide[state.length][state[0].length];
-
-        for (int width = 0; width < boardWidth; width++) {
-            for (int height = 0; height < boardHeight; height ++) {
-                child[width][height] = state[width][height];
-                if(width == w && height == h) {
-                    child[width][height] = side;
-                }
-            }
-        }
-
-        return child;
     }
 
     private boolean canWin(ToeSide[][] currentBoard, ToeSide side) {
