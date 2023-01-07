@@ -59,8 +59,6 @@ public class NegaMaxPruning implements TickTackToeUi {
     }
 
     private int negamaxPruning(ToeSide [][] state, int depth, int alpha, int beta, ToeSide side) {
-        int boardWidth = state.length;
-        int boardHeight = state[0].length;
         int localAlpha = alpha;
 
         if(canWin(state, side)) {
@@ -73,7 +71,7 @@ public class NegaMaxPruning implements TickTackToeUi {
 
         int score = Integer.MIN_VALUE;
 
-        for(Turn possibleTurn : generatePossibleTurns(state, side)) {
+        for(Turn possibleTurn : generatePossibleTurns(state)) {
             state[possibleTurn.width][possibleTurn.height] = side;
             score = Math.max(score, - negamaxPruning(state, depth-1, -localAlpha, -beta, side.oposite()));
             state[possibleTurn.width][possibleTurn.height] = null;
@@ -107,7 +105,7 @@ public class NegaMaxPruning implements TickTackToeUi {
         return toeHeuristic.evaluateBoardState(state, this.side == side ? side : side.oposite());
     }
 
-    private List<Turn> generatePossibleTurns(ToeSide [][] state, ToeSide side) {
+    private List<Turn> generatePossibleTurns(ToeSide [][] state) {
         List<Turn> possibleTurns = new ArrayList<>();
         int boardWidth = state.length;
         int boardHeight = state[0].length;
