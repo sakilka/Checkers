@@ -22,7 +22,7 @@ public class NegaMaxPruning implements TickTackToeUi {
 
     @Override
     public TickTackToeMove computeNextMove(TickTackToeMoveHistory history) {
-        long start = System.currentTimeMillis();
+
         ToeSide[][] baseState = history.getCurrentBoardFromHistory();
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
@@ -51,7 +51,7 @@ public class NegaMaxPruning implements TickTackToeUi {
                 baseState[width][height] = null;
             }
         }
-        System.out.println("NMP Duration: " + (System.currentTimeMillis()-start)/1000.0);
+
         return new TickTackToeMove(move, history.getOnMove());
     }
 
