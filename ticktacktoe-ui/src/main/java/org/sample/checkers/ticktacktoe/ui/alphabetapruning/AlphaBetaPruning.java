@@ -21,6 +21,7 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
     @Override
     public TickTackToeMove computeNextMove(TickTackToeMoveHistory history) {
+        long start = System.currentTimeMillis();
         ToeSide [][] baseState = history.getCurrentBoardFromHistory();
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
@@ -30,23 +31,28 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
         for (int width = 0; width < boardWidth; width++) {
             for (int height = 0; height < boardHeight; height ++) {
-                ToeSide [][] child = turn(baseState, width, height, history.getOnMove());
-
-                if(child != null) {
-                    if(canWin(child, history.getOnMove())) {
-                        return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
-                    }
-
-                    int evaluation = alphaBeta(child, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false,
-                            history.getOnMove().oposite());
-                    if (evaluation >= bestMove) {
-                        move = new Dimension2D(height, width);
-                        bestMove = evaluation;
-                    }
+                if (baseState[width][height] != null) {
+                    continue;
                 }
+
+                baseState[width][height] = history.getOnMove();
+
+                if(canWin(baseState, history.getOnMove())) {
+                    return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
+                }
+
+                int evaluation = alphaBeta(baseState, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false,
+                        history.getOnMove().oposite());
+                if (evaluation >= bestMove) {
+                    move = new Dimension2D(height, width);
+                        bestMove = evaluation;
+                }
+
+                baseState[width][height] = null;
             }
         }
 
+        System.out.println("Duration: " + (System.currentTimeMillis()-start)/1000.0);
         return new TickTackToeMove(move, history.getOnMove());
     }
 
@@ -75,11 +81,14 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
             for (int width = 0; width < boardWidth; width++) {
                 for (int height = 0; height < boardHeight; height ++) {
-                    ToeSide [][] child = turn(state, width, height, side);
 
-                    if(child != null) {
-                        score = Math.max(score, alphaBeta(child, depth-1, alpha, beta, false, side.oposite()));
+                    if (state[width][height] != null) {
+                        continue;
                     }
+
+                    state[width][height] = side;
+                    score = Math.max(score, alphaBeta(state, depth-1, alpha, beta, false, side.oposite()));
+                    state[width][height] = null;
 
                     alpha = Math.max(alpha, score);
 
@@ -95,11 +104,13 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
             for (int width = 0; width < boardWidth; width++) {
                 for (int height = 0; height < boardHeight; height ++) {
-                    ToeSide [][] child = turn(state, width, height, side);
-
-                    if(child != null) {
-                        score = Math.min(score, alphaBeta(child, depth-1, alpha, beta, true, side.oposite()));
+                    if (state[width][height] != null) {
+                        continue;
                     }
+
+                    state[width][height] = side;
+                    score = Math.min(score, alphaBeta(state, depth-1, alpha, beta, true, side.oposite()));
+                    state[width][height] = null;
 
                     beta = Math.min(beta, score);
 
@@ -123,26 +134,26 @@ public class AlphaBetaPruning implements TickTackToeUi {
         return true;
     }
 
-    private ToeSide [][] turn(ToeSide [][] state, int w, int h, ToeSide side){
-        if(state[w][h] != null) {
-            return null;
-        }
-
-        int boardWidth = state.length;
-        int boardHeight = state[0].length;
-        ToeSide [][] child = new ToeSide[state.length][state[0].length];
-
-        for (int width = 0; width < boardWidth; width++) {
-            for (int height = 0; height < boardHeight; height ++) {
-                child[width][height] = state[width][height];
-                if(width == w && height == h) {
-                    child[width][height] = side;
-                }
-            }
-        }
-
-        return child;
-    }
+//    private ToeSide [][] turn(ToeSide [][] state, int w, int h, ToeSide side){
+//        if(state[w][h] != null) {
+//            return null;
+//        }
+//
+//        int boardWidth = state.length;
+//        int boardHeight = state[0].length;
+//        ToeSide [][] child = new ToeSide[state.length][state[0].length];
+//
+//        for (int width = 0; width < boardWidth; width++) {
+//            for (int height = 0; height < boardHeight; height ++) {
+//                child[width][height] = state[width][height];
+//                if(width == w && height == h) {
+//                    child[width][height] = side;
+//                }
+//            }
+//        }
+//
+//        return child;
+//    }
 
     private boolean canWin(ToeSide[][] currentBoard, ToeSide side) {
         return  WinCombinationsCounter.countWiningCombinations(currentBoard, 0, side) != 0;
