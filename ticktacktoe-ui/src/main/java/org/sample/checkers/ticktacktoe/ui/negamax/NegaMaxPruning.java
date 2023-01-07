@@ -9,6 +9,9 @@ import org.sample.checkers.ticktacktoe.ui.heuristic.ToeHeuristic;
 import org.sample.checkers.ticktacktoe.ui.heuristic.WinCombinationsCounter;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class NegaMaxPruning implements TickTackToeUi {
 
@@ -22,7 +25,7 @@ public class NegaMaxPruning implements TickTackToeUi {
 
     @Override
     public TickTackToeMove computeNextMove(TickTackToeMoveHistory history) {
-
+        long start = System.currentTimeMillis();
         ToeSide[][] baseState = history.getCurrentBoardFromHistory();
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
@@ -51,7 +54,7 @@ public class NegaMaxPruning implements TickTackToeUi {
                 baseState[width][height] = null;
             }
         }
-
+        System.out.println("NMP Duration: " + (System.currentTimeMillis()-start)/1000.0);
         return new TickTackToeMove(move, history.getOnMove());
     }
 
@@ -70,23 +73,17 @@ public class NegaMaxPruning implements TickTackToeUi {
 
         int score = Integer.MIN_VALUE;
 
-        for (int width = 0; width < boardWidth; width++) {
-            for (int height = 0; height < boardHeight; height ++) {
-                if(state[width][height] != null) {
-                    continue;
-                }
+        for(Turn possibleTurn : generatePossibleTurns(state, side)) {
+            state[possibleTurn.width][possibleTurn.height] = side;
+            score = Math.max(score, - negamaxPruning(state, depth-1, -localAlpha, -beta, side.oposite()));
+            state[possibleTurn.width][possibleTurn.height] = null;
 
-                state[width][height] = side;
-                score = Math.max(score, - negamaxPruning(state, depth-1, -localAlpha, -beta, side.oposite()));
-                state[width][height] = null;
-
-                if(score >= beta) {
-                    return score;
-                }
-
-                if(score > localAlpha)
-                    localAlpha = score;
+            if(score >= beta) {
+                return score;
             }
+
+            if(score > localAlpha)
+                localAlpha = score;
         }
 
         return score;
@@ -108,6 +105,34 @@ public class NegaMaxPruning implements TickTackToeUi {
 
     private int evaluateBoard(ToeSide [][] state, ToeSide side){
         return toeHeuristic.evaluateBoardState(state, this.side == side ? side : side.oposite());
+    }
+
+    private List<Turn> generatePossibleTurns(ToeSide [][] state, ToeSide side) {
+        List<Turn> possibleTurns = new ArrayList<>();
+        int boardWidth = state.length;
+        int boardHeight = state[0].length;
+
+        for (int width = 0; width < boardWidth; width++) {
+            for (int height = 0; height < boardHeight; height ++) {
+                if (state[width][height] != null) {
+                    continue;
+                }
+
+                possibleTurns.add(new Turn(width, height));
+            }
+        }
+
+        return possibleTurns;
+    }
+
+    private static class Turn {
+        private final int width;
+        private final int height;
+
+        public Turn(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
     }
 }
 
