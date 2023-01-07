@@ -41,6 +41,10 @@ public class AlphaBetaPruning implements TickTackToeUi {
                     return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
                 }
 
+                if(canWin(baseState, history.getOnMove().oposite())) {
+                    return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
+                }
+
                 int evaluation = alphaBeta(baseState, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false,
                         history.getOnMove().oposite());
                 if (evaluation >= bestMove) {
