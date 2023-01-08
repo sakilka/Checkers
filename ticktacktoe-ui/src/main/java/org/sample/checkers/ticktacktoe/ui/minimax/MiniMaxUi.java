@@ -24,13 +24,11 @@ public class MiniMaxUi implements TickTackToeUi {
         ToeSide [][] baseState = history.getCurrentBoardFromHistory();
 
         if(canWin(baseState, history.getOnMove(), 1)) {
-            System.out.println("Win");
             Dimension2D winTurn = getWinningMove(baseState, history.getOnMove());
             return new TickTackToeMove(winTurn, history.getOnMove());
         }
 
         if(canWin(baseState, history.getOnMove().opposite(), 1)) {
-            System.out.println("Lost");
             Dimension2D blockTurn = getWinningMove(baseState, history.getOnMove().opposite());
             return new TickTackToeMove(blockTurn, history.getOnMove());
         }
@@ -156,7 +154,7 @@ public class MiniMaxUi implements TickTackToeUi {
 
                 state[width][height] = side;
                 if(canWin(state, side, 0)) {
-                    state[width][height] = null;
+                    state[height][width] = null;
                     return new Dimension2D(width, height);
                 }
 
