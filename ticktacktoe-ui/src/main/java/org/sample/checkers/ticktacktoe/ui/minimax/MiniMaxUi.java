@@ -22,6 +22,19 @@ public class MiniMaxUi implements TickTackToeUi {
     @Override
     public TickTackToeMove computeNextMove(TickTackToeMoveHistory history) {
         ToeSide [][] baseState = history.getCurrentBoardFromHistory();
+
+        if(canWin(baseState, history.getOnMove(), 1)) {
+            System.out.println("Win");
+            Dimension2D winTurn = getWinningMove(baseState, history.getOnMove());
+            return new TickTackToeMove(winTurn, history.getOnMove());
+        }
+
+        if(canWin(baseState, history.getOnMove().opposite(), 1)) {
+            System.out.println("Lost");
+            Dimension2D blockTurn = getWinningMove(baseState, history.getOnMove().opposite());
+            return new TickTackToeMove(blockTurn, history.getOnMove());
+        }
+
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
 
@@ -33,10 +46,7 @@ public class MiniMaxUi implements TickTackToeUi {
                 ToeSide [][] child = turn(baseState, width, height, history.getOnMove());
 
                 if(child != null) {
-                    if(canWin(child, history.getOnMove())) {
-                        return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
-                    }
-                    int evaluation = minimax(child, SEARCH_DEPTH, false, history.getOnMove().oposite());
+                    int evaluation = minimax(child, SEARCH_DEPTH, false, history.getOnMove().opposite());
                     if (evaluation >= bestMove) {
                         move = new Dimension2D(height, width);
                         bestMove = evaluation;
@@ -56,12 +66,12 @@ public class MiniMaxUi implements TickTackToeUi {
             return toeHeuristic.evaluateBoardState(state, side);
         }
 
-        if(canWin(state, side)) {
-            return toeHeuristic.evaluateBoardState(state, side);
+        if(canWin(state, side, 0)) {
+            return Integer.MAX_VALUE;
         }
 
-        if(canWin(state, side.oposite())) {
-            return toeHeuristic.evaluateBoardState(state, side.oposite());
+        if(canWin(state, side.opposite(), 1)) {
+            return Integer.MIN_VALUE;
         }
 
         if(anyNextMove(state)) {
@@ -76,7 +86,7 @@ public class MiniMaxUi implements TickTackToeUi {
                     ToeSide [][] child = turn(state, width, height, side);
 
                     if(child != null) {
-                        score = Math.max(score, minimax(child, depth-1, false, side.oposite()));
+                        score = Math.max(score, minimax(child, depth-1, false, side.opposite()));
                     }
                 }
             }
@@ -90,7 +100,7 @@ public class MiniMaxUi implements TickTackToeUi {
                     ToeSide [][] child = turn(state, width, height, side);
 
                     if(child != null) {
-                        score = Math.min(score, minimax(child, depth-1, true, side.oposite()));
+                        score = Math.min(score, minimax(child, depth-1, true, side.opposite()));
                     }
                 }
             }
@@ -130,7 +140,30 @@ public class MiniMaxUi implements TickTackToeUi {
         return child;
     }
 
-    private boolean canWin(ToeSide[][] currentBoard, ToeSide side) {
-        return  WinCombinationsCounter.countWiningCombinations(currentBoard, 0, side) != 0;
+    private boolean canWin(ToeSide[][] currentBoard, ToeSide side, int needed) {
+        return WinCombinationsCounter.countWiningCombinations(currentBoard, needed, side) != 0;
+    }
+
+    private Dimension2D getWinningMove(ToeSide[][] state, ToeSide side) {
+        int boardWidth = state.length;
+        int boardHeight = state[0].length;
+
+        for (int width = 0; width < boardWidth; width++) {
+            for (int height = 0; height < boardHeight; height ++) {
+                if(state[width][height] != null) {
+                    continue;
+                }
+
+                state[width][height] = side;
+                if(canWin(state, side, 0)) {
+                    state[width][height] = null;
+                    return new Dimension2D(width, height);
+                }
+
+                state[width][height] = null;
+            }
+        }
+
+        throw new RuntimeException("No turn find for winner!");
     }
 }
