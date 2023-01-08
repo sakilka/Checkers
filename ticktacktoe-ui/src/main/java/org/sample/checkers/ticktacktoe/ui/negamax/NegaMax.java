@@ -148,6 +148,7 @@ public class NegaMax implements TickTackToeUi {
     }
 
     private int evaluateBoard(ToeSide [][] state, ToeSide side){
-        return toeHeuristic.evaluateBoardState(state, this.side == side ? side : side.opposite());
+        int value = toeHeuristic.evaluateBoardState(state, this.side == side ? side : side.opposite());
+        return this.side == side ? value : - value;
     }
 }
