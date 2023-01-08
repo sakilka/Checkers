@@ -14,6 +14,7 @@ public class MiniMaxUi implements TickTackToeUi {
 
     private static final int SEARCH_DEPTH = 3;
     private final ToeHeuristic toeHeuristic;
+    private ToeSide side;
 
     public MiniMaxUi() {
         this.toeHeuristic = new ToeHeuristic();
@@ -35,6 +36,7 @@ public class MiniMaxUi implements TickTackToeUi {
 
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
+        side = history.getOnMove();
 
         int bestMove = Integer.MIN_VALUE;
         Dimension2D move = null;
@@ -61,7 +63,7 @@ public class MiniMaxUi implements TickTackToeUi {
         int boardHeight = state[0].length;
 
         if(depth == 0) {
-            return toeHeuristic.evaluateBoardState(state, side);
+            return evaluateBoard(state, side);
         }
 
         if(canWin(state, side, 0)) {
@@ -73,7 +75,7 @@ public class MiniMaxUi implements TickTackToeUi {
         }
 
         if(anyNextMove(state)) {
-            return toeHeuristic.evaluateBoardState(state, side);
+            return evaluateBoard(state, side);
         }
 
         if(max) {
@@ -163,5 +165,9 @@ public class MiniMaxUi implements TickTackToeUi {
         }
 
         throw new RuntimeException("No turn find for winner!");
+    }
+
+    private int evaluateBoard(ToeSide [][] state, ToeSide side){
+        return toeHeuristic.evaluateBoardState(state, this.side == side ? side : side.opposite());
     }
 }

@@ -12,7 +12,11 @@ public class TickTackToeContext {
     public static TickTackToeUi getUi() {
         if(ui == null) {
             ApplicationContext context = new AnnotationConfigApplicationContext(TickTackToeContext.class);
-            ui = context.getBean("alphaBetaPruning", TickTackToeUi.class);
+            //ui = context.getBean("negaMaxPruning", TickTackToeUi.class);
+            //ui = context.getBean("alphaBetaPruning", TickTackToeUi.class);
+            //ui = context.getBean("miniMaxUi", TickTackToeUi.class);
+            //ui = context.getBean("negaMax", TickTackToeUi.class);
+            ui = context.getBean("advancedAlphaBetaPruning", TickTackToeUi.class);
         }
 
         return ui;
