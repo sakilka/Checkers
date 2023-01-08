@@ -10,7 +10,7 @@ import org.sample.checkers.ticktacktoe.ui.heuristic.WinCombinationsCounter;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @Service
 public class NegaMaxPruning implements TickTackToeUi {
@@ -18,6 +18,7 @@ public class NegaMaxPruning implements TickTackToeUi {
     private static final int SEARCH_DEPTH = 3;
     private final ToeHeuristic toeHeuristic;
     private ToeSide side;
+    private static final int INFINITY = Integer.MAX_VALUE;
 
     public NegaMaxPruning() {
         this.toeHeuristic = new ToeHeuristic();
@@ -25,8 +26,18 @@ public class NegaMaxPruning implements TickTackToeUi {
 
     @Override
     public TickTackToeMove computeNextMove(TickTackToeMoveHistory history) {
-        long start = System.currentTimeMillis();
         ToeSide[][] baseState = history.getCurrentBoardFromHistory();
+
+        if(canWin(baseState, history.getOnMove(), 1)) {
+            Dimension2D winTurn = getWinningMove(baseState, history.getOnMove());
+            return new TickTackToeMove(winTurn, history.getOnMove());
+        }
+
+        if(canWin(baseState, history.getOnMove().opposite(), 1)) {
+            Dimension2D blockTurn = getWinningMove(baseState, history.getOnMove().opposite());
+            return new TickTackToeMove(blockTurn, history.getOnMove());
+        }
+
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
         side = history.getOnMove();
@@ -41,11 +52,10 @@ public class NegaMaxPruning implements TickTackToeUi {
                 }
 
                 baseState[width][height] = history.getOnMove();
-                if(canWin(baseState, history.getOnMove())) {
-                    return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
-                }
-                int evaluation = - negamaxPruning(baseState, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE,
-                        history.getOnMove().oposite());
+
+                int evaluation = - negamaxPruning(baseState, SEARCH_DEPTH, - INFINITY, INFINITY,
+                        history.getOnMove().opposite());
+
                 if (evaluation >= bestMove) {
                     move = new Dimension2D(height, width);
                     bestMove = evaluation;
@@ -54,15 +64,17 @@ public class NegaMaxPruning implements TickTackToeUi {
                 baseState[width][height] = null;
             }
         }
-        System.out.println("NMP Duration: " + (System.currentTimeMillis()-start)/1000.0);
+
         return new TickTackToeMove(move, history.getOnMove());
     }
 
     private int negamaxPruning(ToeSide [][] state, int depth, int alpha, int beta, ToeSide side) {
-        int localAlpha = alpha;
-
-        if(canWin(state, side)) {
+        if(canWin(state, side, 0)) {
             return Integer.MIN_VALUE;
+        }
+
+        if(canWin(state, side.opposite(), 0)) {
+            return Integer.MAX_VALUE;
         }
 
         if(depth == 0 || anyNextMove(state)) {
@@ -73,15 +85,14 @@ public class NegaMaxPruning implements TickTackToeUi {
 
         for(Turn possibleTurn : generatePossibleTurns(state)) {
             state[possibleTurn.width][possibleTurn.height] = side;
-            score = Math.max(score, - negamaxPruning(state, depth-1, -localAlpha, -beta, side.oposite()));
+            score = Math.max(score, - negamaxPruning(state, depth-1, - beta, - alpha, side.opposite()));
             state[possibleTurn.width][possibleTurn.height] = null;
+
+            alpha = Math.max(alpha, score);
 
             if(score >= beta) {
                 return score;
             }
-
-            if(score > localAlpha)
-                localAlpha = score;
         }
 
         return score;
@@ -97,16 +108,39 @@ public class NegaMaxPruning implements TickTackToeUi {
         return true;
     }
 
-    private boolean canWin(ToeSide[][] currentBoard, ToeSide side) {
-        return  WinCombinationsCounter.countWiningCombinations(currentBoard, 0, side) != 0;
+    private boolean canWin(ToeSide[][] currentBoard, ToeSide side, int needed) {
+        return WinCombinationsCounter.countWiningCombinations(currentBoard, needed, side) != 0;
+    }
+
+    private Dimension2D getWinningMove(ToeSide[][] state, ToeSide side) {
+        int boardWidth = state.length;
+        int boardHeight = state[0].length;
+
+        for (int width = 0; width < boardWidth; width++) {
+            for (int height = 0; height < boardHeight; height ++) {
+                if(state[width][height] != null) {
+                    continue;
+                }
+
+                state[width][height] = side;
+                if(canWin(state, side, 0)) {
+                    state[width][height] = null;
+                    return new Dimension2D(height, width);
+                }
+
+                state[width][height] = null;
+            }
+        }
+
+        throw new RuntimeException("No turn find for winner!");
     }
 
     private int evaluateBoard(ToeSide [][] state, ToeSide side){
-        return toeHeuristic.evaluateBoardState(state, this.side == side ? side : side.oposite());
+        return toeHeuristic.evaluateBoardState(state, this.side == side ? side : side.opposite());
     }
 
-    private List<Turn> generatePossibleTurns(ToeSide [][] state) {
-        List<Turn> possibleTurns = new ArrayList<>();
+    private Collection<Turn> generatePossibleTurns(ToeSide [][] state) {
+        Collection<Turn> possibleTurns = new ArrayList<>();
         int boardWidth = state.length;
         int boardHeight = state[0].length;
 

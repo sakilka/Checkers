@@ -22,6 +22,17 @@ public class AlphaBetaPruning implements TickTackToeUi {
     @Override
     public TickTackToeMove computeNextMove(TickTackToeMoveHistory history) {
         ToeSide [][] baseState = history.getCurrentBoardFromHistory();
+
+        if(canWin(baseState, history.getOnMove(), 1)) {
+            Dimension2D winTurn = getWinningMove(baseState, history.getOnMove());
+            return new TickTackToeMove(winTurn, history.getOnMove());
+        }
+
+        if(canWin(baseState, history.getOnMove().opposite(), 1)) {
+            Dimension2D blockTurn = getWinningMove(baseState, history.getOnMove().opposite());
+            return new TickTackToeMove(blockTurn, history.getOnMove());
+        }
+
         int boardWidth = baseState.length;
         int boardHeight = baseState[0].length;
 
@@ -36,16 +47,9 @@ public class AlphaBetaPruning implements TickTackToeUi {
 
                 baseState[width][height] = history.getOnMove();
 
-                if(canWin(baseState, history.getOnMove())) {
-                    return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
-                }
-
-                if(canWin(baseState, history.getOnMove().oposite())) {
-                    return new TickTackToeMove(new Dimension2D(height, width), history.getOnMove());
-                }
-
                 int evaluation = alphaBeta(baseState, SEARCH_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false,
-                        history.getOnMove().oposite());
+                        history.getOnMove().opposite());
+
                 if (evaluation >= bestMove) {
                     move = new Dimension2D(height, width);
                         bestMove = evaluation;
@@ -66,8 +70,12 @@ public class AlphaBetaPruning implements TickTackToeUi {
             return toeHeuristic.evaluateBoardState(state, side);
         }
 
-        if(canWin(state, side)) {
+        if(canWin(state, side, 0)) {
             return Integer.MIN_VALUE;
+        }
+
+        if(canWin(state, side.opposite(), 0)) {
+            return Integer.MAX_VALUE;
         }
 
         if(anyNextMove(state)) {
@@ -85,13 +93,12 @@ public class AlphaBetaPruning implements TickTackToeUi {
                     }
 
                     state[width][height] = side;
-                    score = Math.max(score, alphaBeta(state, depth-1, alpha, beta, false, side.oposite()));
+                    score = Math.max(score, alphaBeta(state, depth-1, alpha, beta, false, side.opposite()));
                     state[width][height] = null;
 
                     alpha = Math.max(alpha, score);
-
-                    if(beta <= alpha) {
-                        break;
+                    if(score >= beta) {
+                        return  score;
                     }
                 }
             }
@@ -107,13 +114,13 @@ public class AlphaBetaPruning implements TickTackToeUi {
                     }
 
                     state[width][height] = side;
-                    score = Math.min(score, alphaBeta(state, depth-1, alpha, beta, true, side.oposite()));
+                    score = Math.min(score, alphaBeta(state, depth-1, alpha, beta, true, side.opposite()));
                     state[width][height] = null;
 
                     beta = Math.min(beta, score);
 
-                    if(beta <= alpha) {
-                        break;
+                    if(score <= alpha) {
+                        return score;
                     }
                 }
             }
@@ -132,7 +139,30 @@ public class AlphaBetaPruning implements TickTackToeUi {
         return true;
     }
 
-    private boolean canWin(ToeSide[][] currentBoard, ToeSide side) {
-        return  WinCombinationsCounter.countWiningCombinations(currentBoard, 0, side) != 0;
+    private boolean canWin(ToeSide[][] currentBoard, ToeSide side, int needed) {
+        return WinCombinationsCounter.countWiningCombinations(currentBoard, needed, side) != 0;
+    }
+
+    private Dimension2D getWinningMove(ToeSide[][] state, ToeSide side) {
+        int boardWidth = state.length;
+        int boardHeight = state[0].length;
+
+        for (int width = 0; width < boardWidth; width++) {
+            for (int height = 0; height < boardHeight; height ++) {
+                if(state[width][height] != null) {
+                    continue;
+                }
+
+                state[width][height] = side;
+                if(canWin(state, side, 0)) {
+                    state[width][height] = null;
+                    return new Dimension2D(height, width);
+                }
+
+                state[width][height] = null;
+            }
+        }
+
+        throw new RuntimeException("No turn find for winner!");
     }
 }

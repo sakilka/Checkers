@@ -58,7 +58,7 @@ public class TickTackToeScene extends SubScene implements GameBoard {
         tickTackToeConfiguration = getConfig();
         cells = new Cell[tickTackToeConfiguration.getTickTackToeHeight()][tickTackToeConfiguration.getTickTackToeWidth()];
         onTurn = CROSS;
-        uiTurn = gameSetup.getPlayer() == MULTI_PLAYER ? null : onTurn.oposite();
+        uiTurn = gameSetup.getPlayer() == MULTI_PLAYER ? null : onTurn.opposite();
         this.tickTackToeMoveHistory = new TickTackToeMoveHistory(new ArrayList<>(),
                 tickTackToeConfiguration.getTickTackToeWidth(),tickTackToeConfiguration.getTickTackToeHeight(), onTurn);
 
@@ -115,7 +115,7 @@ public class TickTackToeScene extends SubScene implements GameBoard {
             cell.setCross();
         }
 
-        onTurn = onTurn.oposite();
+        onTurn = onTurn.opposite();
         tickTackToeMoveHistory.addMove(new TickTackToeMove(new Dimension2D(cell.getWidthPosition(),
                 cell.getHeightPosition()), cell.getSide()));
 
@@ -132,7 +132,7 @@ public class TickTackToeScene extends SubScene implements GameBoard {
             cells[(int) nextMove.getPosition().height][(int) nextMove.getPosition().width].setCross();
         }
 
-        onTurn = onTurn.oposite();
+        onTurn = onTurn.opposite();
         tickTackToeMoveHistory.addMove(new TickTackToeMove(nextMove.getPosition(), nextMove.getSide()));
     }
 
