@@ -5,8 +5,8 @@ import org.sample.checkers.config.ticktacktoe.TickTackToeMove;
 import org.sample.checkers.config.ticktacktoe.TickTackToeMoveHistory;
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 import org.sample.checkers.ticktacktoe.ui.TickTackToeUi;
-import org.sample.checkers.ticktacktoe.ui.heuristic.ToeHeuristic;
-import org.sample.checkers.ticktacktoe.ui.heuristic.WinCombinationsCounter;
+import org.sample.checkers.ticktacktoe.ui.heuristic.base.ToeHeuristic;
+import org.sample.checkers.ticktacktoe.ui.heuristic.base.WinCombinationsCounter;
 import org.springframework.stereotype.Service;
 
 @Service

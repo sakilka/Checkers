@@ -1,4 +1,4 @@
-package org.sample.checkers.ticktacktoe.ui.heuristic;
+package org.sample.checkers.ticktacktoe.ui.heuristic.base;
 
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 

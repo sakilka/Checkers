@@ -6,8 +6,7 @@ import org.sample.checkers.config.ticktacktoe.TickTackToeMoveHistory;
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 import org.sample.checkers.ticktacktoe.ui.Position;
 import org.sample.checkers.ticktacktoe.ui.TickTackToeUi;
-import org.sample.checkers.ticktacktoe.ui.heuristic.ToeHeuristic;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.sample.checkers.ticktacktoe.ui.heuristic.base.ToeHeuristic;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

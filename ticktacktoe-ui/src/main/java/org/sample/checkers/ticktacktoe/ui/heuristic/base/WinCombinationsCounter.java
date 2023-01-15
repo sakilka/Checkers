@@ -1,9 +1,9 @@
-package org.sample.checkers.ticktacktoe.ui.heuristic;
+package org.sample.checkers.ticktacktoe.ui.heuristic.base;
 
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 import org.sample.checkers.ticktacktoe.ui.Position;
 
-import static org.sample.checkers.ticktacktoe.ui.heuristic.ToeHeuristic.WIN_LENGTH;
+import static org.sample.checkers.ticktacktoe.ui.heuristic.base.ToeHeuristic.WIN_LENGTH;
 
 public class WinCombinationsCounter {
 
