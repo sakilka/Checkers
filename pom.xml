@@ -32,6 +32,8 @@
         <javafx-maven-plugin.version>0.0.3</javafx-maven-plugin.version>
         <fontawesomefx.version>8.9</fontawesomefx.version>
         <spring.version>5.2.6.RELEASE</spring.version>
+        <junit.version>5.3.1</junit.version>
+        <assertj.version>3.24.1</assertj.version>
     </properties>
 
     <dependencyManagement>
@@ -102,6 +104,20 @@
                 <groupId>de.jensd</groupId>
                 <artifactId>fontawesomefx</artifactId>
                 <version>8.9</version>
+            </dependency>
+
+            <!-- test -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

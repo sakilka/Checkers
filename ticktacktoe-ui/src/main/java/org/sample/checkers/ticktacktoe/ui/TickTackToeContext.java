@@ -16,7 +16,8 @@ public class TickTackToeContext {
             //ui = context.getBean("alphaBetaPruning", TickTackToeUi.class);
             //ui = context.getBean("miniMaxUi", TickTackToeUi.class);
             //ui = context.getBean("negaMax", TickTackToeUi.class);
-            ui = context.getBean("advancedAlphaBetaPruning", TickTackToeUi.class);
+            //ui = context.getBean("advancedAlphaBetaPruning", TickTackToeUi.class);
+            ui = context.getBean("simpleHeuristicUi", TickTackToeUi.class);
         }
 
         return ui;
