@@ -57,12 +57,32 @@ public class BitboardsUtil {
         return new BigInteger(s, base);
     }
 
-    public static boolean isWin(BigInteger bitboard) {
+    public static boolean isWin(BigInteger bitboard, int winSize) {
+        if(winSize<1 || winSize>5) {
+            throw new RuntimeException("Win size must be between 1 and 5!");
+        }
+
         int[] directions = {1, 11, 12, 10};
-        BigInteger bb;
-        for(int direction : directions) {
-            bb = bitboard.and(bitboard.shiftRight(direction));
-            if (!(bb.and(bb.shiftRight(2 * direction))).equals(BigInteger.ZERO)) return true;
+        BigInteger mask = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
+
+        if(winSize<4) {
+            for (int direction : directions) {
+                if (!bitboard
+                        .and(bitboard.shiftRight((direction)))
+                        .and(winSize < 3 ? mask : (bitboard.shiftRight((2 * direction))))
+                        .and(winSize < 4 ? mask : (bitboard.shiftRight((3 * direction))))
+                        .and(winSize < 5 ? mask : (bitboard.shiftRight((4 * direction)))).equals(BigInteger.ZERO)) {
+                    return true;
+                }
+            }
+        } else {
+            BigInteger bb;
+            for (int direction : directions) {
+                bb = bitboard.and(bitboard.shiftRight(direction));
+                if (!(bb.and(bb.shiftRight(2 * direction))
+                        .and(winSize < 5 ? mask : bitboard.shiftRight((4 * direction)))).equals(BigInteger.ZERO))
+                    return true;
+            }
         }
         return false;
     }

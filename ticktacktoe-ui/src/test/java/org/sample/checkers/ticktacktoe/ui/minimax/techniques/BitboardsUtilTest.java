@@ -1,7 +1,6 @@
 package org.sample.checkers.ticktacktoe.ui.minimax.techniques;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 import org.sample.checkers.ticktacktoe.ui.minimax.techniques.util.TechniquesTestUtils;
 
@@ -251,11 +250,13 @@ class BitboardsUtilTest extends TechniquesTestUtils {
         System.out.println(Os.toString(2));
 
         // when
-        boolean crossWin = BitboardsUtil.isWin(Xs);
-        boolean circleWin = BitboardsUtil.isWin(Os);
+        boolean crossWin3 = BitboardsUtil.isWin(Xs, 3);
+        boolean crossWin4 = BitboardsUtil.isWin(Xs, 4);
+        boolean circleWin = BitboardsUtil.isWin(Os, 5);
 
         //then
-        assertThat(crossWin).isFalse();
+        assertThat(crossWin3).isTrue();
+        assertThat(crossWin4).isFalse();
         assertThat(circleWin).isTrue();
     }
 }
