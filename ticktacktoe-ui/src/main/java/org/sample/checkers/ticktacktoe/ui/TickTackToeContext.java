@@ -1,5 +1,6 @@
 package org.sample.checkers.ticktacktoe.ui;
 
+import org.sample.checkers.ticktacktoe.ui.minimax.AdvancedMinimaxUi;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,7 +18,8 @@ public class TickTackToeContext {
             //ui = context.getBean("miniMaxUi", TickTackToeUi.class);
             //ui = context.getBean("negaMax", TickTackToeUi.class);
             //ui = context.getBean("advancedAlphaBetaPruning", TickTackToeUi.class);
-            ui = context.getBean("simpleHeuristicUi", TickTackToeUi.class);
+            //ui = context.getBean("simpleHeuristicUi", TickTackToeUi.class);
+            ui = context.getBean("advancedMinimaxUi", AdvancedMinimaxUi.class);
         }
 
         return ui;

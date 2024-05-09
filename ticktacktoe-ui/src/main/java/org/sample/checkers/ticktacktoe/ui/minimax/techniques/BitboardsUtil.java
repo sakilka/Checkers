@@ -2,6 +2,7 @@ package org.sample.checkers.ticktacktoe.ui.minimax.techniques;
 
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class BitboardsUtil {
@@ -16,6 +17,18 @@ public class BitboardsUtil {
         }
 
        return parseLong(bitboard, 2);
+    }
+
+    public static BigInteger getBitboardDecimal(ToeSide [][] board, ToeSide side) {
+        String bitboard = "";
+        for (int col = 0; col < board.length; col++) {
+            for (int h = board[0].length - 1; h >= 0; h--) {
+                bitboard = (board[col][h] == side ? 1 : 0) + bitboard;
+            }
+            bitboard = "0" + bitboard;
+        }
+
+        return parseBigDecimal(bitboard, 2);
     }
 
 //    public static boolean isWin(long bitboard) {
@@ -38,5 +51,19 @@ public class BitboardsUtil {
 
     private static long parseLong(String s, int base) {
         return new BigInteger(s, base).longValue();
+    }
+
+    private static BigInteger parseBigDecimal(String s, int base) {
+        return new BigInteger(s, base);
+    }
+
+    public static boolean isWin(BigInteger bitboard) {
+        int[] directions = {1, 11, 12, 10};
+        BigInteger bb;
+        for(int direction : directions) {
+            bb = bitboard.and(bitboard.shiftRight(direction));
+            if (!(bb.and(bb.shiftRight(2 * direction))).equals(BigInteger.ZERO)) return true;
+        }
+        return false;
     }
 }
