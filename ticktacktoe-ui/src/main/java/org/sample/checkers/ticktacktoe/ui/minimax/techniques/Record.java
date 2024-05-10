@@ -15,4 +15,8 @@ public class Record {
         this.score = score;
         this.player = player;
     }
+
+    public Integer getScore() {
+        return score;
+    }
 }

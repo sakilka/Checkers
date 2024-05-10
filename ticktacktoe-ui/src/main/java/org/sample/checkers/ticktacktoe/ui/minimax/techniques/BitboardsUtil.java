@@ -4,8 +4,15 @@ import org.sample.checkers.config.ticktacktoe.ToeSide;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * Class that represents a connect-four game
+ *
+ * @param [bitboard] array of 2 bitboards
+ * @param [counter] number of already played moves
+ */
 public abstract class BitboardsUtil {
 
     protected final int height;
@@ -25,6 +32,15 @@ public abstract class BitboardsUtil {
         this.counter = 0;
         this.moves = new int[1000000];
         this.bitboard = new BigInteger[2];
+    }
+
+    public BitboardsUtil(int height, int column, int winSize, BigInteger[] bitboard) {
+        this.height = height;
+        this.column = column;
+        this.winSize = winSize;
+        this.counter = 0;
+        this.moves = new int[1000000];
+        this.bitboard = bitboard;
     }
 
     protected BigInteger getBitboard(ToeSide [][] board, ToeSide side) {
@@ -95,6 +111,14 @@ public abstract class BitboardsUtil {
         //    bitboard[counter & 1] ^= move;  // reverses (2)
     }
 
+    public List<Integer> listMoves(boolean shuffle) {
+        List<Integer> possibleMoves = listMoves();
+        if(shuffle) {
+            Collections.shuffle(possibleMoves);
+        }
+        return possibleMoves;
+    }
+
     protected List<Integer> listMoves() {
         List<Integer> moves = new ArrayList<>();
 
@@ -113,7 +137,7 @@ public abstract class BitboardsUtil {
         return moves;
     }
 
-    protected boolean hasWinner(ToeSide player) {
+    public boolean hasWinner(ToeSide player) {
         if(ToeSide.CROSS == player) {
             return isWin(bitboard[0], winSize, height);
         } else if(ToeSide.CIRCLE == player) {
@@ -123,7 +147,7 @@ public abstract class BitboardsUtil {
         }
     }
 
-    protected Integer evaluate() {
+    public Integer evaluate() {
         if(isWin(bitboard[(counter +1) & 1], winSize, height)) {
             return - Integer.MAX_VALUE;
         }
@@ -172,4 +196,15 @@ public abstract class BitboardsUtil {
         return inRow == 1 ? count/4 : count;
     }
 
+    public int getHeight() {
+        return height;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public int getWinSize() {
+        return winSize;
+    }
 }
