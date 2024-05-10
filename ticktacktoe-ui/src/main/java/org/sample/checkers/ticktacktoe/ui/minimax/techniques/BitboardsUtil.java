@@ -3,6 +3,8 @@ package org.sample.checkers.ticktacktoe.ui.minimax.techniques;
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BitboardsUtil {
 
@@ -86,5 +88,23 @@ public abstract class BitboardsUtil {
         //    int col = moves[--counter];     // reverses (3)
         //    long move = 1L << --height[col]; // reverses (1)
         //    bitboard[counter & 1] ^= move;  // reverses (2)
+    }
+
+    protected List<Integer> listMoves() {
+        List<Integer> moves = new ArrayList<>();
+
+        BigInteger TOP = BigInteger.ZERO;
+
+        for (int col = 1; col <= (column + 1); col++){
+            TOP = TOP.setBit((col * (height + 1) - 1));
+        }
+
+        BigInteger bb = bitboard[0].or(bitboard[1]).or(TOP);
+
+        for(int nBit = 0; nBit < (column * (height + 1)); nBit++) {
+            if (!bb.testBit(nBit)) moves.add(nBit);
+        }
+
+        return moves;
     }
 }

@@ -5,6 +5,7 @@ import org.sample.checkers.config.ticktacktoe.ToeSide;
 import org.sample.checkers.ticktacktoe.ui.minimax.techniques.util.TechniquesTestUtils;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -521,6 +522,50 @@ class BitboardsUtilTest extends TechniquesTestUtils {
         assertThat(this.bitboard[0].testBit(80)).isFalse();
         assertThat(this.bitboard[1].testBit(112)).isTrue();
         assertThat(this.bitboard[0].testBit(122)).isFalse();
+        printBitBoard(this.bitboard);
+    }
+
+    @Test
+    void testGetListMove() {
+        // given
+        ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_CIRCLE_15_10_5, 15, 10);
+        printBoard(currentBoard);
+
+        //    protected int counter;
+        //    protected int[] moves;
+        //    protected BigInteger bitboard[];
+
+        this.counter = 7;
+        this.moves[0] = 81; //X
+        this.moves[1] = 82; //O
+        this.moves[2] = 72; //X
+        this.moves[3] = 92; //O
+        this.moves[4] = 94; //X
+        this.moves[5] = 102;//O
+        this.moves[6] = 80; //X
+
+        BigInteger Xs = getBitboard(currentBoard, ToeSide.CROSS);
+        BigInteger Os = getBitboard(currentBoard, ToeSide.CIRCLE);
+
+        this.bitboard[0] = Xs;
+        this.bitboard[1] = Os;
+
+        //when
+        List<Integer> validMoves = listMoves();
+
+        // then
+        assertThat(this.moves).startsWith(81,82,72,92,94,102,80);
+        assertThat(this.bitboard[1].testBit(102)).isTrue();
+        assertThat(this.bitboard[0].testBit(80)).isTrue();
+        assertThat(validMoves).isNotNull();
+        assertThat(validMoves.size()).isEqualTo((column *  height) - counter);
+        assertThat(validMoves.contains(80)).isFalse();
+        assertThat(validMoves.contains(81)).isFalse();
+        assertThat(validMoves.contains(92)).isFalse();
+        assertThat(validMoves.contains(102)).isFalse();
+        assertThat(validMoves.contains(105)).isTrue();
+        assertThat(validMoves.contains(164)).isFalse();
+        assertThat(validMoves.contains(0)).isTrue();
         printBitBoard(this.bitboard);
     }
 }
