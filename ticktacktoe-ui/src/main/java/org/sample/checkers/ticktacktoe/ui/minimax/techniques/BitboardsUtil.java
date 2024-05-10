@@ -124,8 +124,8 @@ public abstract class BitboardsUtil {
     }
 
     protected Integer evaluate() {
-        if(isWin(bitboard[counter & 1], winSize, height)) {
-            return Integer.MAX_VALUE;
+        if(isWin(bitboard[(counter +1) & 1], winSize, height)) {
+            return - Integer.MAX_VALUE;
         }
 
         int score = 0;

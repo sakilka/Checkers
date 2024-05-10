@@ -683,12 +683,16 @@ class BitboardsUtilTest extends TechniquesTestUtils {
 
         Integer scoreO = evaluate();
 
+        undoMove();
+
+        Integer scoreX2 = evaluate();
 
         // then
         assertThat(this.moves).startsWith(81,82,72,92,94,102,80);
         assertThat(this.bitboard[1].testBit(102)).isTrue();
         assertThat(this.bitboard[0].testBit(80)).isTrue();
-        assertThat(scoreX).isEqualTo(-40);
+        assertThat(scoreX).isEqualTo(-2147483647);
+        assertThat(scoreX2).isEqualTo(-27);
         assertThat(scoreO).isEqualTo(-22);
         printBitBoard(this.bitboard);
     }
