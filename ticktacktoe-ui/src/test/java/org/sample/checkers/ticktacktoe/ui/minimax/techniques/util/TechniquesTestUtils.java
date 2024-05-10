@@ -1,10 +1,15 @@
 package org.sample.checkers.ticktacktoe.ui.minimax.techniques.util;
 
 import org.sample.checkers.config.ticktacktoe.ToeSide;
+import org.sample.checkers.ticktacktoe.ui.minimax.techniques.BitboardsUtil;
 
 import java.math.BigInteger;
 
-public abstract class TechniquesTestUtils {
+public abstract class TechniquesTestUtils extends BitboardsUtil {
+
+    public TechniquesTestUtils() {
+        super(10, 15);
+    }
 
     protected static ToeSide[][] loadBoard(String board, int width, int height){
         ToeSide [][] result = new ToeSide[width][height];
@@ -111,5 +116,40 @@ public abstract class TechniquesTestUtils {
 
     private static BigInteger parseBigDecimal(String s, int base) {
         return new BigInteger(s, base);
+    }
+
+    //    public static boolean isWin(long bitboard) {
+//        if (bitboard & (bitboard >> 6) & (bitboard >> 12) & (bitboard >> 18) != 0) return true; // diagonal \
+//        if (bitboard & (bitboard >> 8) & (bitboard >> 16) & (bitboard >> 24) != 0) return true; // diagonal /
+//        if (bitboard & (bitboard >> 7) & (bitboard >> 14) & (bitboard >> 21) != 0) return true; // horizontal
+//        if (bitboard & (bitboard >> 1) & (bitboard >>  2) & (bitboard >>  3) != 0) return true; // vertical
+//        return false;
+//    }
+
+    protected static boolean isWin(long bitboard) {
+        int[] directions = {1, 7, 6, 8};
+        long bb;
+        for(int direction : directions) {
+            bb = bitboard & (bitboard >> direction);
+            if ((bb & (bb >> (2 * direction))) != 0) return true;
+        }
+        return false;
+    }
+
+    protected void printBitBoard(BigInteger[] bitBoard) {
+        System.out.println();
+        int nBit = 0;
+        ToeSide [][] board = new ToeSide[column][height];
+
+        for (int col = 0; col < column; col++) {
+            for(int h = height; h >= 0; h--) {
+                if(bitBoard[0].testBit(nBit)) board[col][h] = ToeSide.CROSS;
+                if(bitBoard[1].testBit(nBit)) board[col][h] = ToeSide.CIRCLE;
+                nBit++;
+            }
+        }
+
+        printBoard(board);
+        System.out.println();
     }
 }

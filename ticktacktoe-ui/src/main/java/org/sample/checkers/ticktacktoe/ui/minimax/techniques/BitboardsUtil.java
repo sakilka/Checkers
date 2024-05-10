@@ -4,9 +4,23 @@ import org.sample.checkers.config.ticktacktoe.ToeSide;
 
 import java.math.BigInteger;
 
-public class BitboardsUtil {
+public abstract class BitboardsUtil {
 
-    public static BigInteger getBitboard(ToeSide [][] board, ToeSide side) {
+    protected final int height;
+    protected final int column;
+    protected int counter;
+    protected int[] moves;
+    protected BigInteger bitboard[];
+
+    public BitboardsUtil(int height, int column) {
+        this.height = height;
+        this.column = column;
+        this.counter = 0;
+        this.moves = new int[1000000];
+        this.bitboard = new BigInteger[2];
+    }
+
+    protected BigInteger getBitboard(ToeSide [][] board, ToeSide side) {
         BigInteger bitboard = BigInteger.ZERO;
         int nBit = 0;
 
@@ -23,30 +37,12 @@ public class BitboardsUtil {
         return bitboard;
     }
 
-//    public static boolean isWin(long bitboard) {
-//        if (bitboard & (bitboard >> 6) & (bitboard >> 12) & (bitboard >> 18) != 0) return true; // diagonal \
-//        if (bitboard & (bitboard >> 8) & (bitboard >> 16) & (bitboard >> 24) != 0) return true; // diagonal /
-//        if (bitboard & (bitboard >> 7) & (bitboard >> 14) & (bitboard >> 21) != 0) return true; // horizontal
-//        if (bitboard & (bitboard >> 1) & (bitboard >>  2) & (bitboard >>  3) != 0) return true; // vertical
-//        return false;
-//    }
-
-    public static boolean isWin(long bitboard) {
-        int[] directions = {1, 7, 6, 8};
-        long bb;
-        for(int direction : directions) {
-            bb = bitboard & (bitboard >> direction);
-            if ((bb & (bb >> (2 * direction))) != 0) return true;
-        }
-        return false;
-    }
-
-    public static boolean isWin(BigInteger bitboard, int winSize) {
+    protected boolean isWin(BigInteger bitboard, int winSize, int height) {
         if(winSize<1 || winSize>5) {
             throw new RuntimeException("Win size must be between 1 and 5!");
         }
 
-        int[] directions = {1, 11, 12, 10};
+        int[] directions = {1, height + 1, height + 2, height};
         BigInteger mask = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
 
         if(winSize<4) {
@@ -69,5 +65,26 @@ public class BitboardsUtil {
             }
         }
         return false;
+    }
+
+    protected void makeMove(int position) {
+        BigInteger move = BigInteger.ONE.shiftLeft(position);
+        bitboard[counter & 1] = bitboard[counter & 1].xor(move);
+        moves[counter++] = position;
+//
+//        long move = 1L << height[col]++; // (1)  vyberie z pamete vysku v danom stlpci a zvysi o jedna a nastavy bit
+//                                         //      nastavy height +1
+//        bitboard[counter & 1] ^= move;   // (2)  vyberie bitboard pre dany tah
+//                                         //      nastavy zmenu do bitboard cez xor
+//        moves[counter++] = col;          // (3)  ulozi tah do historie
+    }
+
+    protected void undoMove() {
+        int position = moves[--counter];
+        BigInteger move = BigInteger.ONE.shiftLeft(position);
+        bitboard[counter & 1] = bitboard[counter & 1].xor(move);
+        //    int col = moves[--counter];     // reverses (3)
+        //    long move = 1L << --height[col]; // reverses (1)
+        //    bitboard[counter & 1] ^= move;  // reverses (2)
     }
 }
