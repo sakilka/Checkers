@@ -6,6 +6,7 @@ import org.sample.checkers.config.ticktacktoe.TickTackToeMoveHistory;
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 import org.sample.checkers.ticktacktoe.ui.TickTackToeUi;
 import org.sample.checkers.ticktacktoe.ui.minimax.techniques.BitboardsUtil;
+import org.sample.checkers.ticktacktoe.ui.minimax.techniques.Record;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -13,8 +14,10 @@ import java.util.Random;
 @Service
 public class AdvancedMinimaxUi extends BitboardsUtil implements TickTackToeUi {
 
-    public AdvancedMinimaxUi(int height, int column) {
-        super(height, column);
+    private static final int DIFFICULTY = 5;
+
+    public AdvancedMinimaxUi(int height, int column, int winSize) {
+        super(height, column, winSize);
     }
 
     @Override
@@ -23,8 +26,44 @@ public class AdvancedMinimaxUi extends BitboardsUtil implements TickTackToeUi {
 
         Dimension2D randomFreeMove = getRandomFreeMove(currentBoard);
 
+        Record move = minimax(currentBoard, DIFFICULTY, ToeSide.CROSS);
+
         return new TickTackToeMove(randomFreeMove, history.getOnMove());
     }
+
+    private Record minimax(ToeSide[][] currentBoard, int depth, ToeSide currentPlayer) {
+        if (depth == 0 || isGameOver(currentPlayer))
+            return new Record(null, null, evaluate(), currentPlayer);
+
+        return null;
+    }
+
+    boolean isGameOver(ToeSide player) {
+        return hasWinner(player) || (counter == column * height);
+    }
+
+    /*
+    function minimax(node, depth, maximizingPlayer) is
+    if depth = 0 or node is a terminal node then
+        return the heuristic value of node
+    if maximizingPlayer then
+        value := −∞
+        for each child of node do
+            value := max(value, minimax(child, depth − 1, FALSE))
+        return value
+    else (* minimizing player *)
+        value := +∞
+        for each child of node do
+            value := min(value, minimax(child, depth − 1, TRUE))
+        return value
+     */
+
+    /*
+    (* Initial call *)
+        minimax(origin, depth, TRUE)
+     */
+
+
 
     private Dimension2D getRandomFreeMove(ToeSide[][] currentBoard) {
         Random random = new Random(System.currentTimeMillis());

@@ -10,13 +10,18 @@ public abstract class BitboardsUtil {
 
     protected final int height;
     protected final int column;
+    protected final int winSize;
     protected int counter;
     protected int[] moves;
     protected BigInteger bitboard[];
 
-    public BitboardsUtil(int height, int column) {
+    private int[] winCombinationsCoefficient = {1, 1, 3, 7, 20};
+    private int[] defeatCombinationsCoefficient = {1, 3, 5, 9, 30};
+
+    public BitboardsUtil(int height, int column, int winSize) {
         this.height = height;
         this.column = column;
+        this.winSize = winSize;
         this.counter = 0;
         this.moves = new int[1000000];
         this.bitboard = new BigInteger[2];
@@ -107,4 +112,64 @@ public abstract class BitboardsUtil {
 
         return moves;
     }
+
+    protected boolean hasWinner(ToeSide player) {
+        if(ToeSide.CROSS == player) {
+            return isWin(bitboard[0], winSize, height);
+        } else if(ToeSide.CIRCLE == player) {
+            return isWin(bitboard[1], winSize, height);
+        } else {
+            return isWin(bitboard[0], winSize, height) || isWin(bitboard[1], winSize, height);
+        }
+    }
+
+    protected Integer evaluate() {
+        if(isWin(bitboard[counter & 1], winSize, height)) {
+            return Integer.MAX_VALUE;
+        }
+
+        int score = 0;
+
+        for(int inRow = 1; inRow < winSize; inRow++) {
+            score += winCombinationsCoefficient[inRow - 1] * countInRow(inRow, 0);
+            score -= defeatCombinationsCoefficient[inRow - 1] * countInRow(inRow, 1);
+        }
+        return score;
+    }
+
+    protected Integer countInRow(int inRow, int side) {
+
+        int count = 0;
+        int[] directions = {1, height + 1, height + 2, height};
+
+        for (int direction : directions) {
+            BigInteger bb = bitboard[side].and(bitboard[side].shiftRight(direction));
+
+            switch (inRow) {
+                case 1:
+                    count += bitboard[side].bitCount();
+                    break;
+                case 2:
+                    count += bb.bitCount();
+                    break;
+                case 3:
+                    bb = bb.and((bitboard[side].shiftRight((2 * direction))));
+                    count += bb.bitCount();
+                    break;
+                case 4:
+                    bb = bb.and(bb.shiftRight(2 * direction));
+                    count += bb.bitCount();
+                    break;
+                default:
+                case 5:
+                    bb = bb.and(bb.shiftRight(2 * direction))
+                            .and(bitboard[side].shiftRight((4 * direction)));
+                    count += bb.bitCount();
+                    break;
+            }
+        }
+
+        return inRow == 1 ? count/4 : count;
+    }
+
 }

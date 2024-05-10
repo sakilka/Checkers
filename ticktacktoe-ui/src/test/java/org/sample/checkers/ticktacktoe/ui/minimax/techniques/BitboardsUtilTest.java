@@ -568,4 +568,128 @@ class BitboardsUtilTest extends TechniquesTestUtils {
         assertThat(validMoves.contains(0)).isTrue();
         printBitBoard(this.bitboard);
     }
+
+    @Test
+    void testCountWinningCombinations() {
+        // given
+        ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_CIRCLE_15_10_5, 15, 10);
+        printBoard(currentBoard);
+
+        //    protected int counter;
+        //    protected int[] moves;
+        //    protected BigInteger bitboard[];
+
+        this.counter = 7;
+        this.moves[0] = 81; //X
+        this.moves[1] = 82; //O
+        this.moves[2] = 72; //X
+        this.moves[3] = 92; //O
+        this.moves[4] = 94; //X
+        this.moves[5] = 102;//O
+        this.moves[6] = 80; //X
+
+        BigInteger Xs = getBitboard(currentBoard, ToeSide.CROSS);
+        BigInteger Os = getBitboard(currentBoard, ToeSide.CIRCLE);
+
+        this.bitboard[0] = Xs;
+        this.bitboard[1] = Os;
+
+        makeMove(112);
+        makeMove(79);
+        makeMove(122);
+
+        currentBoard = getBoardFromBitBoard(bitboard);
+
+        //when
+        Integer fiveInRowX = countInRow(5, 0);
+        Integer fiveInRowO = countInRow(5, 1);
+
+        Integer fiveInRowX2 = countWiningCombinations(currentBoard, 0, ToeSide.CROSS);
+        Integer fiveInRowO2 = countWiningCombinations(currentBoard, 0, ToeSide.CIRCLE);
+
+        Integer fourInRowX = countInRow(4, 0);
+        Integer fourInRowO = countInRow(4, 1);
+
+        Integer fourInRowX2 = countWiningCombinations(currentBoard, 1, ToeSide.CROSS);
+        Integer fourInRowO2 = countWiningCombinations(currentBoard, 1, ToeSide.CIRCLE);
+
+        Integer threeInRowX = countInRow(3, 0);
+        Integer threeInRowO = countInRow(3, 1);
+
+        Integer threeInRowX2 = countWiningCombinations(currentBoard, 2, ToeSide.CROSS);
+        Integer threeInRowO2 = countWiningCombinations(currentBoard, 2, ToeSide.CIRCLE);
+
+        Integer twoInRowX = countInRow(2, 0);
+        Integer twoInRowO = countInRow(2, 1);
+
+        Integer twoInRowX2 = countWiningCombinations(currentBoard, 3, ToeSide.CROSS);
+        Integer twoInRowO2 = countWiningCombinations(currentBoard, 3, ToeSide.CIRCLE);
+
+        Integer oneInRowX = countInRow(1, 0);
+        Integer oneInRowO = countInRow(1, 1);
+
+        // then
+        assertThat(this.moves).startsWith(81,82,72,92,94,102,80);
+        assertThat(this.bitboard[1].testBit(102)).isTrue();
+        assertThat(this.bitboard[0].testBit(80)).isTrue();
+
+        assertThat(fiveInRowX).isZero().isEqualTo(fiveInRowX2);
+        assertThat(fourInRowX).isEqualTo(0).isEqualTo(fourInRowX2);
+        assertThat(threeInRowX).isEqualTo(1).isEqualTo(threeInRowX2);
+        assertThat(twoInRowX).isEqualTo(2).isNotEqualTo(twoInRowX2);
+        assertThat(oneInRowX).isEqualTo(5);
+
+        assertThat(fiveInRowO).isEqualTo(1).isEqualTo(fiveInRowO2);
+        assertThat(fourInRowO).isEqualTo(2).isEqualTo(fourInRowO2);
+        assertThat(threeInRowO).isEqualTo(3).isNotEqualTo(threeInRowO2);
+        assertThat(twoInRowO).isEqualTo(4).isNotEqualTo(twoInRowO2);
+        assertThat(oneInRowO).isEqualTo(5);
+        printBitBoard(this.bitboard);
+    }
+
+    @Test
+    void testEvaluateBoard() {
+        // given
+        ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_CIRCLE_15_10_5, 15, 10);
+        printBoard(currentBoard);
+
+        //    protected int counter;
+        //    protected int[] moves;
+        //    protected BigInteger bitboard[];
+
+        this.counter = 7;
+        this.moves[0] = 81; //X
+        this.moves[1] = 82; //O
+        this.moves[2] = 72; //X
+        this.moves[3] = 92; //O
+        this.moves[4] = 94; //X
+        this.moves[5] = 102;//O
+        this.moves[6] = 80; //X
+
+        BigInteger Xs = getBitboard(currentBoard, ToeSide.CROSS);
+        BigInteger Os = getBitboard(currentBoard, ToeSide.CIRCLE);
+
+        this.bitboard[0] = Xs;
+        this.bitboard[1] = Os;
+
+        makeMove(112);
+        makeMove(79);
+        makeMove(122);
+
+        //when
+        Integer scoreX = evaluate();
+
+        undoMove();
+
+        Integer scoreO = evaluate();
+
+
+        // then
+        assertThat(this.moves).startsWith(81,82,72,92,94,102,80);
+        assertThat(this.bitboard[1].testBit(102)).isTrue();
+        assertThat(this.bitboard[0].testBit(80)).isTrue();
+        assertThat(scoreX).isEqualTo(-40);
+        assertThat(scoreO).isEqualTo(-22);
+        printBitBoard(this.bitboard);
+    }
 }
