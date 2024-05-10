@@ -65,8 +65,8 @@ class BitboardsUtilTest extends TechniquesTestUtils {
         ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD, 7, 6);
 
         // when
-        long Xs = BitboardsUtil.getBitboard(currentBoard, ToeSide.CROSS);
-        long Os = BitboardsUtil.getBitboard(currentBoard, ToeSide.CIRCLE);
+        long Xs = getBitboardLong(currentBoard, ToeSide.CROSS);
+        long Os = getBitboardLong(currentBoard, ToeSide.CIRCLE);
 
         //then
         assertThat(Xs).isNotNull().isNotZero();
@@ -166,8 +166,8 @@ class BitboardsUtilTest extends TechniquesTestUtils {
     void testIsWin() {
         // given
         ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_WIN_CROSS, 7, 6);
-        long Xs = BitboardsUtil.getBitboard(currentBoard, ToeSide.CROSS);
-        long Os = BitboardsUtil.getBitboard(currentBoard, ToeSide.CIRCLE);
+        long Xs = getBitboardLong(currentBoard, ToeSide.CROSS);
+        long Os = getBitboardLong(currentBoard, ToeSide.CIRCLE);
 
         // when
         boolean crossWin = BitboardsUtil.isWin(Xs);
@@ -182,8 +182,8 @@ class BitboardsUtilTest extends TechniquesTestUtils {
     void testIsWinCircle() {
         // given
         ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_WIN_CIRCLE, 7, 6);
-        long Xs = BitboardsUtil.getBitboard(currentBoard, ToeSide.CROSS);
-        long Os = BitboardsUtil.getBitboard(currentBoard, ToeSide.CIRCLE);
+        long Xs = getBitboardLong(currentBoard, ToeSide.CROSS);
+        long Os = getBitboardLong(currentBoard, ToeSide.CIRCLE);
 
         // when
         boolean crossWin = BitboardsUtil.isWin(Xs);
@@ -198,8 +198,8 @@ class BitboardsUtilTest extends TechniquesTestUtils {
     void testIsNotWin() {
         // given
         ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD, 7, 6);
-        long Xs = BitboardsUtil.getBitboard(currentBoard, ToeSide.CROSS);
-        long Os = BitboardsUtil.getBitboard(currentBoard, ToeSide.CIRCLE);
+        long Xs = getBitboardLong(currentBoard, ToeSide.CROSS);
+        long Os = getBitboardLong(currentBoard, ToeSide.CIRCLE);
 
         // when
         boolean crossWin = BitboardsUtil.isWin(Xs);
@@ -211,13 +211,31 @@ class BitboardsUtilTest extends TechniquesTestUtils {
     }
 
     @Test
+    void testLoadBitBoardToBigInteger() {
+        // given
+        ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_WIN_CIRCLE_15_10_5, 15, 10);
+        printBoard(currentBoard);
+
+        //when
+        BigInteger Xs = getBitboardDecimal(currentBoard, ToeSide.CROSS);
+        BigInteger Os = getBitboardDecimal(currentBoard, ToeSide.CIRCLE);
+
+        BigInteger Xs2 = BitboardsUtil.getBitboard(currentBoard, ToeSide.CROSS);
+        BigInteger Os2 = BitboardsUtil.getBitboard(currentBoard, ToeSide.CIRCLE);
+
+        // then
+        assertThat(Xs).isEqualTo(Xs2);
+        assertThat(Os).isEqualTo(Os2);
+    }
+
+    @Test
     void testIsWinCircle5InRow() {
         // given
         ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_WIN_CIRCLE_15_10_5, 15, 10);
         printBoard(currentBoard);
 
-        BigInteger Xs = BitboardsUtil.getBitboardDecimal(currentBoard, ToeSide.CROSS);
-        BigInteger Os = BitboardsUtil.getBitboardDecimal(currentBoard, ToeSide.CIRCLE);
+        BigInteger Xs = BitboardsUtil.getBitboard(currentBoard, ToeSide.CROSS);
+        BigInteger Os = BitboardsUtil.getBitboard(currentBoard, ToeSide.CIRCLE);
 
 /*
                               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0   10 21 32 43 54 65 76 87 98 109 120 131 142 153 164
@@ -258,5 +276,83 @@ class BitboardsUtilTest extends TechniquesTestUtils {
         assertThat(crossWin3).isTrue();
         assertThat(crossWin4).isFalse();
         assertThat(circleWin).isTrue();
+    }
+
+    @Test
+    void testSetNBitInLong() {
+        // given
+        int n = 3;
+        int n2 = 5;
+        int x = 0;
+
+        // when
+        x |= (1 << n) | (1 << n2);
+
+        // then
+        assertThat(x).isNotZero().isEqualTo(40).isEqualTo(0b101000);
+        System.out.println(Integer.toBinaryString(x));
+    }
+
+    @Test
+    void testUnsetNBitInLong() {
+        // given
+        int n = 3;
+        int n2 = 5;
+        int x = 0b11111111;
+
+        // when
+        x &= ~((1 << n) | (1 << n2));
+
+        // then
+        assertThat(x).isNotZero().isEqualTo(215).isEqualTo(0b11010111);
+        System.out.println(Integer.toBinaryString(x));
+    }
+
+    @Test
+    void testSetNBitInBigInteger() {
+        // given
+        int n = 3;
+        int n2 = 5;
+        BigInteger x = BigInteger.ZERO;
+
+        // when
+        x = x.or((BigInteger.ONE.shiftLeft(n)).or(BigInteger.ONE.shiftLeft(n2)));
+
+        // then
+        assertThat(x).isNotNull().isEqualTo(BigInteger.valueOf(40));
+        assertThat(x.intValue()).isEqualTo(0b101000);
+        System.out.println(x.toString(2));
+    }
+
+    @Test
+    void testSetNBitInBigIntegerDirect() {
+        // given
+        int n = 3;
+        int n2 = 5;
+        BigInteger x = BigInteger.ZERO;
+
+        // when
+        x = x.setBit(n).setBit(n2);
+
+        // then
+        assertThat(x).isNotNull().isEqualTo(BigInteger.valueOf(40));
+        assertThat(x.intValue()).isEqualTo(0b101000);
+        System.out.println(x.toString(2));
+    }
+
+    @Test
+    void testUnsetNBitInBigInteger() {
+        // given
+        int n = 3;
+        int n2 = 5;
+        BigInteger x = BigInteger.valueOf(255);
+
+        // when
+        x = x.clearBit(n).clearBit(n2);
+
+        // then
+        assertThat(x).isNotNull().isEqualTo(BigInteger.valueOf(215));
+        assertThat(x.intValue()).isEqualTo(0b11010111);
+        System.out.println(x.toString(2));
     }
 }

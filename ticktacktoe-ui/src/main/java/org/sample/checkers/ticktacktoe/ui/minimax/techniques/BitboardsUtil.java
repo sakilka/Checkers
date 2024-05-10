@@ -2,33 +2,25 @@ package org.sample.checkers.ticktacktoe.ui.minimax.techniques;
 
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class BitboardsUtil {
 
-    public static long getBitboard(ToeSide [][] board, ToeSide side) {
-        String bitboard = "";
+    public static BigInteger getBitboard(ToeSide [][] board, ToeSide side) {
+        BigInteger bitboard = BigInteger.ZERO;
+        int nBit = 0;
+
         for (int col = 0; col < board.length; col++) {
             for (int h = board[0].length - 1; h >= 0; h--) {
-                bitboard = (board[col][h] == side ? 1 : 0) + bitboard;
+                if(board[col][h] == side) {
+                    bitboard = bitboard.setBit(nBit);
+                }
+                nBit++;
             }
-            bitboard = "0" + bitboard;
+            nBit++;
         }
 
-       return parseLong(bitboard, 2);
-    }
-
-    public static BigInteger getBitboardDecimal(ToeSide [][] board, ToeSide side) {
-        String bitboard = "";
-        for (int col = 0; col < board.length; col++) {
-            for (int h = board[0].length - 1; h >= 0; h--) {
-                bitboard = (board[col][h] == side ? 1 : 0) + bitboard;
-            }
-            bitboard = "0" + bitboard;
-        }
-
-        return parseBigDecimal(bitboard, 2);
+        return bitboard;
     }
 
 //    public static boolean isWin(long bitboard) {
@@ -47,14 +39,6 @@ public class BitboardsUtil {
             if ((bb & (bb >> (2 * direction))) != 0) return true;
         }
         return false;
-    }
-
-    private static long parseLong(String s, int base) {
-        return new BigInteger(s, base).longValue();
-    }
-
-    private static BigInteger parseBigDecimal(String s, int base) {
-        return new BigInteger(s, base);
     }
 
     public static boolean isWin(BigInteger bitboard, int winSize) {

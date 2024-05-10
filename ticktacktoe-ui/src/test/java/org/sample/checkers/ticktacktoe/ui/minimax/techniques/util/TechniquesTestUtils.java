@@ -2,6 +2,8 @@ package org.sample.checkers.ticktacktoe.ui.minimax.techniques.util;
 
 import org.sample.checkers.config.ticktacktoe.ToeSide;
 
+import java.math.BigInteger;
+
 public abstract class TechniquesTestUtils {
 
     protected static ToeSide[][] loadBoard(String board, int width, int height){
@@ -76,5 +78,38 @@ public abstract class TechniquesTestUtils {
             pointer++;
         }
         return bitboard;
+    }
+
+    protected static long getBitboardLong(ToeSide [][] board, ToeSide side) {
+        String bitboard = "";
+        for (int col = 0; col < board.length; col++) {
+            for (int h = board[0].length - 1; h >= 0; h--) {
+                bitboard = (board[col][h] == side ? 1 : 0) + bitboard;
+            }
+            bitboard = "0" + bitboard;
+        }
+
+        return parseLong(bitboard, 2);
+    }
+
+    private static long parseLong(String s, int base) {
+        return new BigInteger(s, base).longValue();
+    }
+
+
+    public static BigInteger getBitboardDecimal(ToeSide [][] board, ToeSide side) {
+        String bitboard = "";
+        for (int col = 0; col < board.length; col++) {
+            for (int h = board[0].length - 1; h >= 0; h--) {
+                bitboard = (board[col][h] == side ? 1 : 0) + bitboard;
+            }
+            bitboard = "0" + bitboard;
+        }
+
+        return parseBigDecimal(bitboard, 2);
+    }
+
+    private static BigInteger parseBigDecimal(String s, int base) {
+        return new BigInteger(s, base);
     }
 }
