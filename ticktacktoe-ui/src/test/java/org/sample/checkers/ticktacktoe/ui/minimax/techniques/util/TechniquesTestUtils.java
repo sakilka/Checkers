@@ -285,6 +285,82 @@ public abstract class TechniquesTestUtils extends BitboardsUtil {
         return diagonalCount;
     }
 
+    protected Integer countInRowWithoutBlock(int inRow, int side) {
+        int block = side == 0 ? 1 : 0;
+
+        int count = 0;
+        int[] directions = {1, height + 1, height + 2, height};
+        BigInteger TOP = BigInteger.ZERO;
+
+        for (int col = 1; col <= (column + 1); col++){
+            TOP = TOP.setBit((col * (height + 1) - 1));
+        }
+
+        for (int direction : directions) {
+            BigInteger bb = bitboard[side].and(bitboard[side].shiftRight(direction));
+            BigInteger blockBoard = BigInteger.ZERO;
+
+            switch (inRow) {
+                case 1:
+                    blockBoard = bitboard[block].or(bitboard[block].shiftRight(direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(direction));
+                    count += bitboard[side].xor(blockBoard).and(bitboard[side]).bitCount();
+                    break;
+                case 2:
+                    blockBoard = bitboard[block]
+                            .or(bitboard[block].shiftRight(direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(direction))
+                            .or(bitboard[block].shiftRight(2 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(2 * direction));
+                    count += bb.xor(blockBoard).and(bb).bitCount();
+                    break;
+                case 3:
+                    blockBoard = bitboard[block]
+                            .or(bitboard[block].shiftRight(direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(direction))
+                            .or(bitboard[block].shiftRight(2 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(2 * direction))
+                            .or(bitboard[block].shiftRight(3 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(3 * direction));
+                    bb = bb.and((bitboard[side].shiftRight((2 * direction))));
+                    count += bb.xor(blockBoard).and(bb).bitCount();
+                    break;
+                case 4:
+                    blockBoard = bitboard[block]
+                            .or(bitboard[block].shiftRight(direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(direction))
+                            .or(bitboard[block].shiftRight(2 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(2 * direction))
+                            .or(bitboard[block].shiftRight(3 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(3 * direction))
+                            .or(bitboard[block].shiftRight(4 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(4 * direction));
+                    bb = bb.and(bb.shiftRight(2 * direction));
+                    count += bb.xor(blockBoard).and(bb).bitCount();
+                    break;
+                default:
+                case 5:
+                    blockBoard = bitboard[block]
+                            .or(bitboard[block].shiftRight(direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(direction))
+                            .or(bitboard[block].shiftRight(2 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(2 * direction))
+                            .or(bitboard[block].shiftRight(3 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(3 * direction))
+                            .or(bitboard[block].shiftRight(4 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(4 * direction))
+                            .or(bitboard[block].shiftRight(5 * direction))
+                            .xor(TOP).and(bitboard[block].shiftRight(5 * direction));
+                    bb = bb.and(bb.shiftRight(2 * direction))
+                            .and(bitboard[side].shiftRight((4 * direction)));
+                    count += bb.xor(blockBoard).and(bb).bitCount();
+                    break;
+            }
+        }
+
+        return inRow == 1 ? count/4 : count;
+    }
+
     public int evaluateBoardState(ToeSide[][] currentBoard, ToeSide side) {
         int score = 0;
 
@@ -293,8 +369,8 @@ public abstract class TechniquesTestUtils extends BitboardsUtil {
         }
 
         for(int neededTurns = WIN_LENGTH; neededTurns >0; neededTurns--) {
-            score += winCombinationsCoefficientTest[neededTurns - 1] * WinCombinationsCounter.countWiningCombinations(currentBoard, neededTurns, side);
-            score -= winCombinationsCoefficientTest[neededTurns - 1] * WinCombinationsCounter.countWiningCombinations(currentBoard, neededTurns, side == CROSS ? CIRCLE : CROSS);
+            score += winCombinationsCoefficientTest[neededTurns - 1] * countWiningCombinations(currentBoard, neededTurns, side);
+            score -= defeatCombinationsCoefficientTest[neededTurns - 1] * countWiningCombinations(currentBoard, neededTurns, side == CROSS ? CIRCLE : CROSS);
         }
         return score;
     }

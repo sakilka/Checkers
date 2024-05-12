@@ -27,7 +27,7 @@ public class AdvancedMinimaxUi implements TickTackToeUi {
         Dimension2D randomFreeMove = getRandomFreeMove(currentBoard);
 
         BitboardGame game = new BitboardGame(currentBoard[0].length, currentBoard.length, 5);
-        //Record move = minimax(game, DIFFICULTY, DIFFICULTY, ToeSide.CROSS, true);
+        Record move = minimax(game, DIFFICULTY, DIFFICULTY, ToeSide.CROSS, true);
 
         return new TickTackToeMove(randomFreeMove, history.getOnMove());
     }
