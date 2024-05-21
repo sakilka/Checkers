@@ -191,6 +191,67 @@ class BitboardsUtilTest extends TechniquesTestUtils {
     }
 
     @Test
+    void testBitwiseOperations() {
+        int x = 0b00000011;
+        int y = 0b00001001;
+        int and = x & y;
+        int or = x | y;
+        int xor = x ^ y;
+        int complementX = ~ x;
+        int complementY = ~ y;
+        int andNotX = 0b00001000 & (~ x);
+        int andNotY = 0b00001000 & (~ y);
+
+        System.out.println(x);
+        System.out.println(y);
+        System.out.println("AND: " + and);
+        System.out.println("OR: " + or);
+        System.out.println("XOR: " + xor);
+        System.out.println("Complement X: " + complementX);
+        System.out.println("Complement Y: " + complementY);
+        System.out.println("And not X: " + andNotX);
+        System.out.println("And not Y: " + andNotY);
+        System.out.println(Integer.toBinaryString(x));
+        System.out.println(Integer.toBinaryString(y));
+        System.out.println(Integer.toBinaryString(and));
+        System.out.println(Integer.toBinaryString(or));
+        System.out.println(Integer.toBinaryString(xor));
+        System.out.println(Integer.toBinaryString(complementX));
+        System.out.println(Integer.toBinaryString(complementY));
+        System.out.println(Integer.toBinaryString(andNotX));
+        System.out.println(Integer.toBinaryString(andNotY));
+
+        BigInteger X = BigInteger.valueOf(0b00000011);
+        BigInteger Y = BigInteger.valueOf(0b00001001);
+        BigInteger AND = X.and(Y);
+        BigInteger OR = X.or(Y);
+        BigInteger XOR = X.xor(Y);
+        BigInteger COMPLEMENTX = X.not();
+        BigInteger COMPLEMENTY = Y.not();
+        BigInteger ANDNOTX = BigInteger.valueOf(0b00001000).andNot(X);
+        BigInteger ANDNOTY = BigInteger.valueOf(0b00001000).andNot(Y);
+
+        System.out.println(X);
+        System.out.println(Y);
+        System.out.println("AND: " + AND);
+        System.out.println("OR: " + OR);
+        System.out.println("XOR: " + XOR);
+        System.out.println("Complement X: " + COMPLEMENTX);
+        System.out.println("Complement Y: " + COMPLEMENTY);
+        System.out.println("And not X: " + ANDNOTX);
+        System.out.println("And not Y: " + ANDNOTY);
+        System.out.println(X.toString(2));
+        System.out.println(Y.toString(2));
+        System.out.println(AND.toString(2));
+        System.out.println(OR.toString(2));
+        System.out.println(XOR.toString(2));
+        System.out.println(COMPLEMENTX.toString(2));
+        System.out.println(COMPLEMENTY.toString(2));
+        System.out.println(ANDNOTX.toString(2));
+        System.out.println(ANDNOTY.toString(2));
+    }
+
+    @Test
     void testIsWin() {
         // given
         ToeSide[][] currentBoard = loadBoard(CONNECT_FOUR_TEST_BOARD_WIN_CROSS, 7, 6);
@@ -609,7 +670,7 @@ class BitboardsUtilTest extends TechniquesTestUtils {
         Integer fiveInRowO2 = countWiningCombinations(currentBoard, 0, ToeSide.CIRCLE);
 
         Integer fiveInRowX3 = countInRowWithoutBlock(5, 0);
-        Integer fiveInRowO3 = countInRow(5, 1);
+        Integer fiveInRowO3 = countInRowWithoutBlock(5, 1);
 
         Integer fourInRowX = countInRow(4, 0);
         Integer fourInRowO = countInRow(4, 1);

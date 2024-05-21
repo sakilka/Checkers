@@ -290,74 +290,125 @@ public abstract class TechniquesTestUtils extends BitboardsUtil {
 
         int count = 0;
         int[] directions = {1, height + 1, height + 2, height};
-        BigInteger mask = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
-        BigInteger mask1 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
-        BigInteger mask2 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
-        BigInteger mask3 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
-        BigInteger mask4 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
-
-        for (int col = 1; col <= (column + 1); col++){
-            mask = mask.clearBit((col * (height + 1) - 1));
-            mask1 = mask1.clearBit((col * (height + 1) - 1));
-            mask1 = mask1.clearBit((col * (height + 1) - 2));
-            mask2 = mask2.clearBit((col * (height + 1) - 1));
-            mask2 = mask2.clearBit((col * (height + 1) - 2));
-            mask2 = mask2.clearBit((col * (height + 1) - 3));
-            mask3 = mask3.clearBit((col * (height + 1) - 1));
-            mask3 = mask3.clearBit((col * (height + 1) - 2));
-            mask3 = mask3.clearBit((col * (height + 1) - 3));
-            mask3 = mask3.clearBit((col * (height + 1) - 4));
-            mask4 = mask4.clearBit((col * (height + 1) - 1));
-            mask4 = mask4.clearBit((col * (height + 1) - 2));
-            mask4 = mask4.clearBit((col * (height + 1) - 3));
-            mask4 = mask4.clearBit((col * (height + 1) - 4));
-            mask4 = mask4.clearBit((col * (height + 1) - 5));
-        }
 
         for (int direction : directions) {
-            BigInteger bb = bitboard[side].and(bitboard[side].shiftRight(direction));
-            BigInteger blockBoard = BigInteger.ZERO;
 
-            switch (inRow) {
-                case 1:
-                    blockBoard = bitboard[block];
-                    count += bitboard[side].xor(blockBoard).and(bitboard[side]).bitCount();
-                    break;
-                case 2:
-                    blockBoard = bitboard[block]
-                            .or(mask1.and(bitboard[block].shiftRight(direction)));
-                    count += bb.xor(blockBoard).and(bb).bitCount();
-                    break;
-                case 3:
-                    blockBoard = bitboard[block]
-                            .or(mask1.and(bitboard[block].shiftRight(direction)))
-                            .or(mask2.and(bitboard[block].shiftRight(2 * direction)));
-                    bb = bb.and((bitboard[side].shiftRight((2 * direction))));
-                    count += bb.xor(blockBoard).and(bb).bitCount();
-                    break;
-                case 4:
-                    blockBoard = bitboard[block]
-                            .or(mask1.and(bitboard[block].shiftRight(direction)))
-                            .or(mask2.and(bitboard[block].shiftRight(2 * direction)))
-                            .or(mask3.and(bitboard[block].shiftRight(3 * direction)));
-                    bb = bb.and(bb.shiftRight(2 * direction));
-                    count += bb.xor(blockBoard).and(bb).bitCount();
-                    break;
-                default:
-                case 5:
-                    blockBoard = bitboard[block]
-                            .or(mask1.and(bitboard[block].shiftRight(direction)))
-                            .or(mask2.and(bitboard[block].shiftRight(2 * direction)))
-                            .or(mask3.and(bitboard[block].shiftRight(3 * direction)))
-                            .or(mask4.and(bitboard[block].shiftRight(4 * direction)));
-                    bb = bb.and(bb.shiftRight(2 * direction))
-                            .and(bitboard[side].shiftRight((4 * direction)));
-                    count += bb.xor(blockBoard).and(bb).bitCount();
-                    break;
+            BigInteger mask1 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
+            BigInteger mask2 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
+            BigInteger mask3 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
+            BigInteger mask4 = BigInteger.ONE.shiftLeft(256).subtract(BigInteger.ONE);
+
+            for (int col = 1; col <= (column + 1); col++){
+                mask1 = mask1.clearBit(clearBit(col,height, 0, direction));
+                mask1 = mask1.clearBit(clearBit(col,height, 1, direction));
+
+                mask2 = mask2.clearBit(clearBit(col,height, 0, direction));
+                mask2 = mask2.clearBit(clearBit(col,height, 1, direction));
+                mask2 = mask2.clearBit(clearBit(col,height, 2, direction));
+
+                mask3 = mask3.clearBit(clearBit(col,height, 0, direction));
+                mask3 = mask3.clearBit(clearBit(col,height, 1, direction));
+                mask3 = mask3.clearBit(clearBit(col,height, 2, direction));
+                mask3 = mask3.clearBit(clearBit(col,height, 3, direction));
+
+                mask4 = mask4.clearBit(clearBit(col,height, 0, direction));
+                mask4 = mask4.clearBit(clearBit(col,height, 1, direction));
+                mask4 = mask4.clearBit(clearBit(col,height, 2, direction));
+                mask4 = mask4.clearBit(clearBit(col,height, 3, direction));
+                mask4 = mask4.clearBit(clearBit(col,height, 4, direction));
             }
+
+            System.out.println("mask: " + direction);
+            printBitBoard(new BigInteger[]{mask4, BigInteger.ZERO});
+            BigInteger possible5 = bitboard[side]
+                    .or(mask1.and(bitboard[side].shiftRight(direction)));
+
+            BigInteger blockBoard = bitboard[block]
+                    .or(mask1.and(bitboard[block].shiftRight(direction)))
+                    .or(mask2.and(bitboard[block].shiftRight(2 * direction)))
+                    .or(mask3.and(bitboard[block].shiftRight(3 * direction)))
+                    .or(mask4.and(bitboard[block].shiftRight(4 * direction)));
+
+            System.out.println("direction: " + direction);
+            printBitBoard(new BigInteger[]{BigInteger.ZERO, blockBoard});
+
+            possible5 = possible5
+                    .or(mask2.and(bitboard[side].shiftRight((2 * direction))))
+                    .or(mask3.and(bitboard[side].shiftRight((3 * direction))))
+                    .or(mask4.and(bitboard[side].shiftRight((4 * direction))));
+
+            System.out.println("direction: " + direction);
+            printBitBoard(new BigInteger[]{possible5, BigInteger.ZERO});
+
+            BigInteger xor = possible5.xor(blockBoard);
+            BigInteger result2 = xor.and(possible5);
+            BigInteger result = xor.and(possible5).and(mask4.and(bitboard[side].shiftRight((4 * direction))));
+
+            System.out.println("direction xor: " + direction);
+            printBitBoard(new BigInteger[]{xor, BigInteger.ZERO});
+            System.out.println("direction xor and: " + direction + " side: " + side);
+            printBitBoard(new BigInteger[]{result2, BigInteger.ZERO});
+            System.out.println("direction xor and: " + direction + " side: " + side);
+            printBitBoard(new BigInteger[]{result, BigInteger.ZERO});
+            System.out.println("maska o 4: " + direction);
+            printBitBoard(new BigInteger[]{mask4, BigInteger.ZERO});
+            System.out.println("posunute o 4: " + direction);
+            printBitBoard(new BigInteger[]{mask4.and(bitboard[side].shiftRight((4 * direction))), BigInteger.ZERO});
+
+            count += result.bitCount();
         }
 
-        return inRow == 1 ? count/4 : count;
+        return count;
+//        for (int direction : directions) {
+//            BigInteger bb = bitboard[side].and(bitboard[side].shiftRight(direction));
+//            BigInteger blockBoard = BigInteger.ZERO;
+//
+//            switch (inRow) {
+//                case 1:
+//                    blockBoard = bitboard[block];
+//                    count += bitboard[side].xor(blockBoard).and(bitboard[side]).bitCount();
+//                    break;
+//                case 2:
+//                    blockBoard = bitboard[block]
+//                            .or(mask1.and(bitboard[block].shiftRight(direction)));
+//                    count += bb.xor(blockBoard).and(bb).bitCount();
+//                    break;
+//                case 3:
+//                    blockBoard = bitboard[block]
+//                            .or(mask1.and(bitboard[block].shiftRight(direction)))
+//                            .or(mask2.and(bitboard[block].shiftRight(2 * direction)));
+//                    bb = bb.and((bitboard[side].shiftRight((2 * direction))));
+//                    count += bb.xor(blockBoard).and(bb).bitCount();
+//                    break;
+//                case 4:
+//                    blockBoard = bitboard[block]
+//                            .or(mask1.and(bitboard[block].shiftRight(direction)))
+//                            .or(mask2.and(bitboard[block].shiftRight(2 * direction)))
+//                            .or(mask3.and(bitboard[block].shiftRight(3 * direction)));
+//                    bb = bb.and(bb.shiftRight(2 * direction));
+//                    count += bb.xor(blockBoard).and(bb).bitCount();
+//                    break;
+//                default:
+//                case 5:
+//                    blockBoard = bitboard[block]
+//                            .or(mask1.and(bitboard[block].shiftRight(direction)))
+//                            .or(mask2.and(bitboard[block].shiftRight(2 * direction)))
+//                            .or(mask3.and(bitboard[block].shiftRight(3 * direction)))
+//                            .or(mask4.and(bitboard[block].shiftRight(4 * direction)));
+//                    bb = bb.and(bb.shiftRight(2 * direction))
+//                            .and(bitboard[side].shiftRight((4 * direction)));
+//                    count += bb.xor(blockBoard).and(bb).bitCount();
+//                    break;
+//            }
+//        }
+//
+//        return inRow == 1 ? count/4 : count;
+    }
+
+    private static int clearBit(int col, int height, int diff, int direction){
+        return ((col * (height + 1) - 1) - (diff * direction)) > 0 ?
+                ((col * (height + 1) - 1) - (diff * direction)) :
+                ((col * (height + 1) - 1));
     }
 
     public int evaluateBoardState(ToeSide[][] currentBoard, ToeSide side) {
